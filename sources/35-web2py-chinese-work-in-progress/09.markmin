@@ -1,47 +1,68 @@
-## Access Control
+## 访问控制 Access Control
 ``Auth``:inxx ``Access Control``:inxx ``RBAC``:inxx ``DAC``:inxx ``MAC``:inxx
 
-web2py includes a powerful and customizable Role Based Access Control mechanism (RBAC).
+Web2py包含强大的并且可定制的基于角色的访问控制机制（RBAC）。
+下面是来自维基百科（Wikipedia）的定义：
 
-Here is a definition from Wikipedia:
+“基于角色的访问控制（RBAC）是给授权用户限制系统访问的途径。它是
+新的替代强制访问控制（MAC）和自主访问控制（DAC）的方案。RBAC有时
+称为基于角色的安全。
 
-"Role-Based Access Control (RBAC) is an approach to restricting system access to authorized users. It is a newer alternative approach to mandatory access control (MAC) and discretionary access control (DAC). RBAC is sometimes referred to as role-based security.
+RBAC是一种策略中性和灵活的访问控制技术足够强大来模拟DAC和
+MAC。相反，如果角色图限制为树而不是部分排序集，MAC能模拟RBAC。
 
-RBAC is a policy neutral and flexible access control technology sufficiently powerful to simulate DAC and MAC. Conversely, MAC can simulate RBAC if the role graph is restricted to a tree rather than a partially ordered set.
+RBAC开发出来之前，MAC和DAC被视为仅知的访问控制模型：如果一个
+模型不是MAC，它被视为DAC模型，反之亦然。1990s后期研究表明RBAC不属
+于任何一类。
 
-Prior to the development of RBAC, MAC and DAC were considered to be the only known models for access control: if a model was not MAC, it was considered to be a DAC model, and vice versa. Research in the late 1990s demonstrated that RBAC falls in neither category.
+在一个组织中，角色为各种工作职能而创造。执行某些操作的权限派发给
+特定角色。成员（或其它系统用户）指派了特定角色，通过那些角色指派得到
+执行特定系统功能的权限。与基于内容的访问控制（CBAC）不同，RBAC不看
+消息内容（比如连接的源）。
 
-Within an organization, roles are created for various job functions. The permissions to perform certain operations are assigned to specific roles. Members of staff (or other system users) are assigned particular roles, and through those role assignments acquire the permissions to perform particular system functions. Unlike context-based access control (CBAC), RBAC does not look at the message context (such as a connection's source).
+因为用户不被直接地分配权限，而仅通过他们的角色（或角色）获得，个
+别用户权利的管理变成简单地给用户指派合适角色的问题；这简化了公共操作，
+比如添加用户或改变用户部门。
 
-Since users are not assigned permissions directly, but only acquire them through their role (or roles), management of individual user rights becomes a matter of simply assigning appropriate roles to the user; this simplifies common operations, such as adding a user, or changing a user's department.
+RBAC不用于访问控制表（ACLs），用在传统自主访问控制系统，该系统
+用组织中的意思分配权限给特定操作而不是低级别数据对象。例如，访问控制
+表可以用来准许或取消对特定系统文件写访问，但它没有规定那个文件如何被
+修改。
 
-RBAC differs from access control lists (ACLs) used in traditional discretionary access control systems in that it assigns permissions to specific operations with meaning in the organization, rather than to low level data objects. For example, an access control list could be used to grant or deny write access to a particular system file, but it would not dictate how that file could be changed."
 
-The web2py class that implements RBAC is called **Auth**.
+实现RBAC的web2py类叫做**Auth**。
 
-**Auth** needs (and defines) the following tables:
-- ``auth_user`` stores users' name, email address, password, and status (registration pending, accepted, blocked)
-- ``auth_group`` stores groups or roles for users in a many-to-many structure. By default, each user is in its own group, but a user can be in multiple groups, and each group can contain multiple users. A group is identified by a role and a description.
-- ``auth_membership`` links users and groups in a many-to-many structure.
-- ``auth_permission`` links groups and permissions. A permission is identified by a name and, optionally, a table and a record. For example, members of a certain group can have "update" permissions on a specific record of a specific table.
-- ``auth_event`` logs changes in the other tables and successful access via CRUD to objects controlled by the RBAC.
+**Auth** 需要（定义）下面的表：
+- ``auth_user`` 存储用户名字、电子邮件地址、密码和状态（注册等候、接受、阻
+止）
+- ``auth_group`` 为用户在多对多结构中存储组或角色。默认情况，每个用户在它
+自己的组中，但一个用户可以在多个组，并且每个组可以包含多个用户。组
+用角色和描述定义。
+- ``auth_membership``在多对对结构中链接用户和组。
+- ``auth_permission`` 链接组合权限。权限用名字或可选表和记录来定义。例如，
+某个组的成员有“update”权限对指定表的指定记录。
+- ``auth_event`` 日志在其它表中改变，通过RBAC控制的对象的CRUD成功访问。
 
-In principle, there is no restriction on the names of the roles and the names of the permissions; the developer can create them to fix the roles and permissions in the organization. Once they have been created, web2py provides an API to check if a user is logged in, if a user is a member of a given group, and/or if the user is a member of any group that has a given required permission.
+原理上，没有对角色名字和权限名字的限制；开发者可以创建它们固定组
+织中的角色和权限。一旦它们被创建，web2py提供API检查是否用户登录了，用
+户是否是所给出组的成员，或用户是否是任意一个组的用户，并得到了需要的
+权限。web2py也提装饰器来限制访问基于登录、成员资格和权限的任意功能。
+web2py也理解一些特定的权限，即那些具有与CRUD方法相应名字（create,
+read, update, delete)创建、读取、更新、删除），无需使用装饰器而强制自动使用
+它们。
+本章，我们将逐个讨论RBAC不同的部分。
 
-web2py also provides decorators to restrict access to any function based on login, membership and permissions.
+### 认证Authentication
 
-web2py also understands some specific permissions, i.e., those that have a name that correspond to the CRUD methods (create, read, update, delete) and can enforce them automatically without the need to use decorators.
+为了使用RBAC，用户需要被识别。这意味着他们需要注册（或被注册）并
+登录。
 
-In this chapter, we are going to discuss different parts of RBAC one by one.
+**Auth** 提供多种登录方法。默认的一种是由基于本地``auth_user``表识别用户。另
+外，能针对第三方认证系统登录用户，能对供应商单点登录，例如Google,
+PAM, LDAP, Facebook, LinkedIn, Dropbox, OpenID, OAuth,等。
 
-### Authentication
-
-In order to use RBAC, users need to be identified. This means that they need to register (or be registered) and log in.
-
-**Auth** provides multiple login methods. The default one consists of identifying users based on the local ``auth_user`` table.
-Alternatively, it can log in users against third-party authentication systems and single sign on providers such as Google, PAM, LDAP, Facebook, LinkedIn, Dropbox, OpenID, OAuth, etc..
-
-To start using ``Auth``, you need at least this code in a model file, which is also provided with the web2py "welcome" application and assumes a ``db`` connection object:
+要开始使用 ``Auth``，你至少需要在模型文件中有下面的代码，也由
+web2py“welcome”应用提供，并假定有 ``db`` 链接对象：
 ``
 from gluon.tools import Auth
 auth = Auth(db, hmac_key=Auth.get_or_create_key())
@@ -49,24 +70,27 @@ auth.define_tables()
 ``:code
 
 -------
-The ``password`` field of the ``db.auth_user`` table defaults to a ``CRYPT`` validator, which needs and ``hmac_key``. The ``Auth.get_or_create_key()`` is a function that read the hmac kay from a file "private/auth.key" within the application folder. If the file does not exist it creates a random ``hmac_key``. If multiple apps share the same auth database, make sure they also use the same ``hmac_key``.
+``db.auth_user``表的``password`` 字段默认是``CRYPT`` 验证器，需要 ``hmac_key``。 ``Auth.get_or_create_key()`` i是函数，从在应用文件夹的文件
+“private/auth.key”读取 ``hmac_key``。如果文件不存在，它创建一个随机的 ``hmac_key``。
+如果多个apps共享同一个auth数据库，确认他们也使用同一个``hmac_key``
 -------
 
-By default, web2py uses email for login. If instead you want to log in using username set ``auth.define_tables(username=True)``
+默认情况，web2py用电子邮件登录。如果不是，你想用用户名登录，设置 ``auth.define_tables(username=True)``
 
-If multiple apps share the same auth database you may want to disable migrations: ``auth.define_tables(migrate=False)``.
+如果多个app共享同一个auth数据库，你想禁止迁移：
+``auth.define_tables(migrate=False)``.
 
-To expose **Auth**, you also need the following function in a controller (for example in "default.py"):
+要公开 **Auth**，你也需要下面的函数在控制器中（例如在“"default.py”）
 ``
 def user(): return dict(form=auth())
 ``:code
 
 -------
-The ``auth`` object and the ``user`` action are already defined in the
-scaffolding application.
+``auth`` 对象和``user`` 动作也已定义在基本构建应用中。
 -------
 
-web2py also includes a sample view "welcome/views/default/user.html" to render this function properly that looks like this:
+web2py也包括例子视图“welcome/views/default/user.html”合适地呈现这个函数，
+如下：
 ``
 {{extend 'layout.html'}}
 <h2>{{=T( request.args(0).replace('_',' ').capitalize() )}}</h2>
@@ -84,12 +108,14 @@ web2py also includes a sample view "welcome/views/default/user.html" to render t
 </div>
 ``:code
 
-Notice that this function simply displays a ``form`` and therefore it can be customized using normal custom form syntax. The only caveat is that the form displayed by ``form=auth()`` depends on ``request.args(0)``; therefore, if you replace the default ``auth()`` login form with a custom login form, you may need an ``if`` statement like this in the view:
+注意，这个函数简单显示``form`` ，因此它能用常用定制表单语法定制。仅有的注意
+是表单用``form=auth()`` 显示依赖于 ``request.args(0)``；因此，如果你用定制登录表单
+替换默``auth()`` 登录表单，你需要下面视图中的``if``语句：
 ``
 {{if request.args(0)=='login':}}...custom login form...{{pass}}
 ``:code
 
-The controller above exposes multiple actions:
+上面的控制器公开了许多动作：
 ``
 http://.../[app]/default/user/register
 http://.../[app]/default/user/login
@@ -104,26 +130,28 @@ http://.../[app]/default/user/impersonate
 http://.../[app]/default/user/groups
 http://.../[app]/default/user/not_authorized
 ``:code
-- **register** allows users to register. It is integrated with CAPTCHA, although this is disabled by default.
-- **login** allows users who are registered to log in (if the registration is verified or does not require verification, if it has been approved or does not require approval, and if it has not been blocked).
-- **logout** does what you would expect but also, as the other methods, logs the event and can be used to trigger some event.
-- **profile** allows users to edit their profile, i.e. the content of the ``auth_user`` table. Notice that this table does not have a fixed structure and can be customized.
-- **change_password** allows users to change their password in a fail-safe way.
-- **verify_email**. If email verification is turned on, then visitors, upon registration, receive an email with a link to verify their email information. The link points to this action.
-- **retrieve_username**. By default, **Auth** uses email and password for login, but it can, optionally, use username instead of email. In this latter case, if a user forgets his/her username, the ``retrieve_username`` method allows the user to type the email address and retrieve the username by email.
-- **request_reset_password**. Allows users who forgot their password to request a new password. They will get a confirmation email pointing to **reset_password**.
-- **impersonate** allows a user to "impersonate" another user. This is important for debugging and for support purposes. ``request.args[0]`` is the id of the user to be impersonated. This is only allowed if the logged in user ``has_permission('impersonate', db.auth_user, user_id)``.
-- **groups** lists the groups of which the current logged in user is a member.
-- **not_authorized** displays an error message when the visitor tried to do something that he/she is not authorized to do
-- **navbar** is a helper that generates a bar with login/register/etc. links.
+- **register** 允许用户注册。集成CAPTCHA ，但是默认禁用。
+- **login** 允许注册用户登录（如果注册确认了或不需要确认，如果批准或无
+需批准，且如果它没有被锁定）。
+- **logout** 做你期望做的，也作为其他方法，日志事件并用来触发一些事件。
+- **profile** a允许用户编辑他们的简介，即auth_user表的内容。注意该表没有固
+定的结构并能定制。
+- **change_password** 允许用户以失败安全模式修改他们的密码。
+- **verify_email** 如果电子邮件确认打开，那么访问者，就注册，接收邮件链
+接确认他们的电子邮件信息。链接指向这个动作。
+- **retrieve_username**  默认情况，**Auth** 使用电子邮件和密码登录，但它，可选，
+用用户名而不是电子邮件。后面这种情况，如果用户忘记他/她的用户名， ``retrieve_username`` 方法允许用户输入电子邮件地址并通过电子邮件得到用户
+名。
+- **request_reset_password** 允许忘记他们密码的用户请求新密码。他们会得到确
+认电子邮件指向 **reset_password**.
+- **impersonate** 允许用户 "impersonate" 另外用户。这对于调试和支持目的重要。``request.args[0]`` 是被模拟的用户的id。如果登录用户 ``has_permission('impersonate', db.auth_user, user_id)``这才被允许。
+- **groups** 列出当前登录用户是成员的组。
+- **not_authorized** 显示错误消息，当访问者试图做点他/她不被授权的事情。
+- **navbar** 是帮助对象生成任务栏有login/register/等链接。
 
-Logout, profile, change_password, impersonate, and groups require login.
-
-By default they are all exposed, but it is possible to restrict access to only some of these actions.
-
-All of the methods above can be extended or replaced by subclassing **Auth**.
-
-All of the methods above can be used in separate actions. For example:
+默认情况，它们全都公开，但也可能限制访问这些动作的其中一部分。
+所有上面的方法能扩展或被 **Auth**子类替代。
+所有上面的方法能用在分离动作。例如：
 
 ``
 def mylogin(): return dict(form=auth.login())
@@ -132,37 +160,41 @@ def myprofile(): return dict(form=auth.profile())
 ...
 ``
 
-To restrict access to functions to only logged in visitors, decorate the function as in the following example
+要限制访问函数，只需登录为访问者，如下面例子装饰函数：
 ``
 @auth.requires_login()
 def hello():
     return dict(message='hello %(first_name)s' % auth.user)
 ``:code
 
-Any function can be decorated, not just exposed actions. Of course this is still only a very simple example of access control. More complex examples will be discussed later.
+任何函数能被装饰，不仅仅是公开的动作。当然，这仍然是一个简单的访问控
+制的例子。更复杂地例子后面会讨论。
 ``auth.user``:inxx ``auth.user_id``:inxx
 
 -----
-``auth.user`` contains a copy of the ``db.auth_user`` records for the current logged in user or ``None`` otherwise. There is also a ``auth.user_id`` which is the same as ``auth.user.id`` (i.e. the id of the current logger in user) or ``None``.
+``auth.user`` 包含当前登录用户``db.auth_user`` 记录的副本或反之``None`` 。也有``auth.user_id`` ，与``auth.user.id`` 即当前登录用户的id）一样或 ``None``。
 -----
 
-#### Restrictions on registration
+#### 注册限制 Restrictions on registration
 
-If you want to allow visitors to register but not to log in until registration has been approved by the administrator:
+如果你想允许访问者注册但不能登录，直到注册被管理员批准。
 ``
 auth.settings.registration_requires_approval = True
 ``:code
 
-You can approve a registration via the appadmin interface. Look into the table ``auth_user``. Pending registrations have a ``registration_key`` field set to "pending". A registration is approved when this field is set to blank.
+你能通过appadmin界面批准注册。在表 ``auth_user``中查找。等候的注册有 ``registration_key`` 字段设置为“pending”。当该字段设置为空，注册通过。
 
-Via the appadmin interface, you can also block a user from logging in. Locate the user in the table ``auth_user`` and set the ``registration_key`` to "blocked". "blocked" users are not allowed to log in. Notice that this will prevent a visitor from logging in but it will not force a visitor who is already logged in to log out. The word "disabled" may be used instead of "blocked" if preferred, with exactly the same behavior.
+通过appadmin界面，你也可以阻止用户登录。在表 ``auth_user``定位用户，设置``registration_key`` 为“blocked”。“blocked”用户不允许登录。注意这会阻止访问者
+登录，但它不会强制已经登录的访问者退出。如果愿意也可用“disabled”替换
+“blocked”，完全系统的行动。
 
-You can also block access to the "register" page completely with this statement:
+你也可以用下面的语句完全阻止访问“register”页面。
 ``
 auth.settings.actions_disabled.append('register')
 ``:code
 
-If you want to allow people to register and automatically log them in after registration but still want to send an email for verification so that they cannot login again after logout, unless they completed the instructions in the email, you can accomplish it as follows:
+如果你想允许用户注册，并且注册后自动登录，但仍想发送电子邮件证实以便
+他们退出后不能再登录，除非他们完成了电子邮件中的指示，你能如下实现：
 
 ``
 auth.settings.registration_requires_approval = True
@@ -170,19 +202,20 @@ auth.settings.login_after_registration = True
 ``:code
 
 
-Other methods of **Auth** can be restricted in the same way.
+其它 **Auth** 方法也能用同样的方法限制。
 
-#### Integration with OpenID, Facebook, etc.
+#### 集成OpenID, Facebook等
 ``Janrain``:inxx ``OpenID``:inxx ``Facebook``:inxx ``LinkedIn``:inxx ``Google``:inxx ``MySpace``:inxx ``Flickr``:inxx
 
-You can use the web2py Role Base Access Control and authenticate with other services like OpenID, Facebook, LinkedIn, Google, Dropbox, MySpace, Flickr, etc.
-The easiest way is to use Janrain Engage (formerly RPX) (Janrain.com).
-
-Dropbox is discussed as a special case in Chapter 14 since it allows more than just login, it also provides storage services for the logged in users.
-
-Janrain Engage is a service that provides middleware authentication. You can register with Janrain.com, register a domain (the name of your app) and set of URLs you will be using, and they will provide you with an API key.
-
-Now edit the model of your web2py application and place the following lines somewhere after the definition of the ``auth`` object :
+你能用web2py基于角色的访问控制，也可用其它服务认证，比如
+OpenID、Facebook、 LinkedIn、Google、 Dropbox、MySpace和Flickr等。最简单的方
+法是使用Janrain Engage (以前 RPX)(Janrain.com)。
+Dropbox作为特例在第14章讨论，因为它不仅允许登录，它还为登录的用户提
+供存储服务。
+Janrain Engage是提供中间件认证的服务。你可以用Janrain.com注册，登记域名
+（你应用的名字），设置你将使用的URL，并提供你API。
+现在，编辑你web2py应用的模型，在你定义 ``auth`` 对象之后，把下面几行内容放
+置好：
 
 ``
 from gluon.contrib.login_methods.rpx_account import RPXAccount
@@ -193,13 +226,18 @@ auth.settings.login_form = RPXAccount(request,
     url = "http://localhost:8000/%s/default/user/login" % request.application)
 ``:code
 
-The first line imports the new login method, the second line disables local registration, and the third line asks web2py to use the RPX login method. You must insert your own ``api_key`` provided by Janrain.com, the domain you choose upon registration and the external ``url`` of your login page.
+第一行导入新登录方法，第二行禁用本地注册，第三行要求web2py用PBX登录
+方法。你必须插入你自己的、Janrain.com提供的``api_key``，在注册时选择的域名和
+你登录页面的外部``url``。
 
 [[image @///image/en6900.png center 300px]]
 
-When a new user logins for the first time, web2py creates a new ``db.auth_user`` record associated to the user. It will use the ``registration_id`` field to store a unique id for the user. Most authentication methods will also provide a username, email, first_name and last_name but that is not guaranteed. Which fields are provided depends on the login method selected by the user. If the same user logs in twice using different authentication mechanisms (for example once with OpenID and once with Facebook), Janrain may not recognize his/her as the same user and issue different ``registration_id``.
+当新用户第一次登录，web2py创建新``db.auth_user`` 关联该用户。它用``registration_id`` 字段为用户存储唯一的id。大多数认证方法也提供用户名、电子邮
+件、姓和名字但这不保证哪些字段提供取决于用户选择的登录方法。如果同一个
+用户用不同的认证机制登录两次（例如，一次用OpenID，另外一次用
+Facebook），Janrain可能不认为他/她是同一个用户，并发给不同的 ``registration_id``。
 
-You can customize the mapping between the data provided by Janrain and the data stored in ``db.auth_user``. Here is an example for Facebook:
+你能定制存储在 ``db.auth_user``的数据和Janrain提供数据之间的映射。
 ``
 auth.settings.login_form.mappings.Facebook = lambda profile:\
             dict(registration_id = profile["identifier"],
@@ -209,70 +247,79 @@ auth.settings.login_form.mappings.Facebook = lambda profile:\
                  last_name = profile["name"]["familyName"])
 ``:code
 
-The keys in the dictionary are fields in ``db.auth_user`` and the values are data entries in the profile object provided by Janrain. Look at the online Janrain documentation for details on the latter.
+字典的键是 ``db.auth_user``的字段，值是Janrain提供配置文件对象数据项。后者的
+详细说明参见在线Janrain文档。
 
-Janrain will also keep statistics about your users' login.
+Janrain也保留有关你的用户登录的统计。
 
-This login form is fully integrated with web2py Role Based Access Control and you can still create groups, make users members of groups, assign permissions, block users, etc.
+该登录表单完全集成web2py基于角色的访问控制，你能创建组，生成组用户成
+员，分配权限和阻止用户等。
 
 -----
-Janrain's free Basic service allows up to 2500 unique registered users to sign in annually. Accommodating more users requires an upgrade to one of their paid service tiers.
-
-If you prefer not to use Janrain and want to use a different login method (LDAP, PAM, Google, OpenID, OAuth/Facebook, LinkedIn, etc.) you can do so. The API to do so is described later in the chapter.
+Janrain的免费基本服务允许上限至2500唯一注册用户每年登录。提供更多用户
+需要升级到它们的付费服务等级。
+如果你选择不用Janrain而想用不同的登录方法（LDAP,PAM, Google, OpenID,
+OAuth/Facebook, LinkedIn等。），你也可以。实现的API在本章后面描述。
 -----
 
-#### CAPTCHA and reCAPTCHA
+#### CAPTCHA 和 reCAPTCHA
 
 ``CAPTCHA``:inxx ``reCAPTCHA``:inxx ``PIL``:inxx
-To prevent spammers and bots registering on your site, you may require a registration CAPTCHA. web2py supports reCAPTCHA``recaptcha``:cite  out of the box. This is because reCAPTCHA is very well designed, free, accessible (it can read the words to the visitors), easy to set up, and does not require installing any third-party libraries.
+为防止你网站的垃圾邮件和机器人注册，你可能需要注册CAPTCHA。Web2py支
+持即开即用的``recaptcha``:cite  。这是因为reCAPTCHA很好的设计，免费，可接
+入（它能读取给访问者的词），容易安装，且不需要安装第三方库。
 
-This is what you need to do to use reCAPTCHA:
-- Register with reCAPTCHA``recaptcha``:cite  and obtain a (PUBLIC_KEY, PRIVATE_KEY) couple for your account. These are just two strings.
-- Append the following code to your model after the ``auth`` object is defined:
+下面是你使用reCAPTCHA需要做的：
+- 注册``recaptcha``:cite  并获得你的（PUBLIC_KEY，PRIVATE_KEY）账号
+对。这是两个字符串。
+- 在 ``auth`` 对象定以后，追加下面的代码到你的模型：
 ``
 from gluon.tools import Recaptcha
 auth.settings.captcha = Recaptcha(request,
     'PUBLIC_KEY', 'PRIVATE_KEY')
 ``:code
 
-reCAPTCHA may not work if you access the web site as 'localhost' or '127.0.0.1', because it is registered to work with publicly visible web sites only.
+如果你访问‘localhost’或‘127.0.0.1’ web网站，reCAPTCHA可能不工作，因为
+它仅对公众可见的web网站注册才工作。
 
-The ``Recaptcha`` constructor takes some optional arguments:
+ ``Recaptcha``构造函数用下面可选参数：
 ``
 Recaptcha(..., use_ssl=True, error_message='invalid', label='Verify:', options='')
 ``:code
 
-Notice that ``use_ssl=False`` by default.
+注意默认``use_ssl=False``。
 
-``options`` may be a configuration string, e.g. ``options="theme:'white', lang:'fr'"``
+``options`` 可以是配置字符串，例如 ``options="theme:'white', lang:'fr'"``
 
-More details: [[reCAPTCHA http://www.google.com/recaptcha]]``recaptchagoogle``:cite  and [[customizing http://code.google.com/apis/recaptcha/docs/customization.html]]  .
+更多细节：[[reCAPTCHA http://www.google.com/recaptcha]]``recaptchagoogle``:cite  and [[customizing http://code.google.com/apis/recaptcha/docs/customization.html]]  .
 
-If you do not want to use reCAPTCHA, look into the definition of the ``Recaptcha`` class in "gluon/tools.py", since it is easy to use other CAPTCHA systems.
+如果你想使用reCAPTCHA，在“"gluon/tools.py”查看``Recaptcha`` 类的定义，因为
+用其它CAPTCHA系统容易。
 
-Notice that ``Recaptcha`` is just a helper that extends ``DIV``. It generates a dummy field that validates using the ``reCaptcha`` service and, therefore, it can be used in any form, including used defined FORMs:
+注意 ``Recaptcha`` 就是扩展了 ``DIV``的帮助对象。它生成虚拟字段验证使用 ``reCaptcha`` 服务，因此它能以任何形式使用，包括用在定义FORMs：
 
 ``
 form = FORM(INPUT(...),Recaptcha(...),INPUT(_type='submit'))
 ``:code
 
-You can use it in all types of SQLFORM by injection:
+通过注入你能在所有SQLFORM类型中使用它：
 
 ``
 form = SQLFORM(...) or SQLFORM.factory(...)
 form.element('table').insert(-1,TR('',Recaptcha(...),''))
 ``:code
 
-#### Customizing ``Auth``
+#### 定制 ``Auth``
 
-The call to
+调用
 ``
 auth.define_tables()
 ``:code
 
-defines all **Auth** tables that have not been defined already. This means that if you wish to do so, you can define your own ``auth_user`` table.
+定义所有还未定义的**Auth**表。这意味着如果你想这么做，
+你能定义你自己的``auth_user`` 表。
 
-There are a number of ways to customize auth. The simplest way is to add extra fields:
+有一些方法定制auth。最简单的方法是添加额外字段：
 
 ``
 ## after auth = Auth(db)
@@ -284,10 +331,11 @@ auth.settings.extra_fields['auth_user']= [
 ## before auth.define_tables(username=True)
 ``
 
-You can declare extra fields not just for table "auth_user" but also for other "auth_" tables.
-Using ``extra_fields`` is the recommended way as it will not break any internal mechanism.
+你不但能给表“auth_user”，也能给其它表“auth_”声明额外字段。用``extra_fields``是推荐的方法，因为它不会打破任何内部机制。
 
-Another way to do (for experts!) consists of defining your auth tables youself. If a table is declared before ``auth.define_tables()`` it is used instead of the default one. Here is how to do it:
+另外一个方法（给专家的！）在于自己定义你的auth表。
+在``auth.define_tables()`` 之前定义表，它不使用默认而是定义的。下面是如何
+实现：
 
 ``
 ## after auth = Auth(db)
@@ -325,19 +373,22 @@ auth.settings.table_user = custom_auth_table # tell auth to use custom_auth_tabl
 ## before auth.define_tables()
 ``:code
 
-You can add any field you wish, and you can change validators but you cannot remove
-the fields marked as "required" in this example.
+你能添加你想的任何字段，并改变验证器但你不能删除这个例子中标示为
+“required”的字段。
 
-It is important to make "password", "registration_key", "reset_password_key" and "registration_id" fields ``readable=False`` and ``writable=False``, since a visitor must not be allowed to tamper with them.
+使“password”, “registration_key”, “reset_password_key”
+和 “registration_id” 字段 ``readable=False``和``writable=False``,因为访
+问者不被允许随意更改它们。
 
-If you add a field called "username", it will be used in place of "email" for login. If you do, you will need to add a validator as well:
+如果你增加字段“username”，它会用来替换“email”登录。如果你要做
+你还需要增加验证器：
 ``
 auth_table.username.requires = IS_NOT_IN_DB(db, auth_table.username)
 ``:code
 
-#### Renaming ``Auth`` tables
+#### 重命名 ``Auth`` 表
 
-The actual names of the ``Auth`` tables are stored in
+ ``Auth`` 表的实际名字存储在：
 ``
 auth.settings.table_user_name = 'auth_user'
 auth.settings.table_group_name = 'auth_group'
@@ -346,7 +397,8 @@ auth.settings.table_permission_name = 'auth_permission'
 auth.settings.table_event_name = 'auth_event'
 ``:code
 
-The names of the table can be changed by reassigning the above variables after the ``auth`` object is defined and before the Auth tables are defined. For example:
+在 ``auth`` 对象定义后并在Auth表定义前，表的名字可以重新指定上面变量得到
+修改。例如：
 ``
 auth = Auth(db)
 auth.settings.table_user_name = 'person'
@@ -354,7 +406,7 @@ auth.settings.table_user_name = 'person'
 auth.define_tables()
 ``:code
 
-The actual tables can also be referenced, independently of their actual names, by
+实际的表可以被引用，独立地用它们的实际名字：
 ``
 auth.settings.table_user
 auth.settings.table_group
@@ -363,33 +415,36 @@ auth.settings.table_permission
 auth.settings.table_event
 ``:code
 
-#### Other login methods and login forms
+#### 其它登录方法和登录表单
 ``LDAP``:inxx ``PAM``:inxx
 
-Auth provides multiple login methods and hooks to create new login methods. Each supported login method corresponds to a file in the folder
+Auth提供多登录方法，创建新登录方法的钩子。每种支持的方法对应文件夹中
+的文件。
 ``
 gluon/contrib/login_methods/
 ``:code
 
-Refer to the documentation in the files themselves for each login method, but here are some examples.
+指每种登录方法在文件中的记述，下面是一些例子。
 
-First of all, we need to make a distinction between two types of alternate login methods:
-- login methods that use a web2py login form (although the credentials are verified outside web2py). An example is LDAP.
-- login methods that require an external single-sign-on form (an example is Google and Facebook).
+首先，我们需要区别两种登录方法：
+- 用web2py 登录表单的登录方法（虽然凭证在web2py 外确认）。例如
+LDAP。
+- 需要外部单点登录表单的登录方法（例子是Google and Facebook）。
 
-In the latter case, web2py never gets the login credentials, only a login token issued by the service provider. The token is stored in ``db.auth_user.registration_id``.
+后一种情况，web2py从不得到登录凭证，仅是服务提供商发布的登录令牌。令
+牌存储在``db.auth_user.registration_id``。
 
-Let's consider examples of the first case:
+让我们考虑第一种情况的例子：
 
 ##### Basic
 
-Let's say you have an authentication service, for example at the url
+你有认证服务，例如在url
 
 ``
 https://basic.example.com
 ``:code
 
-that accepts basic access authentication. That means the server accepts HTTP requests with a header of the form:
+接受基本访问控制。那意味服务器接受带有表单头的HTTP请求：
 
 ``
 GET /index.html HTTP/1.0
@@ -397,52 +452,62 @@ Host: basic.example.com
 Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 ``:code
 
-where the latter string is the base64 encoding of the string username:password. The service responds 200 OK if the user is authorized and 400, 401, 402, 403 or 404 otherwise.
+后面的字符串是用户名：密码字符串base64的编码。如果用户授权了，服务响应
+200OK，否则400, 401, 402, 403 或404响应。
 
-You want to enter username and password using the standard ``Auth`` login form and verify the credentials against such a service. All you need to do is add the following code to your application
+你想用标准 ``Auth`` 登录表单输入用户名和密码，并对这样的服务确认凭据。所有
+你需要做的就是添加下面的代码到你的应用：
 ``
 from gluon.contrib.login_methods.basic_auth import basic_auth
 auth.settings.login_methods.append(
     basic_auth('https://basic.example.com'))
 ``:code
 
-Notice that ``auth.settings.login_methods`` is a list of authentication methods that are executed sequentially.
-By default it is set to
+注意 ``auth.settings.login_methods`` 是认证方法的列表，依次运行。默认它设置为：
+
 ``
 auth.settings.login_methods = [auth]
 ``:code
 
-When an alternate method is appended, for example ``basic_auth``, **Auth** first tries to log in the visitor based on the content of ``auth_user``, and when this fails, it tries the next method in the list. If a method succeeds in logging in the visitor, and if ``auth.settings.login_methods[0]==auth``, ``Auth`` takes the following actions:
-- if the user does not exist in ``auth_user``, a new user is created and the username/email and passwords are stored.
-- if the user does exist in ``auth_user`` but the new accepted password does not match the old stored password, the old password is replaced with the new one (notice that passwords are always stored hashed unless specified otherwise).
+当另外的方法追加了，例如``basic_auth``, **Auth** f首先首先尝试基于``auth_user``内容登
+录访问者，当这失败，它尝试列表中的下一个方法。如果方法成功登录访问者，
+且如果 ``auth.settings.login_methods[0]==auth``, ``Auth`` 采取下面的动作：
+- 如果用户不存在于``auth_user``，新用户被创建并且用户名/电子邮件地址和密
+码被存储。
+- 如果用户不存在于``auth_user``， 但新接受的密码与存储的老的密码不匹配老
+密码用新的替换（注意密码总存储散列的除非特别说明）。
 
-If you do not wish to store the new password in ``auth_user``, then it is sufficient to change the order of login methods, or remove ``auth`` from the list. For example:
+如果你不希望存储新密码到``auth_user``，那么改变登录方法的顺序就足够了，或从列表删除 ``auth`` 。例如：
 ``
 from gluon.contrib.login_methods.basic_auth import basic_auth
 auth.settings.login_methods = \
     [basic_auth('https://basic.example.com')]
 ``:code
 
-The same applies for any other login method described here.
+同样适用于其它的登录方法描述于下。
 
-##### SMTP and Gmail
+##### SMTP 和 Gmail
 ``SMTP``:inxx ``Gmail``:inxx
 
-You can verify login credentials using a remote SMTP server, for example Gmail; i.e., you log the user in if the email and password they provide are valid credentials to access the Gmail SMTP server (``smtp.gmail.com:587``). All that is needed is the following code:
+你可以用远程SMTP服务器确认登录凭据，比如Gmail；即如果他们提供的电子
+邮件和密码是访问Gmail SMTP服务器word they provide are valid credentials to access the Gmail SMTP server (``smtp.gmail.com:587``)的有效凭据，你
+接受用户登录。所有需要的代码如下
 ``
 from gluon.contrib.login_methods.email_auth import email_auth
 auth.settings.login_methods.append(
     email_auth("smtp.gmail.com:587", "@gmail.com"))
 ``:code
 
-The first argument of ``email_auth`` is the address:port of the SMTP server. The second argument is the email domain.
+``email_auth`` 第一个参数是SMTP服务器的地址：端口。第二个参数是电子邮件域
+名。
 
-This works with any SMTP server that requires TLS authentication.``TLS``:inxx
+这对任何需要TLS认证的SMTP服务器都有用。``TLS``:inxx
 
 ##### PAM
 ``PAM``:inxx
 
-Authentication using Pluggable Authentication Modules (PAM) works as in the previous cases. It allows web2py to authenticate users using the operating system accounts:
+用可插拔认证模块（PAM）的认证与前面的情况相同。它允许webpy用操作系统
+账户认证用户：
 ``
 from gluon.contrib.login_methods.pam_auth import pam_auth
 auth.settings.login_methods.append(pam_auth())
@@ -451,9 +516,9 @@ auth.settings.login_methods.append(pam_auth())
 ##### LDAP
 ``LDAP``:inxx
 
-Authentication using LDAP works very much as in the previous cases.
+用LDAP认证与前面的情况非常象。
 
-To use LDAP login with MS Active Directory:``Active Directory``:inxx
+要使用LDAP登录MS活动目录：``Active Directory``:inxx
 ``
 from gluon.contrib.login_methods.ldap_auth import ldap_auth
 auth.settings.login_methods.append(ldap_auth(mode='ad',
@@ -461,19 +526,19 @@ auth.settings.login_methods.append(ldap_auth(mode='ad',
    base_dn='ou=Users,dc=domain,dc=com'))
 ``:code
 
-To use LDAP login with Lotus Notes and Domino:``Lotus Notes``:inxx ``Domino``:inxx
+要使用LDAP登录Lotus Notes 和 Domino：``Lotus Notes``:inxx ``Domino``:inxx
 ``
 auth.settings.login_methods.append(ldap_auth(mode='domino',
    server='my.domino.server'))
 ``:code
 
-To use LDAP login with OpenLDAP (with UID):``OpenLDAP``:inxx
+要使用LDAP登录OpenLDAP（用 UID）：``OpenLDAP``:inxx
 ``
 auth.settings.login_methods.append(ldap_auth(server='my.ldap.server',
    base_dn='ou=Users,dc=domain,dc=com'))
 ``:code
 
-To use LDAP login with OpenLDAP (with CN):
+要使用LDAP登录OpenLDAP（用CN）：
 ``
 auth.settings.login_methods.append(ldap_auth(mode='cn',
    server='my.ldap.server', base_dn='ou=Users,dc=domain,dc=com'))
@@ -482,7 +547,8 @@ auth.settings.login_methods.append(ldap_auth(mode='cn',
 ##### Google App Engine
 ``GAE login``:inxx
 
-Authentication using Google when running on Google App Engine requires skipping the web2py login form, being redirected to the Google login page, and back upon success. Because the behavior is different than in the previous examples, the API is a little different.
+当运行在Google App Engine用Google认证要求跳过web2py登录表单，重定向到
+Google页面，成功就返回。因为行为与前面的例子不同，所以API有点不同。
 
 ``
 from gluon.contrib.login_methods.gae_google_login import GaeGoogleAccount
@@ -492,16 +558,19 @@ auth.settings.login_form = GaeGoogleAccount()
 ##### OpenID
 ``OpenID``:inxx
 
-We have previously discussed integration with Janrain (which has OpenID support) and that is the easiest way to use OpenID. Yet sometimes you do not want to rely on a third party service and you want to access the OpenID provider directly from the consumer (your app).
+前面我们讨论了集成Janrain（有OpenID支持），那是最简单的方法使用
+OpenID。但有时，你不想依赖第三方的服务，你想直接从消费者（你的应用）
+访问OpenID供应商。
 
-Here is an example:
+下面是例子：
 
 ``
 from gluon.contrib.login_methods.openid_auth import OpenIDAuth
 auth.settings.login_form = OpenIDAuth(auth)
 ``:code
 
-``OpenIDAuth`` requires the ''python-openid'' module to be installed separately. Under the hood, this login method defines the following table:
+``OpenIDAuth`` 需要python-openid模块单独地安装。
+在底层，这种登录方法定义下面的表：
 
 ``
 db.define_table('alt_logins',
@@ -510,7 +579,7 @@ db.define_table('alt_logins',
     Field('user', self.table_user, readable=False))
 ``:code
 
-which stores the openid usernames for each user. If you want to display the openids for the current logged in user:
+给每个用户存储了openid用户名。如果你想给当前登录用户显示openid：
 
 ``
 {{=auth.settings.login_form.list_user_openids()}}
@@ -519,18 +588,20 @@ which stores the openid usernames for each user. If you want to display the open
 ##### OAuth2.0 and Facebook
 ``OAuth``:inxx ``Facebook``:inxx
 
-We have previously discussed integration with Janrain (which has Facebook support), yet sometimes you do not want to rely on a third party service and you want to access a OAuth2.0 provider directly; for example, Facebook. Here is how:
+前面我们讨论了集成Janrain（有Facebook支持），但有时，你不想依赖第三方
+的服务，你想直接访问OAuth2.0供应商；例如，Facebook。下面是如何实现：
 
 ``
 from gluon.contrib.login_methods.oauth20_account import OAuthAccount
 auth.settings.login_form=OAuthAccount(YOUR_CLIENT_ID,YOUR_CLIENT_SECRET)
 ``:code
 
-Things get a little more complex if you want to use Facebook OAuth2.0 to login into a specific Facebook app to access its API, instead of your own app. Here is an example for accessing the Facebook Graph API.
+如果你想用Facebook OAuth2.0登录到指定Facebook应用访问它的API而不是你
+自己的应用，情况会变得更复杂。下面是访问Facebook Graph API的例子。
 
-First of all you must install the [[Facebook Python SDK https://github.com/facebook/python-sdk]].
+首先，你必须安装[[Facebook Python SDK https://github.com/facebook/python-sdk]].
 
-Second, you need the following code in your model:
+其次，你需要有下面的代码在你的模型里：
 
 ``
 ## import required modules
@@ -571,26 +642,28 @@ auth.settings.login_form=FaceBookAccount()
 ##### LinkedIn
 ``LinkedIn``:inxx
 
-We have previously discussed integration with Janrain (which has LinkedIn support) and that is the easiest way to use OAuth. Yet sometime you do not want to rely on a third party service or you may want to access LinkedIn directly to get more information than Janrain provides.
-
-Here is an example:
+前面我们讨论了集成Janrain（有LinkedIn支持），那是最简单的方法使用
+OAuth。但有时，你不想依赖第三方的服务，或者你想直接访问LinkedIn以获得
+比Janrain所提供更多的信息。
+下面是例子：
 
 ``
 from gluon.contrib.login_methods.linkedin_account import LinkedInAccount
 auth.settings.login_form=LinkedInAccount(request,KEY,SECRET,RETURN_URL)
 ``:code
 
-``LinkedInAccount`` requires the "python-linkedin" module installed separately.
+``LinkedInAccount``需要单独安装的“python-linkedin”模块。
 
 ##### X509
 
-You can also login by passing to the page an x509 certificate and your credential will be extracted from the certificate. This requires ``M2Crypto`` installed from
+你可以通过传递X509证书给页面来登录，你的凭据会从证书中提取。这要求从
+下面安装``M2Crypto`` ：
 
 ``
 http://chandlerproject.org/bin/view/Projects/MeTooCrypto
 ``
 
-Once you have M2Cryption installed you can do:
+一旦你安装好了M2Crypto，你可以做：
 
 ``
 from gluon.contrib.login_methods.x509_auth import X509Account
@@ -598,18 +671,24 @@ auth.settings.actions_disabled=['register','change_password','request_reset_pass
 auth.settings.login_form = X509Account()
 ``:code
 
-You can now authenticate into web2py passing your x509 certificate. How to do this is browser dependant but probably you are more likely to use certificates for web services. In this case you can use for example ``cURL`` to try out your authentication:
+现在你可以传递X509证书在web2py认证。如何实现是依赖于浏览器的，但你可
+能更倾向于给web服务使用证书。这种情况，你可以用比如``cURL`` 尝试你的认证：
 
 ``
 curl -d "firstName=John&lastName=Smith" -G -v --key private.key \
      --cert  server.crt https://example/app/default/user/profile
 ``
 
-This works out of the box with Rocket (the web2py built-in web server) but you may need some extra configuration work on the web server side if you are using a different web server. In particular you need to tell your web server where the certificates are located on local host and that it needs to verify certificates coming from the clients. How to do it is web server dependent and therefore omitted here.
+用Rocket即开即用（web2py内建web服务器），但如果你是用不同的web服务器，
+你可能需要在web服务器侧一些额外的配置工作。特别是，你需要告诉你的web
+服务器，证书在本地主机的哪里，并且它需要确认来自客户的证书。如何实现
+是依赖web服务器的，因而此处省略。
 
 ##### Multiple login forms
 
-Some login methods modify the login_form, some do not. When they do that, they may not be able to coexist. Yet some coexist by providing multiple login forms in the same page. web2py provides a way to do it. Here is an example mixing normal login (auth) and RPX login (janrain.com):
+一些登录方法修改登录表单，一些不修改。当它们做这个的时候，不能同时存
+在的。但通过提供多登录表单一些存在在同一个页面。Web2py通方法实现。下面
+是混合常用登录（auth）和RPX登录（janrain.com）的例子：
 
 ``
 from gluon.contrib.login_methods.extended_login_form import ExtendedLoginForm
@@ -618,16 +697,15 @@ auth.settings.login_form = ExtendedLoginForm(request,
     auth, other_form, signals=['token'])
 ``:code
 
-If signals are set and a parameter in request matches any signals,
-it will return the call of ``other_form.login_form`` instead.
-``other_form`` can handle some particular situations, for example,
-multiple steps of OpenID login inside ``other_form.login_form``.
+如果信号设置了并且有请求中有匹配任何信号的参数，
+它返回``other_form.login_form`` 调用。
+``other_form`` 能处理一些特定情况，例如， ``other_form.login_form``内的OpenID多步登录。
 
-Otherwise it will render the normal login form together with the ``other_form``.
+否则，它会用``other_form``一起呈现正常登录表单。
 
-### ``Mail`` and ``Auth``
+### ``Mail``和 ``Auth``
 
-One can define a mailer with
+能用以下定义mail对象（电子邮件对象）：
 
 ``
 from gluon.tools import Mail
@@ -637,8 +715,7 @@ mail.settings.sender = 'you@example.com'
 mail.settings.login = 'username:password'
 
 ``
-
-or simply use the mailer provided by ``auth``:
+或简单地使用``auth``提供的邮件对象：
 
 ``
 mail = auth.settings.mailer
@@ -647,12 +724,14 @@ mail.settings.sender = 'you@example.com'
 mail.settings.login = 'username:password'
 ``
 
-You need to replace the mail.settings with the proper parameters for your SMTP server. Set ``mail.settings.login = None`` if the SMTP server does not require authentication.
+你需要用合适的参数为你的SMTP服务器替换mail.settings。如果SMTP服务器不
+需要认证，设置 ``mail.settings.login = None`` 。
 
-You can read more about web2py API for emails and email configuration in Chapter 8. Here we limit the discussion to the interaction between ``Mail`` and ``Auth``.
+你可以在第8章读到更多有关电子邮件API和电子邮件配置的内容。这里我们把
+讨论限定在``Mail`` 和``Auth``间的交互。
 
-In ``Auth``, by default, email verification is disabled.
-To enable email, append the following lines in the model where ``auth`` is defined:
+``Auth``中，默认情况，电子邮件确认是禁止的。要启用电子邮件，在模型中``Auth``
+定义的地方追加虾米那几行：
 
 ``
 auth.settings.registration_requires_verification = False
@@ -668,103 +747,110 @@ auth.messages.reset_password = 'Click on the link http://' + \
     '/%(key)s to reset your password'
 ``:code
 
-You need to replace the string
+你需要替换
 ``
 'Click on the link ...'
 ``:code
 
-in ``auth.messages.verify_email`` with the proper complete URL of the action ``verify_email``. This is necessary because web2py may be installed behind a proxy, and it cannot determine its own public URLs with absolute certainty.
+``auth.messages.verify_email`` 字符串用动作``verify_email``的合适完整的URL。这是必须的，因为web2py可能安装在代理后，它不能绝对肯定地确定它自己的公众的URL。
 
-### Authorization
+### 授权Authorization
 
-Once a new user is registered, a new group is created to contain the user. The role of the new user is conventionally "user_[id]" where [id] is the id of the newly created user. The creation of the group can be disabled with
+一旦新用户注册了，新的组会被创建包含该用户。该新用户的角色传统上是
+“user_[id]”，[id]是新创建用户id的id。能用下面的语句禁用创建组：
 ``
 auth.settings.create_user_groups = False
 ``:code
 
-although we do not suggest doing so.
+但是我们建议不要这样做。
 
-Users have membership in groups. Each group is identified by a name/role. Groups have permissions. Users have permissions because of the groups they belong to.
+在组内用户有成员资格。每个组用名字/角色标识。组有权限。用户所具有的权限
+是因为他们隶属组。
 
-You can create groups, give membership and permissions via **appadmin**
-or programmatically using the following methods:
+你能创建组，通过**appadmin**
+授予成员资格和权限或用下面的方法编程授予：
 ``
 auth.add_group('role', 'description')
 ``:code
 
-returns the id of the newly created group.
+返回新创建组的id。
 
 ``
 auth.del_group(group_id)
 ``:code
 
-deletes the group with ``group_id``.
+ 用``group_id``删除组。
 
 ``
 auth.del_group(auth.id_group('user_7'))
 ``:code
 
-deletes the group with role "user_7", i.e., the group uniquely associated to user number 7.
+用角色“user_7”删除组，即组唯一关联到用户编号7。
 
 ``
 auth.user_group(user_id)
 ``:code
 
-returns the id of the group uniquely associated to the user identified by ``user_id``.
+回唯一关联到由``user_id``标识的用户组的id。
 
 ``
 auth.add_membership(group_id, user_id)
 ``:code
 
-gives ``user_id`` membership of the group ``group_id``.
-If the ``user_id`` is not specified, then web2py assumes the current logged-in user.
+给``user_id`` 组 ``group_id``的成员资格。如果``user_id`` 不指定，那么web2py假定当前登录的用户。
 
 ``
 auth.del_membership(group_id, user_id)
 ``:code
 
-revokes ``user_id`` membership of the group ``group_id``.
-If the ``user_id`` is not specified, then web2py assumes the current logged-in user.
+剥夺``user_id`` 组``group_id``的成员资格。如果``user_id`` 不指定，那么web2py假定当前登录的用户。
 
 ``
 auth.has_membership(group_id, user_id, role)
 ``:code
 
-checks whether ``user_id`` has membership of the group ``group_id`` or the group with the specified role. Only ``group_id`` or ``role`` should be passed to the function, not both. If the ``user_id`` is not specified, then web2py assumes the current logged-in user.
+检查 ``user_id`` 是否具有组 ``group_id`` 的成员资格或组是否有指定的角色。仅``group_id`` 或 ``role`` 应该传递给函数，不是两个。如果 ``user_id`` 没有指定，那么web2py假定当前
+登录的用户。
 
 ``
 auth.add_permission(group_id, 'name', 'object', record_id)
 ``:code
 
-gives permission "name" (user defined) on the object "object" (also user defined) to members of the group ``group_id``. If "object" is a tablename then the permission can refer to the entire table by setting ``record_id`` to a value of zero, or the permission can refer to a specific record by specifying a ``record_id`` value greater than zero. When giving permissions on tables, it is common to use a permission name in the set ('create', 'read', 'update', 'delete', 'select') since these permissions are understood and can be enforced by CRUD.
+给对象“object”（也是用户定义）中“name”（用户定义的）组 ``group_id``成员的
+权限。如果“object”是表名，则权限指整个表，通过设定 ``record_id`` 为0值；或权
+限指特定记录，通过设定``record_id``比0大的值。当就表给权限，通常用集合
+（’create’, ’read’, ’update’, ’delete’, ’select’）做权限名，因为这些权限能被
+CRUD理解并执行。
 
-If ``group_id`` is zero, web2py uses the group uniquely associated to the current logged-in user.
+如果``group_id``是0，web2py使用唯一与当前登录用户相关的组。
 
-You can also use ``auth.id_group(role="...")`` to get the id of a group given its name. ``id_group``:inxx
+你也可以用 ``auth.id_group(role="...")`` 给出角色名字得到组的id。``id_group``:inxx
 
 ``
 auth.del_permission(group_id, 'name', 'object', record_id)
 ``:code
 
-revokes the permission.
+剥夺权限。
 
 ``
 auth.has_permission('name', 'object', record_id, user_id)
 ``:code
 
-checks whether the user identified by ``user_id`` has membership in a group with the requested permission.
+检查用``user_id`` 标识的用户是否有所请求权限的组的成员资格。
 
 ``
 rows = db(auth.accessible_query('read', db.mytable, user_id))\
     .select(db.mytable.ALL)
 ``:code
 
-returns all rows of table "mytable" that user ``user_id`` has "read" permission on.
-If the ``user_id`` is not specified, then web2py assumes the current logged-in user.
-The ``accessible_query(...)`` can be combined with other queries to make more complex ones.
-``accessible_query(...)`` is the only **Auth** method to require a JOIN, so it does not work on the Google App Engine.
+返回表“mytable” 的用户 ``user_id``有“read”权限的所有行。如果``user_id``没有指定，
+则web2py假定当前登录用户。
+``accessible_query(...)`` 能与其它查询组合来构成更复
+杂的。
+``accessible_query(...)`` 是唯一要求JOIN的 **Auth** 方法，因此它不适用于Google
+App Engine。
 
-Assuming the following definitions:
+假设下面的定义：
 ``
 >>> from gluon.tools import Auth
 >>> auth = Auth(db)
@@ -774,7 +860,7 @@ Assuming the following definitions:
                                      last_name='Bond')
 ``:code
 
-Here is an example:
+有例子：
 ``
 >>> doc_id = db.document.insert(body = 'top secret')
 >>> agents = auth.add_group(role = 'Secret Agent')
@@ -786,9 +872,10 @@ True
 False
 ``:code
 
-#### Decorators
+#### 装饰器Decorators
 
-The most common way to check permission is not by explicit calls to the above methods, but by decorating functions so that permissions are checked relative to the logged-in visitor. Here are some examples:
+最常见检查权限的途径不是显式调用上面的方法，而是装饰函数以便相关登录
+用户的权限被检查了。下面是例子：
 ``
 def function_one():
     return 'this is a public function'
@@ -824,15 +911,18 @@ def function_seven():
     return add(3, 4)
 ``:code
 
-The condition argument of ``@auth.requires(condition)`` can be a callable. ``@auth.requires`` also takes an optional argument ``requires_login`` which defaults to ``True``. If set to False, it does not require login before evaluating the condition as true/false. The condition can be a boolean value or a function evaluating to boolean.
+``@auth.requires(condition)`` 的条件参数是可以调用的。 ``@auth.requires`` 也用可选
+参数 ``requires_login`` ，默认是 ``True``。如果设置为False，在条件的值是true/false前，
+它不需要登录。条件可以是布尔值或值为布尔的函数。
 
-Note that access to all functions apart from the first one is restricted based on permissions that the visitor may or may not have.
+注意就权限访问所有函数除了第一个是受限制的，访问者可能有也可能没有。
+如果用户没有登录，权限不能被检查；用户重定向到登录页面然后回到要求权
+限的页面。
 
-If the visitor is not logged in, then the permission cannot be checked; the visitor is redirected to the login page and then back to the page that requires permissions.
+#### 组合要求Combining requirements
 
-#### Combining requirements
-
-Occasionally, it is necessary to combine requirements. This can be done via a generic ``requires`` decorator which takes a single argument, a true or false condition. For example, to give access to agents, but only on Tuesday:
+偶尔，需要组合要求。这能通过一般``requires`` 装饰器实现，用当个参数，true或
+false条件。例如，给代理访问权，但是仅在星期四：
 ``
 @auth.requires(auth.has_membership(group_id=agents) \
                and request.now.weekday()==1)
@@ -840,7 +930,7 @@ def function_seven():
     return 'Hello agent, it must be Tuesday!'
 ``:code
 
-or equivalently:
+或等价于：
 ``
 @auth.requires(auth.has_membership(role='Secret Agent') \
                and request.now.weekday()==1)
@@ -848,16 +938,18 @@ def function_seven():
     return 'Hello agent, it must be Tuesday!'
 ``:code
 
-#### Authorization and CRUD
+#### 授权和CRUD Authorization and CRUD
 
-Using decorators and/or explicit checks provides one way to implement access control.
-
-Another way to implement access control is to always use CRUD (as opposed to ``SQLFORM``) to access the database and to ask CRUD to enforce access control on database tables and records. This is done by linking ``Auth`` and CRUD with the following statement:
+使用装饰器和/或显式检查提供实现访问控制的方法。
+另外一种实现访问控制方法总是使用CRUD（与``SQLFORM``相反）访问数据库，
+强制数据库表和记录访问控制。用下面的语句，通过链 ``Auth`` 和CRUD实现：
 ``
 crud.settings.auth = auth
 ``:code
 
-This will prevent the visitor from accessing any of the CRUD functions unless the visitor is logged in and has explicit access. For example, to allow a visitor to post comments, but only update their own comments (assuming crud, auth and db.comment are defined):
+这能防止访问者使用任何CRUD函数除非访问者登录而且有权限。例如，允许访
+问者粘贴评论，但仅能更新他们自己的评论（假设crud、auth和db.comment已定
+义）：
 ``
 def give_create_permission(form):
     group_id = auth.id_group('user_%s' % auth.user.id)
@@ -884,7 +976,7 @@ def update_comment():
    return dict(form=form)
 ``:code
 
-You can also select specific records (those you have 'read' access to):
+你也可以查询指定字段（那些你没有‘read’权限的）：
 ``
 def post_comment():
    form = crud.create(db.comment, onaccept=give_update_permission)
@@ -893,23 +985,23 @@ def post_comment():
    return dict(form=form, comments=comments)
 ``:code
 
-The permissions names enforced by :
+权限命名用下面的实现：
 
 ``
 crud.settings.auth = auth
 ``:code
 
-are "read", "create", "update", "delete", "select", "impersonate".
+是 "read", "create", "update", "delete", "select", "impersonate"。
 
-#### Authorization and downloads
+#### 授权和下载 Authorization and downloads
 
-The use of decorators and the use of ``crud.settings.auth`` do not enforce authorization on files downloaded by the usual download function
+使用装饰器及``crud.settings.auth`` 不授权文件通过通常的下载函数下载
 ``
 def download(): return response.download(request, db)
 ``:code
 
-If one wishes to do so, one must declare explicitly which "upload" fields contain files that need access control upon download.
-For example:
+如果想要这么做，必须显式声明“upload”字段包含文件就下载需要访问控制。
+例如：
 ``
 db.define_table('dog',
    Field('small_image', 'upload'),
@@ -920,19 +1012,22 @@ db.dog.large_image.authorization = lambda record: \
    auth.has_permission('read', db.dog, record.id, auth.user.id)
 ``:code
 
-The attribute ``authorization`` of upload field can be None (the default) or a function that decides whether the user is logged in and has permission to 'read' the current record. In this example, there is no restriction on downloading images linked by the "small_image" field, but we require access control on images linked by the "large_image" field.
+上传文件属性 ``authorization``可以是None（默认）或是函数，决定用户是否登录并
+有当前记录的‘read’权限。这个例子，没有限制下载“small_image”字段链接的
+图像，但我们需要对“large_image”字段链接的图像访问控制。
 
 
-#### Access Control and Basic Authentication
+#### 访问控制和基本认证
 
-Occasionally, it may be necessary to expose actions that have decorators that require access control as services; i.e., to call them from a program or script and still be able to use authentication to check for authorization.
+偶尔，有需要公开动作，有装饰器要求访问控制做服务；即从程序或脚本调用
+它们，能使用认证检查授权。
 
-**Auth** enables login via basic authentication:
+**Auth** 允许通过Basic认证登录：
 ``
 auth.settings.allow_basic_login = True
 ``:code
 
-With this set, an action like
+如此设置，如下动作：
 ``
 @auth.requires_login()
 def give_me_time():
@@ -940,7 +1035,7 @@ def give_me_time():
     return time.ctime()
 ``:code
 
-can be called, for example, from a shell command:
+能被调用，例如，从shell命令：
 ``
 wget --user=[username] --password=[password]
     http://.../[app]/[controller]/give_me_time
@@ -957,120 +1052,119 @@ def give_me_time():
         return 'Not authorized'
 ``:code
 
-Basic login is often the only option for services (described in the next chapter), but it is disabled by default.
+Basic登录经常是给服务的唯一选择（下一章描述），默认禁用。
 
-#### Manual Authentication
+#### 手动认证 Manual Authentication
 
-Some times you want to implement your own logic and do "manual" user login.
-This can also be done by calling the function:
+有时候，你想实现你自己的逻辑，采用“manual”用户登录。这能通过调用函数
+实现：
 
 ``
 user = auth.login_bare(username,password)
 ``:code
 
-``login_bare`` returns user if the user exists and the password is valid, else it returns False. ``username`` is the email if the "auth_user" table does not have a "username" field.
+如果用户存在并且密码有效，``login_bare`` 返回用户，否则它返回None。如果 “auth_user”表没有“username”字段，``username``是电子邮件。
 
-#### Settings and messages
+#### 设置和消息 Settings and messages
 
-Here is a list of all parameters that can be customized for **Auth**
+这是所有能为 **Auth**定制的参数列表
 
-The following must point to a ``gluon.tools.Mail`` object to allow ``auth`` to send emails:
+下面语句指向``gluon.tools.Mail``对象允许 ``auth`` 发送电子邮件：
 
 ``
 auth.settings.mailer = None
 ``:code
 
-The following must be the name of the controller that defined the ``user`` action:
+下面必须是定义``user`` 动作的控制器名字：
 
 ``
 auth.settings.controller = 'default'
 ``:code
 
-The following is a very important setting:
+下面是非常重要的设置：
 
 ``
 auth.settings.hmac_key = None
 ``:code
 
-It must be set to something like "sha512:a-pass-phrase" and it will be passed to the CRYPT validator for the "password" field of the ``auth_user`` table. It will be the algorithm and a-pass-phrase used to hash the passwords.
+它必须设置为类似“sha512:a-pass-phrase”的东西，给``auth_user`` table的“password”字段，传递到CRYPT验证器。它是算法并通过字符串散列密码。
 
-By default, auth also requires a minimum password length of 4. This can be changed:
+默认情况，auth要求最小密码长度4.也可以改变：
 ``
 auth.settings.password_min_length = 4
 ``:code
 
-To disabled an action append its name to this list:
+要禁用动作，追加它的名字如下所示列表：
 ``
 auth.settings.actions_disabled = []
 ``:code
 
-For example:
+例如：
 
 ``
 auth.settings.actions_disabled.append('register')
 ``:code
 
-will disable registration.
-
-If you want to receive an email to verify registration set this to ``True``:
+将禁用注册。
+如果你想接收电子邮件确认注册，设置为``True``:
 
 ``
 auth.settings.registration_requires_verification = False
 ``:code
 
-To automatically login people after registration, even if they have not completed the email verification process, set the following to ``True``:
+注册后要自动登录用户，即使他们没有完成电子邮件确认程序，设置下面为``True``:
 
 ``
 auth.settings.login_after_registration = False
 ``:code
 
-If new registrants must wait for approval before being able to login set this to ``True``:
+如果新注册者在能登录前必须等待通过，设置下面为 ``True``:
 
 ``
 auth.settings.registration_requires_approval = False
 ``:code
 
-Approval consists of setting ``registration_key==''`` via appadmin or programmatically.
-
-If you do not want a new group for each new user set the following to ``False``:
+批准由设置 ``registration_key==''``，通过appadmin或编程实现。
+如果你不想每个新用户生成新组，设置下面为``False``:
 
 ``
 auth.settings.create_user_groups = True
 ``:code
 
-The following settings determine alternative login methods and login forms, as discussed previously:
+下面的设置决定替代登录方法和登录表单，如前面讨论的：
 
 ``
 auth.settings.login_methods = [auth]
 auth.settings.login_form = auth
 ``:code
 
-Do you want to allow basic login?
+你想允许basic登录吗？
 
 ``
 auth.settings.allows_basic_login = False
 ``:code
 
 
-The following is the URL of the ``login`` action:
+下面是``login``动作的URL：
 
 ``
 auth.settings.login_url = URL('user', args='login')
 ``:code
 
-If the user tried to access the register page but is already logged in, he will be redirected to this URL:
+如果用户试图访问访问注册页面，但他已经登录，他能被重定向到这个URL：
 
 ``
 auth.settings.logged_url = URL('user', args='profile')
 ``:code
 
-This must point to the URL of the download action, in case the profile contains images:
+这必须指向下载动作的URL，在简介包含图像的情况：
 
 ``
 auth.settings.download_url = URL('download')
 ``:code
 
-These must point to the URL you want to redirect your users to after the various possible ``auth`` actions (in case there is no referrer):
+这些必须指向你想重定向你的用户到的URL，在各种可能 ``auth``动作之后（在没
+有参考的情况下）：
 
 ``
 auth.settings.login_next = URL('index')
@@ -1085,18 +1179,16 @@ auth.settings.reset_password_next = URL('user', args='login')
 auth.settings.verify_email_next = URL('user', args='login')
 ``:code
 
-If the visitor is not logger in, and calls a function that requires authentication,
-the user is redirected to ``auth.settings.login_url`` which defaults to ``URL('default','user/login')``.
-One can replace this behavior by redefining:
+如果访问者没有登录， 调用需要认证的函数， 用户重定向到 ``auth.settings.login_url`` ，默认URL ``URL('default','user/login')``。可以通过如下重定义替换这个动作：
 ``on_failed_authentication``:inxx
 
 ``
 auth.settings.on_failed_authentication = lambda url: redirect(url)
 ``:code
 
-This is the function called for the redirection. The argument ``url``` passed to this function is the url for the login page.
+这是为重定向调用的函数。传递到这个函数的参数``url```是为登录页面的url。
 
-If the visitor does not have permission to access a given function, the visitor is redirect to the URL defined by
+如果访问者没有权限访问给定的函数，访问者重定向到如下定义的URL
 ``on_failed_authorization``:inxx
 
 ``
@@ -1104,11 +1196,12 @@ auth.settings.on_failed_authorization = \
     URL('user',args='on_failed_authorization')
 ``:code
 
-You can change this variable and redirect the user elsewhere.
+你能改变这个变量并重定向用户到其它地方。
 
-Often ``on_failed_authorization`` is a URL but it can be a function that returns the URL and it will be called on failed authorization.
+经常， ``on_failed_authorization``是URL，但它也可以是返回URL的函数，并且它
+在授权失败会被调用。
 
-These are lists of callbacks that should be executed after form validation for each of the corresponding action before any database IO:
+这些是回调的列表，应该在任何数据库IO前单验证每个相应动作表后执行：
 
 ``
 auth.settings.login_onvalidation = []
@@ -1118,9 +1211,10 @@ auth.settings.retrieve_password_onvalidation = []
 auth.settings.reset_password_onvalidation = []
 ``:code
 
-Each callback must be a function that takes the ``form`` object and it can modify the attributes of the form object before database IO is performed.
+每个回调必须是函数，用``form`` 对象参数，它能在数据库IO执行前，修改表单
+对象属性。
 
-These are lists of callbacks that should be executed after the database IO is performed and before redirection:
+下面是在数据库IO执行后且在重定向前应该执行的回调列表：
 
 ``
 auth.settings.login_onaccept = []
@@ -1129,7 +1223,7 @@ auth.settings.profile_onaccept = []
 auth.settings.verify_email_onaccept = []
 ``:code
 
-Here is an example:
+下面是例子：
 
 ``
 auth.settings.register_onaccept.append(lambda form:\
@@ -1137,7 +1231,7 @@ auth.settings.register_onaccept.append(lambda form:\
              message="new user email is %s'%form.vars.email))
 ``:code
 
-You can enable captcha for any of the ``auth`` actions:
+你能给任何 ``auth`` 动作启用验证码：
 
 ``
 auth.settings.captcha = None
@@ -1147,62 +1241,64 @@ auth.settings.retrieve_username_captcha = None
 auth.settings.retrieve_password_captcha = None
 ``:code
 
-If the ``.captcha`` settings points to a ``gluon.tools.Recaptcha``, all forms for which the corresponding option (like ``.login_captcha``) is set to ``None`` will have a captcha, while those for which the corresponding option is set to ``False`` will not. If, instead, ``.captcha`` is set to ``None``, only those form who have a corresponding option set to a ``gluon.tools.Recaptcha`` object will have captcha and the others will not.
+如果 ``.captcha`` 设置指向 ``gluon.tools.Recaptcha``，所有表单，相应选项
+（象``.login_captcha``）设置为 ``None`` ，都有验证码，而那些相应选项设置为``False`` 则没有。如果，相反，``.captcha`` 设置为 ``None``，只有相应选项设置为 ``gluon.tools.Recaptcha`` 对象的表单有验证码，其它就没有。
 
-This is the login session expiration time:
+下面是登录会话终止时间：
 
 ``
 auth.settings.expiration = 3600  # seconds
 ``:code
 
-You can change the name of the password field (in Firebird for example "password" is a keyword and cannot be used to name a field):
+你可以改变密码字段的名字（例如，在Firebird中“password”是关键字，不能
+用作字段名）：
 
 ``
 auth.settings.password_field = 'password'
 ``:code
 
 
-Normally the login form tries to validate an email. This can be disabled by changing this setting:
+通常登录表单试图验证电子邮件。这能通过修改设置禁用：
 
 ``
 auth.settings.login_email_validate = True
 ``:code
 
-Do you want to show the record id in the edit profile page?
+你想在编辑简介页面中显示记录id吗？
 
 ``
 auth.settings.showid = False
 ``:code
 
-For custom forms you may want to disable automatic error notification in forms:
+对客户表单，你可能想在表单中禁用自动错误提示：
 
 ``
 auth.settings.hideerror = False
 ``:code
 
-Also for custom forms you can change the style:
+对客户表单，你也能改变风格：
 
 ``
 auth.settings.formstyle = 'table3cols'
 ``:code
 
-(it can be "table2cols", "divs" and "ul")
-
-And you can set the separator for auth-generated forms:
+（可以是“table2cols”、“divs”和“ul”）
+你能给auth生成的表单设定分隔符：
 
 ``
 auth.settings.label_separator =	':'
 ``:code
 
 
-By default the login form gives the option to extend the login via "remember me" option. The expiration time can be changed or the option disabled via these settings:
+默认情况，登录表单提供选项通过“rememberme”选项扩展登录。终止时间可以
+修改或通过下面设置禁止选项：
 
 ``
 auth.settings.long_expiration = 3600*24*30 # one month
 auth.settings.remember_me_form = True
 ``:code
 
-You can also customize the following messages whose use and context should be obvious:
+你也可以定制下面的消息，它们的使用和内容应当是显而易见的：
 ``
 auth.messages.submit_button = 'Submit'
 auth.messages.verify_password = 'Verify Password'
@@ -1281,44 +1377,55 @@ auth.messages.label_remember_me = "Remember me (for 30 days)"
 ``add|del|has`` membership logs allow the use of "%(user_id)s" and "%(group_id)s".
 ``add|del|has`` permission logs allow the use of "%(user_id)s", "%(name)s", "%(table_name)s", and "%(record_id)s".
 
-### Central Authentication Service
+### 集中认证服务Central Authentication Service
 ``CAS``:inxx ``authentication``:inxx
 
-web2py provides support for third party authentication and single sign on.
-Here we discuss the Central Authentication Service (CAS) which is an industry standard and both client and server are built-into web2py.
+Web2py 提供对第三方认证的支持和单点登录。下面我们讨论集中认证服务
+（CAS），它是工业标准，客户端和服务器端都构建到web2py内。
 
-CAS is an open protocol for distributed authentication and it works in the following way: When a visitor arrives at our web site, our application check in the session if the user is already authenticated (for example via a ``session.token`` object). If the user is not authenticated, the controller redirects the visitor from the CAS appliance, where the user can log in, register, and manage his credentials (name, email and password). If the user registers, he receives an email, and registration is not complete until he responds to the email. Once the user has successfully registered and logged in, the CAS appliance redirects the user to our application together with a key. Our application uses the key to get the credentials of the user via an HTTP request in the background to the CAS server.
+CAS是公开的分布式认证的协议，它的工作原理如下：当访问者到达我们的
+web网站，我们的应用在会话中检查用户是否已经注册（例如通过 ``session.token``对象）。如果用户没有经过认证，控制器从CAS应用重定向用户，用户可以登录、注册和管理他的凭据（姓名、电子邮件和密码）。如果用户注册，他接到电子邮件，注册没有完成，直到他响应了电子邮件。
+一旦用户成功注册并登录，CAS应
+用重定向用户到我们的应用并发给密钥。我们的应用使用密钥通过到后台CAS服
+务器的HTTP请求得到用户的凭据。
 
-Using this mechanism, multiple applications can use a single sign-on via a single CAS server. The server providing authentication is called a service provider. Applications seeking to authenticate visitors are called service consumers.
+使用这样的机制，多个应用可以通过单个CAS服务器实现单点登录。提供认证的
+服务器称之为服务供应商。寻找认证访问者的应用程序叫做服务消费者。
 
-CAS is similar to OpenID, with one main difference. In the case of OpenID, the visitor chooses the service provider. In the case of CAS, our application makes this choice, making CAS more secure.
+CAS与OpenID很相似，有一个主要的不同。在OpenID情况下，访问者选择服务
+供应商。在CAS情形，我们的应用做决定，是CAS更安全。
 
-Running a web2py CAS provider is as easy as copying the scaffolding app. In fact any web2py app that exposes the action
+运行web2py， CAS供应商易如拷贝基本构建应用。
+事实上，任何web2py应用公开了动作
 
 ``
 ## in provider app
 def user(): return dict(form=auth())
 ``
 
-is a CAS 2.0 provider and its services can be accessed at the URL
+是CAS2.0提供商，它的服务通过URL访问
 
 ``
 http://.../provider/default/user/cas/login
 http://.../provider/default/user/cas/validate
 http://.../provider/default/user/cas/logout
 ``:code
-(we assume the app to be called "provider").
-
-You can access this service from any other web application (the consumer) by simply delegating authentication to the provider:
+（我们假设应用叫做“provider”）
+你能通过简单委托认证给提供商，从其它任何web应用（消费者）访问这个服务：
 
 ``
 ## in consumer app
 auth = Auth(db,cas_provider = 'http://127.0.0.1:8000/provider/default/user/cas')
 ``:code
 
-When you visit the login url the consumer app, it will redirect you to the provider app which will perform authentication and will redirect back to the consumer. All processes of registration, logout, change password, retrieve password, have to be completed on the provider app. An entry about the logged-in user will be created on the consumer side so that you add extra fields and have a local profile. Thanks to CAS 2.0 all fields that are readable on the provider and have a corresponding field in the ``auth_user`` table of the consumer will be copied automatically.
+当你访问登录url消费者应用，它会重定向你到提供商应用，执行认证并重定向
+消费者回来。注册、退出登录、修改密码获取密码的所有处理，在供应商应用完
+成。关于登录用户的条目会被创建在消费者侧，以便你添加额外的字段和本地
+配置。得益于CAS2.0，供应商的所有字段可读，在消费者 ``auth_user`` 表有相应字
+段会自动拷贝。 
 
-``Auth(...,cas_provider='...')`` works with third party providers and supports CAS 1.0 and 2.0. The version is detected automatically. By default it builds the URLs of the provider from a base (the ``cas_provider`` url above) by appending
+``Auth(...,cas_provider='...')`` 与第三方供应商工作，并支持CAS1.0和2.0。版本自动
+检测。默认情况，通过追加它从基（上面的``cas_provider`` ）构建供应商的URL：
 
 ``
 /login
@@ -1326,7 +1433,7 @@ When you visit the login url the consumer app, it will redirect you to the provi
 /logout
 ``:code
 
-These can be changed in consumer and in provider
+这能在消费者和供应商中修改
 
 ``
 ## in consumer or provider app (must match)
@@ -1335,7 +1442,8 @@ auth.settings.cas_actions['validate']='validate'
 auth.settings.cas_actions['logout']='logout'
 ``
 
-If you want to connect to a web2py CAS provider from a different domain, you must enable them by attending to the list of allowed domain:
+如果你想从不同的域名连接到web2py CAS供应商，你必须添加允许域名来启用
+它们：
 
 ``
 ## in provider app
@@ -1343,35 +1451,39 @@ auth.settings.cas_domains.append('example.com')
 ``:code
 
 
-#### Using web2py to authorize non-web2py apps
+#### U用web2py授权非web2py 应用
 
-This is possible but dependent on the web server.
-here we assume two applications running under the same web server: Apache with ``mod_wsgi``.
-One of the applications is web2py with an app proving access control via Auth.
-The other can be a CGI script, a PHP program or anything else.
-We want to instruct the web server to ask permission to the former application when a client requests access to the latter.
+这是可能的但依赖于web服务器。这里我们假定两个应用运行在同一个web服务
+器：具有``mod_wsgi``的 Apache。两个应用中的一个是 web2py采用通过 Auth提供
+访问控制的应用。另外一个可能是CGI脚本、PHP程序或其它任意的。当一个客户
+请求访问后者，我们想指导web服务器请求到前一个应用的权限。
 
-First of all we need to modify the web2py application and add the following controller:
+首先，我们需要修改web2py并添加下面的控制器：
 
 ``
 def check_access():
     return 'true' if auth.is_logged_in() else 'false'
 ``:code
 
-which returns ``true`` if the user is logged in and ``false`` otherwise. Now run a web2py process in background:
+如果用户登录了它返回 ``true`` ，否者返回 ``false`` 。现在我们后台启动web2py进程：
 
 ``
 nohup python web2py.py -a '' -p 8002
 ``
 
-Port 8002 is a must and there is no need to enable admin so no admin password.
+端口8002是必须的，不需要启动admin，因而没有admin密码。
 
-Then we need to edit the Apache config file (for example "/etc/apache2/sites-available/default") and instruct apache so that when the non-web2py program is called, it should call the above ``check`` action instead and only if it returns ``true`` it should proceed and respond to the request, else if should deny access.
+然后，我们需要编辑Apache配置文件（例如“/etc/apache2/sitesavailable/
+default”）并指导apache，以便当非web2p程序调用时，它应该调用上
+面的 ``check``动作，仅当它返回``true``，它能执行并响应请求，否则拒绝访问。
+ 
 
-Because web2py and the non-web2py application run under the same domain, if the user is logged into the web2py app, the web2py session cookie will be passed to Apache even when the other app is requested and will allow credential verification.
-
-In order to achieve this we need a script, "web2py/scripts/access.wsgi" that can play this trick.
-The script ships with web2py. All we need to do it tell apache to call this script, the URL of the application needing access control, and the location of the script:
+因为web2py和非web2py应用运行在同一个域名，如果用户登录到web2py应用，
+web2py会话cookie传递给Apache，即使当另外一个应用被请求，会允许凭证确
+认。
+要实现这个，我们需要脚本，“web2py/scripts/access.wsgi”能实现。该脚本就在
+web2py里。所有需要我们做的告诉apache调用这个脚本，应用的URL需要访问控
+制，和脚本的位置：
 
 ``
 <VirtualHost *:80>
@@ -1386,23 +1498,25 @@ The script ships with web2py. All we need to do it tell apache to call this scri
 </VirtualHost>
 ``
 
-Here "^myapp/path/needing/authentication/myfile" is the regular expression that should match the incoming request and "/path/to/" is the absolute location of the web2py folder.
+这里“mˆ yapp/path/needing/authentication/myfile”是正则表达式，应该匹配输入
+请求“/path/to/”是web2py文件夹的绝对位置。
 
-The "access.wsgi" script contains the following line:
+“access.wsgi”脚本包含下面的行：
 
 ``
 URL_CHECK_ACCESS = 'http://127.0.0.1:8002/%(app)s/default/check_access'
 ``
 
-which points to the web2py application we have requested but you can edit it to point to a specific application, running on a port other than 8002.
+它指向我们请求的web2py应用，但你能编辑它，指向特定的应用，运行在除
+8002的其它端口。
 
-You can also change the ``check_access()`` action and make its logic more complex. This action can retrieve the URL that was originally requested using the environment variable
+你也可以修改`check_access()`` 动作，使它的逻辑更复杂。这个动作能得到URL，原始地用环境变量请求
 
 ``
 request.env.request_uri
 ``
 
-and you can implement more complex rules:
+你能实现更复杂的规则：
 
 ``
 def check_access():
