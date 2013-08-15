@@ -1,38 +1,42 @@
 
-## Services
+## 服务
 ``Web Services``:inxx ``API``:inxx
 
-The W3C defines a web service as "a software system designed to support interoperable machine-to-machine interaction over a network". This is a broad definition, and it encompasses a large number of protocols designed not for machine-to-human communication, but for machine-to-machine communication such as XML, JSON, RSS, etc.
+W3C定义web服务“软件系统设计来通过网络支持互操作的机器到机器的
+交互”。这是一个宽泛的定义，它包含相当大量的协议，协议不是用来人机通
+信，而是机器到机器的通信，比如XML, JSON, RSS等。
 
-In this chapter we discuss how to expose web services using web2py. If you are interested in examples of consuming third party services (Twitter, Dropbox, etc.) you should look into Chapter 9 and Chapter 14.
+本章我们讨论如何用web2py实现web服务。如果你感兴趣消费第三方服
+务（Twitter,Dropbox等）的例子，你该查看第9章和第14章。web2py提供，即
+开即用，对许多协议的支持，包括XML, JSON,RSS, CSV, XMLRPC, JSONRPC,
+AMFRPC和SOAP。web2py也能够扩展支持更多的协议。
 
-web2py provides, out of the box, support for many protocols, including XML, JSON, RSS, CSV, XMLRPC, JSONRPC, AMFRPC, and SOAP. web2py can also be extended to support additional protocols.
+那些协议中的每一个都有多种方法支持，我们区分它们为：
+- 以给定格式呈现函数输出（例如XML, JSON,RSS, CSV）
+- 远程过程调用（例如XMLRPC, JSONRPC, AMFRPC）
 
-Each of those protocols is supported in multiple ways, and we make a distinction between:
-- Rendering the output of a function in a given format (for example XML, JSON, RSS, CSV)
-- Remote Procedure Calls (for example XMLRPC, JSONRPC, AMFRPC)
-
-### Rendering a dictionary
+### 呈现字典
 
 #### HTML, XML, and JSON
 ``HTML``:inxx ``XML``:inxx ``JSON``:inxx
 
-Consider the following action:
+考虑下面的动作：
 ``
 def count():
     session.counter = (session.counter or 0) + 1
     return dict(counter=session.counter, now=request.now)
 ``:code
 
-This action returns a counter that is increased by one when a visitor reloads the page, and the timestamp of the current page request.
-
-Normally this page would be requested via:
+这个动作返回计数，当访问者重载页面时计数加1，以及当前页面请求的时间
+戳。
+通常这个页面被请求，通过：
 
 ``
 http://127.0.0.1:8000/app/default/count
 ``:code
 
-and rendered in HTML. Without writing one line of code, we can ask web2py to render this page using different protocols by adding an extension to the URL:
+以HTML 呈现。无需写哪怕一行代码，通过添加URL 的扩展，你能要求
+web2py用不同的协议呈现这个页面：
 
 ``
 http://127.0.0.1:8000/app/default/count.html
@@ -40,9 +44,8 @@ http://127.0.0.1:8000/app/default/count.xml
 http://127.0.0.1:8000/app/default/count.json
 ``:code
 
-The dictionary returned by the action will be rendered in HTML, XML and JSON, respectively.
-
-Here is the XML output:
+动作返回的字典会分别用HTML, XML 和JSON呈现。
+下面是XML输出：
 ``
 <document>
    <counter>3</counter>
@@ -50,48 +53,54 @@ Here is the XML output:
 </document>
 ``:code
 
-Here is the JSON output:
+下面是JSON输出：
 ``
 { 'counter':3, 'now':'2009-08-01 13:00:00' }
 ``:code
 
-Notice that date, time, and datetime objects are rendered as strings in ISO format. This is not part of the JSON standard, but rather a web2py convention.
+注意日期、时间和日期时间对象用ISO格式以字符串呈现。这是不JSON标准的
+部分，而是web2py的规定。
 
-#### Generic views
+#### 通用视图 Generic views
 
-When, for example, the ".xml" extension is called, web2py looks for a template file called "default/count.xml", and if it does not find it, looks for a template called "generic.xml".  The files "generic.html", "generic.xml", "generic.json" are provided with the current scaffolding application. Other extensions can be easily defined by the user.
+例如， 当“.xml”扩展名调用了，web2py查找一个叫“default/count.xml”
+的模板文件，如果没有找到它，则查找叫“generic.xml”的模板。文件
+“generic.html”、“generic.xml”和“genericjson”都由当前基本构建应用提供。其
+它扩展能容易的被用户定义。
 
 ------
-For security reasons the generic views are only allowed to be accessed on localhost. In order to enable the access from remote clients you may need to set the response.generic_patterns.
+为安全起见，通用视图只允许在本地主机上访问。要让远程客户能访问，
+你需要设置response.generic_patterns。
 ------
-Assuming you are using a copy of scaffold app edit the following line in models/db.py
+假设你正在使用基本应用的拷贝在模型/db.py中编辑下面的代码行
 
-- restrict access only to localhost
+- 限制仅本地主机访问
 ``
 response.generic_patterns = ['*'] if request.is_local else []
 ``:code
 
-- to allow all generic views
+- 允许所有通用视图
 ``
 response.generic_patterns = ['*']
 ``:code
 
-- to allow only .json
+- 允许only.json
 
 ``
 response.generic_patterns = ['*.json']
 ``:code
 
-The generic_patterns is a glob pattern, it means you can use any patterns that matches with your app actions or pass a list of patterns.
+generic_patterns是glob 全局模式，它意味着你能使用与你应用匹配的任何模式
+或传递模式列表。
 
 ``
 response.generic_patterns = ['*.json','*.xml']
 ``:code
 
 
-To use it in an older web2py app, you may need to copy the "generic.*" files from a later scaffolding app (after version 1.60).
-
-Here is the code for "generic.html"
+为在旧版本web2py应用中使用它，你需要从后面的基本构建应用（v1.60后
+）复制“generic.*”文件。
+下面是“generic.html”的代码
 ``
 {{extend 'layout.html'}}
 
@@ -108,7 +117,7 @@ args=request.application)}}'">admin</button>
 <script>jQuery('.hidden').hide();</script>
 ``:code
 
-Here is the code for "generic.xml"
+下面是“generic.xml”代码
 ``
 {{
 try:
@@ -120,7 +129,7 @@ except:
 }}
 ``:code
 
-And here is the code for "generic.json"
+下面是“generic.json”代码
 ``
 {{
 try:
@@ -132,29 +141,31 @@ except:
 }}
 ``:code
 
-Any dictionary can be rendered in HTML, XML and JSON as long as it only contains python primitive types (int, float, string, list, tuple, dictionary). ``response._vars`` contains the dictionary returned by the action.
+任何字典能被呈现在HTML, XML 和 JSON，只要它只包含python原始类型
+（int, float, string, list, tuple, dictionary）。 ``response._vars`` 包含由这个动作返回的字典。
 
-If the dictionary contains other user-defined or web2py-specific objects, they must be rendered by a custom view.
+如果字典包含其它用户自定义或web2py指定的对象，它们必须用自定义视
+图呈现。
 
-#### Rendering ``Rows``
+#### 呈现 ``Rows``对象
 ``as_list``:inxx
 
-If you need to render a set of Rows as returned by a select in XML or JSON or another format,
-first transform the Rows object into a list of dictionaries using the ``as_list()`` method.
+如果你需要呈现一组查询语句返回的Rows在XML或JSON里或用其它格
+式，首先用``as_list()``方法转换Rows对象为字典列表。
 
-Consider for example the following mode:
+考虑下面模式例子：
 ``
 db.define_table('person', Field('name'))
 ``:code
 
-The following action can be rendered in HTML, but not in XML or JSON:
+下面的动作能以HTML呈现，但是不能用XML或JSON：
 ``
 def everybody():
     people = db().select(db.person.ALL)
     return dict(people=people)
 ``:code
 
-while the following action can rendered in XML and JSON:
+而下面的动作能以XML和JSON呈现：
 
 ``
 def everybody():
@@ -162,15 +173,15 @@ def everybody():
     return dict(people=people)
 ``:code
 
-#### Custom formats
+#### 自定义格式
 
-If, for example, you want to render an action as a Python pickle:
+如果，例如，你想以Python pickle呈现动作：
 
 ``
 http://127.0.0.1:8000/app/default/count.pickle
 ``:code
 
-you just need to create a new view file "default/count.pickle" that contains:
+你只需创建新视图文件“default/count.pickle”包含：
 ``
 {{
 import cPickle
@@ -179,16 +190,20 @@ response.write(cPickle.dumps(response._vars),escape=False)
 }}
 ``:code
 
-If you want to be able to render any action as a pickled file, you need only to save the above file with the name "generic.pickle".
+如果你想能够以pickled文件呈现任何动作，你只需用名字“generic.pickle”保存
+上面的文件。
 
-Not all objects are pickleable, and not all pickled objects can be un-pickled. It is safe to stick to primitive Python objects and combinations of them. Objects that do not contain references to file streams or database connections are usually pickleable, but they can only be un-pickled in an environment where the classes of all pickled objects are already defined.
+不是所有的对象是pickleable，不是所有的pickled对象能反pickled。坚持Python
+原始对象并组合它们是安全的。对象不包含到文件流或数据库连接的引用，通
+常pickleable，但它们只能在所有pickled对象的类已定义的环境un-pickled。
 
 #### RSS
 ``RSS``:inxx
 
-web2py includes a "generic.rss" view that can render the dictionary returned by the action as an RSS feed.
-
-Because the RSS feeds have a fixed structure (title, link, description, items, etc.) then for this to work, the dictionary returned by the action must have the proper structure:
+web2py包含“generic.rss”视图，能以RSS feed（RSS订阅）形式呈现动作返回的
+字典。
+因为RSS feed（RSS订阅）有固定的结构（标题、链接、描述、项目等），那么这
+要执行，动作返回的字典必须有合适的结构：
 ``
 {'title'      : '',
  'link'       : '',
@@ -197,7 +212,7 @@ Because the RSS feeds have a fixed structure (title, link, description, items, e
  'entries'    : []}
 ``:code
 
-and each entry in entries must have the same similar structure:
+每个实体类中的实体必须有相同的结构：
 
 ``
 {'title'      : '',
@@ -206,7 +221,7 @@ and each entry in entries must have the same similar structure:
  'created_on' : ''}
 ``:code
 
-For example the following action can be rendered as an RSS feed:
+例如，下面的动作能够呈现为RSS feed（RSS订阅）：
 ``
 def feed():
     return dict(title="my feed",
@@ -219,13 +234,13 @@ def feed():
                 ])
 ``:code
 
-by simply visiting the URL:
+只要通过访问URL：
 
 ``
 http://127.0.0.1:8000/app/default/feed.rss
 ``:code
 
-Alternatively, assuming the following model:
+此外，假设下面的模型：
 ``
 db.define_table('rss_entry',
     Field('title'),
@@ -234,7 +249,7 @@ db.define_table('rss_entry',
     Field('description'))
 ``:code
 
-the following action can also be rendered as an RSS feed:
+下面的动作也能呈现为RSS feed（RSS订阅）：
 
 ``
 def feed():
@@ -244,11 +259,10 @@ def feed():
                 entries=db().select(db.rss_entry.ALL).as_list())
 ``:code
 
-The ``as_list()`` method of a Rows object converts the rows into a list of dictionaries.
+Rows对象的``as_list()`` 方法把行转换为字典列表。
+如果有没有显式列出键名的附加字典项，它们被忽略：
 
-If additional dictionary items are found with key names not explicitly listed here, they are ignored.
-
-Here is the "generic.rss" view provided by web2py:
+下面是web2py 提供的“generic.rss”视图：
 ``
 {{
 try:
@@ -260,7 +274,8 @@ except:
 }}
 ``:code
 
-As one more example of an RSS application, we consider an RSS aggregator that collects data from the "slashdot" feed and returns a new web2py rss feed.
+再举RSS应用的一个例子，我们考虑RSS聚合对象，从“slashdot”feed收集数据
+并返回新的web2py rss feed（RSS订阅）。
 ``
 def aggregator():
     import gluon.contrib.feedparser as feedparser
@@ -277,7 +292,7 @@ def aggregator():
                   created_on = request.now) for entry in d.entries])
 ``:code
 
-It can be accessed at:
+它能通过下面列出的访问：
 
 ``
 http://127.0.0.1:8000/app/default/aggregator.rss
@@ -286,9 +301,8 @@ http://127.0.0.1:8000/app/default/aggregator.rss
 #### CSV
 ``CSV``:inxx
 
-The Comma Separated Values (CSV) format is a protocol to represent tabular data.
-
-Consider the following model:
+逗号分隔值格式是表示表格式数据的协议。
+考虑下面的模型：
 ``
 db.define_model('animal',
     Field('species'),
@@ -296,15 +310,15 @@ db.define_model('animal',
     Field('family'))
 ``:code
 
-and the following action:
+和下面的动作：
 ``
 def animals():
     animals = db().select(db.animal.ALL)
     return dict(animals=animals)
 ``:code
 
-web2py does not provide a "generic.csv"; you must define a custom view "default/animals.csv"
-that serializes the animals into CSV. Here is a possible implementation:
+web2py不提供“generic.csv”；你必须定义自定义视图“default/animals.csv”序列
+化animals到CSV。下面是可能的实现：
 ``
 {{
 import cStringIO
@@ -315,32 +329,31 @@ response.write(stream.getvalue(), escape=False)
 }}
 ``:code
 
-Notice that one could also define a "generic.csv" file, but one would have to specify the name of the object to be serialized ("animals" in the example). This is why we do not provide a "generic.csv" file.
+注意也可能定义“generic.csv”文件，但必须指定要被序列化对象的名字（例子
+中的“animal”）。这就是我们为什么不提供“generic.csv”文件的原因。
 
-### Remote procedure calls
+### 远程过程调用 Remote procedure calls
 ``RPC``:inxx
 
-web2py provides a mechanism to turn any function into a web service.
-The mechanism described here differs from the mechanism described before because:
-- The function may take arguments
-- The function may be defined in a model or a module instead of controller
-- You may want to specify in detail which RPC method should be supported
-- It enforces a more strict URL naming convention
-- It is smarter than the previous methods because it works for a fixed set of protocols. For the same reason it is not as easily extensible.
-
-To use this feature:
-
-First, you must import and instantiate a service object.
+web2py提供了把任何函数转换为web服务的机制。这里描述的机制与前面描述
+的不一样，因为：
+- 函数可能有参数
+- 函数可能在模型或模块中定义而不是控制器
+- 你可能想指定细节支持RPC方法
+- 它采用了更严格的URL命名规则
+- 它比之前的方法聪明，因为它对固定的协议簇有用。同理，它不易于扩展。
+要用这功能：
+首先，你必须导入和实例化服务service对象。
 ``
 from gluon.tools import Service
 service = Service()
 ``:code
 
 -------
-This is already done in the "db.py" model file in the scaffolding application.
+这已经在基本构建应用的“db.py”模型文件中实现。
 -------
 
-Second, you must expose the service handler in the controller:
+其次，你必须公开控制器的服务句柄：
 ``
 def call():
     session.forget()
@@ -348,10 +361,12 @@ def call():
 ``:code
 
 -------
-This is already done in the "default.py" controller of the scaffolding application. Remove ``session.forget()`` if you plan to use session cookies with the services.
+这已经在基本构建应用的“db.py”模型文件中实现。如果你打算使用服务会话
+cookie删除 ``session.forget()`` 。
 -------
 
-Third, you must decorate those functions you want to expose as a service. Here is a list of currently supported decorators:
+第三，你必须装饰那些你想公开为服务的函数。下面是当前支持的装饰器的列
+表：
 ``
 @service.run
 @service.xml
@@ -364,80 +379,83 @@ Third, you must decorate those functions you want to expose as a service. Here i
 @service.soap('FunctionName',returns={'result':type},args={'param1':type,})
 ``:code
 
-As an example, consider the following decorated function:
+作为例子，考虑下面被装饰的函数：
 ``
 @service.run
 def concat(a,b):
     return a+b
 ``:code
 
-This function can be defined in a model or in the controller where the ``call`` action is defined. This function can now be called remotely in two ways:
+这个函数定义在模型或控制器，``call`` 动作定义的。这个函数现在能用两种方法远
+程调用：
 
 ``
 http://127.0.0.1:8000/app/default/call/run/concat?a=hello&b=world
 http://127.0.0.1:8000/app/default/call/run/concat/hello/world
 ``:code
-
-In both cases the http request returns:
+两种情况http请求返回：
 ``
 helloworld
 ``:code
 
-If the ``@service.xml`` decorator is used, the function can be called via:
+如果 ``@service.xml`` l装饰器使用了，函数被调用，通过：
 
 ``
 http://127.0.0.1:8000/app/default/call/xml/concat?a=hello&b=world
 http://127.0.0.1:8000/app/default/call/xml/concat/hello/world
 ``:code
 
-and the output is returned as XML:
+输出以XML返回：
 ``
 <document>
    <result>helloworld</result>
 </document>
 ``:code
 
-It can serialize the output of the function even if this is a DAL Rows object. In this case, in fact, it will call ``as_list()`` automatically.
+它能序列化函数输出，即使这是一个DAL Rows对象。这种情况，事实上，它会
+自动调用 ``as_list()`` 。
 
-If the ``@service.json`` decorator is used, the function can be called via:
+如果``@service.json`` 装饰器使用了，函数被调用，通过：
 
 ``
 http://127.0.0.1:8000/app/default/call/json/concat?a=hello&b=world
 http://127.0.0.1:8000/app/default/call/json/concat/hello/world
 ``:code
 
-and the output returned as JSON.
+输出以JSON返回。
 
-If the ``@service.csv`` decorator is used, the service handler requires, as the return value, an iterable object of iterable objects, such as a list of lists. Here is an example:
+如果``@service.csv`` d装饰器使用了，服务句柄要求迭代对象之一作为返回值，比
+如list列表。下面是例子：
 ``
 @service.csv
 def table1(a,b):
     return [[a,b],[1,2]]
 ``:code
 
-This service can be called by visiting one of the following URLs:
+这个服务通过访问下面URL之一被调用：
 
 ``
 http://127.0.0.1:8000/app/default/call/csv/table1?a=hello&b=world
 http://127.0.0.1:8000/app/default/call/csv/table1/hello/world
 ``:code
 
-and it returns:
+它返回：
 ``
 hello,world
 1,2
 ``:code
 
-The ``@service.rss`` decorator expects a return value in the same format as the "generic.rss" view discussed in the previous section.
+``@service.rss`` 装饰器期望与上一章讨论的“generic.rss”视图同样格式的返回值。
 
-Multiple decorators are allowed for each function.
+每个函数允许多个装饰器。
 
-So far, everything discussed in this section is simply an alternative to the method described in the previous section. The real power of the service object comes with XMLRPC, JSONRPC and AMFRPC, as discussed below.
+目前为止，本章讨论的都只是前面章节描述方法的替代。服务对象的真正的力
+量，与XMLRPC, JSONRPC and AMFRPC一道，讨论如下。
 
 #### XMLRPC
 ``XMLRPC``:inxx
 
-Consider the following code, for example, in the "default.py" controller:
+考虑下面的代码，例如，在“default.py”控制器：
 ``
 @service.xmlrpc
 def add(a,b):
@@ -448,7 +466,7 @@ def div(a,b):
     return a/b
 ``:code
 
-Now in a python shell you can do
+现在，在python shell，你能做
 ``
 >>> from xmlrpclib import ServerProxy
 >>> server = ServerProxy(
@@ -463,13 +481,19 @@ Now in a python shell you can do
 ZeroDivisionError: integer division or modulo by zero
 ``:code
 
-The Python xmlrpclib module provides a client for the XMLRPC protocol. web2py acts as the server.
+Python xmlrpclib模块给XMLRPC协议提供客户。web2py做服务器。
 
-The client connects to the server via ServerProxy and can remotely call decorated functions in the server. The data (a,b) is passed to the function(s), not via GET/POST variables, but properly encoded in the request body using the XMLPRC protocol, and thus it carries with itself type information (int or string or other). The same is true for the return value(s). Moreover, any exception raised on the server propagates back to the client.
+客户通过ServerProxy连接服务器，并能远程调用服务器上的装饰过的函数。
+data(a,b)传递给函数，不是通过GET/POST变量，而是用XMLRPC协议适当地编
+码在请求中，如此，它携带自身类型信息（整型或字符串，或其它）。返回值
+也是一样的。而且，任何服务器上引发的异常传回客户端。
 
-There are XMLRPC libraries for many programming languages (including C, C++, Java, C#, Ruby, and Perl), and they can interoperate with each other. This is one the best methods to create applications that talk to each other independent of the programming language.
-
-The XMLRPC client can also be implemented inside a web2py action, so that one action can talk to another web2py application (even within the same installation) using XMLRPC. Beware of session deadlocks in this case. If an action calls via XMLRPC a function in the same app, the caller must release the session lock before the call:
+对许多编程语言（包括C,C++, Java, C#, Ruby和Perl）有XMLRPC库，它们之间
+能相互操作。这是最好的方法，创建能够彼此交谈的应用并独立于编程语言。
+XMLRPC客户也可以在web2py动作内被实现，以便一个动作能与另外一个
+web2py应用（即使在同一个安装当中）用对话XMLRPC。注意这种情况会话死
+锁。如果动作通过XMLRPC调用同一个应用的函数，调用者在调用前必须释放
+会话锁：
 ``
 session.forget(response)
 ``:code
@@ -478,8 +502,8 @@ session.forget(response)
 
 ``JSONRPC``:inxx
 
-In this section we are going to use the same code example as for XMLRPC but we will expose the service using JSONRPC instead:
-
+这一节，我们将使用和XMLRPC一样的代码例子，但我们会公开使用JSONRPC
+的服务：
 ``
 @service.jsonrpc
 def add(a,b):
@@ -489,9 +513,10 @@ def call():
     return service()
 ``:code
 
-JSONRPC is very similar to XMLRPC but uses JSON instead of XML as data serialization protocol.
-
-Of course we can call the service from any program in any language but here we will do it in Python. web2py ships with a module "gluon/contrib/simplejsonrpc.py" created by Mariano Reingart. Here is an example of how to use to call the above service:
+JSONRPC与XMLRPC非常相似，但使用JSON而不是XML序列化协议。
+当然，我们能从任何语言的任何程序调用服务，但在这我们将用Python完成。
+web2py提供Mariano Reingart创建的模块“gluon/contrib/simplejsonrpc.py”。下面
+是如何使用它调用上面服务的例子：
 
 ``
 >>> from gluon.contrib.simplejsonrpc import
@@ -500,27 +525,29 @@ Of course we can call the service from any program in any language but here we w
 >>> print service.add(1, 2)
 ``:code
 
-#### JSONRPC and Pyjamas
+#### JSONRPC和Pyjamas
 ``JSONRPC``:inxx ``Pyjamas``:inxx
 
-JSONRPC is very similar to XMLRPC, but uses the JSON-based protocol instead of XML to encode the data. As an example of application here, we discuss its usage with Pyjamas. Pyjamas is a Python port of the Google Web Toolkit (originally written in Java). Pyjamas allows writing a client application in Python. Pyjamas translates this code into JavaScript. web2py serves the JavaScript and communicates with it via AJAX requests originating from the client and triggered by user actions.
+JSONRPC与XMLRPC非常相似，但使用基于JSON的协议而不是XML编码数据。
+作为应用的一个例子，我们讨论它与Pyjamas的使用。Pyjamas是Google Web
+Toolkit（最初Java编写）的Python端口。Pyjamas允许使用Python写客户应用。
+Pyjamas把这段代码翻译为JavaScript。web2py服务JavaScript，通过源自客户并被
+用户动作出发AJAX请求与它通信。下面我们描述如何让Pyjamas与web2py一同工
+作。它不需要除了web2py与Pyjamas之外的任何额外的库。
 
-Here we describe how to make Pyjamas work with web2py. It does not require any additional libraries other than web2py and Pyjamas.
+我们将构建一个简单“todo”应用，有Pyjamas客户（全部JavaScript），只通过
+JSONRPC与服务器对话。
 
-We are going to build a simple "todo" application with a Pyjamas client (all JavaScript) that talks to the server exclusively via JSONRPC.
-
-First, create a new application called "todo".
-
-Second, in "models/db.py", enter the following code:
+首先，创建新应用叫“todo”：
+其次，在“models/db.py”文件，输入下列代码：
 ``
 db=DAL('sqlite://storage.sqlite')
 db.define_table('todo', Field('task'))
 service = Service()
 ``:code
 
-''(Note: Service class is from gluon.tools).''
-
-Third, in "controllers/default.py", enter the following code:
+（注意：Service服务类来自gluon.tools）
+第三步，在“controllers/default.py”，输入下列代码：
 ``
     def index():
     redirect(URL('todoApp'))
@@ -548,9 +575,8 @@ Third, in "controllers/default.py", enter the following code:
         return dict()
 ``:code
 
-The purpose of each function should be obvious.
-
-Fourth, in "views/default/todoApp.html", enter the following code:
+每个函数的目的是显而易见的。
+第四步，在“views/default/todoApp.html”，输入下列代码：
 ``
 <html>
   <head>
@@ -575,10 +601,9 @@ Fourth, in "views/default/todoApp.html", enter the following code:
 </html>
 ``:code
 
-This view just executes the Pyjamas code in "static/output/todoapp" - code that we have not yet created.
-
-Fifth, in "static/TodoApp.py" (notice it is TodoApp, not todoApp!),
-enter the following client code:
+这个视图在“static/output/todoapp”执行Pyjamas代码，-code我们还没有创建。
+第五步，在“static/TodoApp.py”（注意它是TodoApp，不是todoApp！），输入
+下面的客户端代码：
 ``
 from pyjamas.ui.RootPanel import RootPanel
 from pyjamas.ui.Label import Label
@@ -660,38 +685,41 @@ if __name__ == '__main__':
     app.onModuleLoad()
 ``:code
 
-Sixth, run Pyjamas before serving the application:
+第六步，在服务应用前运行Pyjamas：
 ``
 cd /path/to/todo/static/
 python /python/pyjamas-0.5p1/bin/pyjsbuild TodoApp.py
 ``:code
 
-This will translate the Python code into JavaScript so that it can be executed in the browser.
-
-To access this application, visit the URL:
+这将把Python代码翻译为JavaScript，以便它能在浏览器执行。
+要访问这个应用，访问URL：
 
 ``
 http://127.0.0.1:8000/todo/default/todoApp
 ``:code
 
-This subsection was created by Chris Prinos with help from Luke Kenneth Casson Leighton (creators of Pyjamas), updated by Alexei Vinidiktov. It has been tested with Pyjamas 0.5p1. The example was inspired by this Django page in ref.``blogspot1``:cite.
+这节由Chris Prinos撰写，得到了Luke Kenneth Casson Leighton（Pyjamas发明
+人）的帮助，由Alexei Vinidiktov更新。它已经使用Pyjamas 0.5p1测试过。这个例
+子
+受参考文献``blogspot1``:cite.页面的启发。
 
 #### Amfrpc
 ``PyAMF``:inxx ``Adobe Flash``:inxx
 
-AMFRPC is the Remote Procedure Call protocol used by Flash clients to communicate with a server. web2py supports AMFRPC, but it requires that you run web2py from source and that you preinstall the PyAMF library. This can be installed from the Linux or Windows shell by typing:
+AMFRPC是 Flash客服端与服务器通信使用的远程过程调用协议。web2py支持
+AMFRPC，但它要求你从源文件运行web2py，而且你预装了PyAMF库。这能从
+Linux 或Windows shell键入下面命令安装：
 ``
 easy_install pyamf
 ``:code
 
-(please consult the PyAMF documentation for more details).
+（请咨询PyAMF文档获得更多细节）。
+本节我们假设你已经熟悉ActionScript编程。
+我们将创建简单服务，采用两个数值参数，把他们相加，返回求和结果。我们
+会调用我们的web2py应用“pyamf_test”，并且调用服务 ``addNumbers``。
 
-In this subsection we assume that you are already familiar with
-ActionScript programming.
-
-We will create a simple service that takes two numerical values, adds them together, and returns the sum. We will call our web2py application "pyamf_test", and we will call the service ``addNumbers``.
-
-First, using Adobe Flash (any version starting from MX 2004), create the Flash client application by starting with a new Flash FLA file. In the first frame of the file, add these lines:
+首先，用Adobe Flash（从MX 2004开始后的任何版本）通过开始新Flash FLA文
+件创建Flash客户端应用。在文件一开始的框架，添加下面的行：
 ``
 import mx.remoting.Service;
 import mx.rpc.RelayResponder;
@@ -721,17 +749,19 @@ function onFault(fault:FaultEvent):Void {
 stop();
 ``:code
 
-This code allows the Flash client to connect to a service that corresponds to a function called "addNumbers" in the file "/pyamf_test/default/gateway". You must also import ActionScript version 2 MX remoting classes to enable Remoting in Flash. Add the path to these classes to the classpath settings in the Adobe Flash IDE, or just place the "mx" folder next to the newly created file.
+该代码允许Flash客户端连接到服务，在文件“/pyamf_test/default/gateway”中相
+应的叫“addNumbers”的函数。你也必须导入ActionScript 版本2 MX 远程类启用
+Flash的远程功能。添加路径到这些类在Adobe Flash IDE的classpath设置，或者就
+放置“mx”文件夹在新建文件的旁边。
 
-Notice the arguments of the Service constructor. The first argument is the URL corresponding to the service that we want will create. The third argument is the domain of the service. We choose to call this domain "mydomain".
+注意Service构造函数的参数。第一个参数是我们想创建的相应服务的URL。第三
+个参数是服务的域名。我们选择叫这个域名“mydomain”。
 
-Second, create a dynamic text field called
-"txt_result" and place it on the stage.
+其次，创建动态叫“txt_result”的文本字段，把它放在stage。
 
-Third, you need to set up a web2py gateway that can communicate with the Flash client defined above.
-
-Proceed by creating a new web2py app called ``pyamf_test`` that will host the new service and the AMF gateway for the flash client.
-Edit the "default.py" controller and make sure it contains
+第三步，你需要设置web2py网关，能与上面定义的Flash客户端通信。
+继续创建一个新的web2py应用叫做 ``pyamf_test`` ，主持新的服务和给Flash客户端
+的AMF网关。编辑“default.py”控制器并确认它包含
 ``
 @service.amfrpc3('mydomain')
 def addNumbers(val1, val2):
@@ -740,27 +770,28 @@ def addNumbers(val1, val2):
 def call(): return service()
 ``:code
 
-Fourth, compile and export/publish the SWF flash client as ``pyamf_test.swf``, place the "pyamf_test.amf", "pyamf_test.html", "AC_RunActiveContent.js", and "crossdomain.xml" files in the "static" folder of the newly created appliance that is hosting the gateway, "pyamf_test".
-
-You can now test the client by visiting:
+第四步，以pyamf_test.swf编译和导出/发布SWF flash客户，放置
+“pyamf_test.amf”、“pyamf_test.html”、“AC_RunActiveContent.js”和“crossdom
+ain.xml”文件在新创建应用的“static”文件夹，因为它是主持的网关，
+“pyamf_test”。
+现在你可以测试客户端，通过访问：
 
 ``
 http://127.0.0.1:8000/pyamf_test/static/pyamf_test.html
 ``:code
 
-The gateway is called in the background when the client connects to addNumbers.
-
-If you are using AMF0 instead of AMF3 you can also use the decorator:
+当客户端连接到addNumbers，网关在后台调用。
+如果你使用AMF0而不是AMF3，你也可以使用装饰器：
 ``
 @service.amfrpc
 ``:code
 
-instead of:
+而不是：
 ``
 @service.amfrpc3('mydomain')
 ``:code
 
-In this case you also need to change the service URL to:
+而不是：
 
 ``
 http://127.0.0.1:8000/pyamf_test/default/call/amfrpc
@@ -769,16 +800,16 @@ http://127.0.0.1:8000/pyamf_test/default/call/amfrpc
 #### SOAP
 ``SOAP``:inxx
 
-web2py includes a SOAP client and server created by Mariano Reingart. It can be used very much like XML-RPC:
-
-Consider the following code, for example, in the "default.py" controller:
+web2py包括SOAP客户端和服务器，由Mariano Reingart创建。它能非常类似
+XML-RPC一样被使用。
+考虑下面代码，例如，在“default.py”控制器：
 ``
 @service.soap('MyAdd',returns={'result':int},args={'a':int,'b':int,})
 def add(a,b):
     return a+b
 ``:code
 
-Now in a python shell you can do:
+现在，在python shell，你可以：
 ``
 >>> from gluon.contrib.pysimplesoap.client import SoapClient
 >>> client = SoapClient(wsdl="http://localhost:8000/app/default/call/soap?WSDL")
@@ -786,34 +817,34 @@ Now in a python shell you can do:
 {'result': 3}
 ``:code
 
-To get proper encoding when returning a text values, specify string as u'proper utf8 text'.
-
-You can obtain the WSDL for the service at
+当返回文本值，要得到合适的编码，指定字符串u’为合适的utf8 text’。
+你能获得给服务的WSDL，在
 
 ``
 http://127.0.0.1:8000/app/default/call/soap?WSDL
 ``:code
 
-And you can obtain documentation for any of the exposed methods:
+并且你能获得任何公开方法的文档：
 
 ``
 http://127.0.0.1:8000/app/default/call/soap
 ``:code
 
-### Low level API and other recipes
+### 低级别API和其它方法
 
 #### simplejson
 ``JSON``:inxx ``simplejson``:inxx
 
-web2py includes gluon.contrib.simplejson, developed by Bob Ippolito. This module provides the most standard Python-JSON encoder-decoder.
+web2py包括gluon.contrib.simplejson，由Bob Ippolito开发。该模块提供大部分标
+准Python-JSON 编码-解码。
+Simplejson由两个函数组成：
+- ``gluon.contrib.simplesjson.dumps(a)``把Python对象 ``a`` 编码成JSON。
+- ``gluon.contrib.simplejson.loads(b)`` 把JavaScript对象 ``b`` 解码成Python对象.
 
-SimpleJSON consists of two functions:
-- ``gluon.contrib.simplesjson.dumps(a)`` encodes a Python object ``a`` into JSON.
-- ``gluon.contrib.simplejson.loads(b)`` decodes a JavaScript object ``b`` into a Python object.
-
-Object types that can be serialized include primitive types, lists, and dictionaries. Compound objects can be serialized with the exception of user defined classes.
-
-Here is a sample action (for example in controller "default.py") that serializes the Python list containing weekdays using this low level API:
+对象类型包括原始类型、lists（列表）和dictionaries（字典）能被序列化。复合对
+象除用户定义的类能被序列化。
+下面是例程动作（例如，控制器” default.py”） 用低层的API序列化Python
+包含weekdays（星期）的list（列表）：
 ``
 def weekdays():
     names=['Sunday','Monday','Tuesday','Wednesday',
@@ -822,7 +853,8 @@ def weekdays():
     return gluon.contrib.simplejson.dumps(names)
 ``:code
 
-Below is a sample HTML page that sends an Ajax request to the above action, receives the JSON message and stores the list in a corresponding JavaScript variable:
+下面是HTML页的例子，发送Ajax请求到上面动作，接收JSON消息并存储list在
+相应JavaScript变量：
 ``
 {{extend 'layout.html'}}
 <script>
@@ -831,16 +863,20 @@ $.getJSON('/application/default/weekdays',
 </script>
 ``:code
 
-The code uses the jQuery function ``$.getJSON``, which performs the Ajax call and, on response, stores the weekdays names in a local JavaScript variable ``data`` and passes the variable to the callback function. In the example the callback function simply alerts the visitor that the data has been received.
+该代码使用了jQuery 函数 ``$.getJSON``，它执行Ajax 调用，就响应，存储
+weekdays名字到本地JavaScript变量  ``data``并传递变量给回调函数。例子中，
+回调函数只提示访问者该数据已被接收。 
 
 #### PyRTF
 ``PyRTF``:inxx ``RTF``:inxx
 
-Another common need of web sites is that of generating Word-readable text documents. The simplest way to do so is using the Rich Text Format (RTF) document format. This format was invented by Microsoft and it has since become a standard.
-
-web2py includes gluon.contrib.pyrtf, developed by Simon Cusack and revised by Grant Edwards. This module allows you to generate RTF documents programmatically including colored formatted text and pictures.
-
-In the following example we instantiate two basic RTF classes, Document and Section, append the latter to the former and insert some dummy text in the latter:
+另一个web站点常见的需求是生成词可读（Word-readable）文本文档。实现这个
+最简单的方法是使用丰富文档格式（RTF）文档格式。这个格式由Microsoft发明，
+并成为了标准。
+web2py包含gluon.contrib.pyrtf, 由Simon Cusack开发， Grant Edwards修定。该模
+块允许你编程生成RTF文档包括彩色格式的文本和图片。
+下面的例子，我们实例化两个基本RTF类，Document 和 Section，追加后者到
+前者，插入一些虚拟文本在后者：
 ``
 def makertf():
     import gluon.contrib.pyrtf as q
@@ -853,22 +889,25 @@ def makertf():
     return q.dumps(doc)
 ``:code
 
-In the end the Document is serialized by ``q.dumps(doc)``. Notice that before returning an RTF document it is necessary to specify the content-type in the header else the browser does not know how to handle the file.
+最后，Document被 ``q.dumps(doc)``序列化。注意在返回RTF文档之前，需要在头部
+指定内容类型否则浏览器不知道如何处理文件。
 
-Depending on the configuration, the browser may ask you whether to save this file or open it using a text editor.
+依赖于配置，浏览器可能要求你要么存储这个文件要么使用文本编辑器打开它。
 
-#### ReportLab and PDF
+#### ReportLab 和 PDF
 ``ReportLab``:inxx ``PDF``:inxx
 
-web2py can also generate PDF documents, with an additional library called "ReportLab"``ReportLab``:cite .
+web2py也能生成PDF文档，用叫做`ReportLab``:cite 额外库。
 
-If you are running web2py from source, it is sufficient to have ReportLab installed. If you are running the Windows binary distribution, you need to unzip ReportLab in the "web2py/" folder. If you are running the Mac binary distribution, you need to unzip ReportLab  in the folder:
+如果你从源文件运行web2py，它足够安装了ReportLab。如果你运行Windows二
+进制发行版，你需要解压ReportLab到 “web2py/”文件夹。如果你运行Mac二进
+制发行版，你需要解压ReportLab到下面的文件夹：
 ``
 web2py.app/Contents/Resources/
 ``:code
 
-From now on we assume ReportLab is installed and that web2py can find it.
-We will create a simple action called "get_me_a_pdf" that generates a PDF document.
+从现在开始，我们假定ReportLab已经安装并且web2py能找到它。我们会创建一
+个叫做“get_me_a_pdf”的简单动作来生成PDF文档。
 ``
 from reportlab.platypus import *
 from reportlab.lib.styles import getSampleStyleSheet
@@ -900,85 +939,94 @@ def get_me_a_pdf():
     return data
 ``:code
 
-Notice how we generate the PDF into a unique temporary file, ``tmpfilename``, we read the generated PDF from the file, then we deleted the file.
+注意我们如何生成到PDF唯一临时文件，``tmpfilename``，我们从该文件读取生成
+的PDF，然后我们删除该文件。
 
-For more information about the ReportLab API, refer to the ReportLab documentation. We strongly recommend using the Platypus API of ReportLab, such as ``Paragraph``, ``Spacer``, etc.
+有关更多ReportLab API的信息，参考ReportLab文档。我们强烈推荐使用
+ReportLab的 Platypus API，比如``Paragraph``, ``Spacer``,等。
 
 
-### Restful Web Services
+### Restful Web 服务
 
 ``REST``:inxx
 
-REST stands for "REpresentational State Transfer" and it is a type of web service architecture and not, like SOAP, a protocol. In fact there is no standard for REST.
+REST代表“REpresentational State Transfer”（表示状态转移），它是web服
+务结构的一种类型，不是协议，如SOAP。事实上，REST没有标准。
 
-Loosely speaking REST says that a service can be thought of as a collection of resources. Each resource should be identified by a URL. There are four methods actions on a resource and they are POST (create), GET (read), PUT (update) and DELETE, from which the acronym CRUD (create-read-update-delete) stands for. A client communicates with the resource by making an HTTP request to the URL that identifies the resource and using the HTTP method POST/PUT/GET/DELETE to pass instructions to the resource. The URL may have an extension, for example ``json`` that specify how the protocol for encoding the data.
-
-So for example a POST request to
+粗略地说，REST指出服务能被考虑为资源的集合。每个资源用URI标识。每
+个资源有四种动作，它们是POST (create 创建), GET (read 读取), PUT(update更
+新)和 DELETE （删除），首字母缩略CRUD（create-read-update-delete 创建-读
+取-更新-删除）代表。客户与通过产生到标识资源的URL的HTTP请求的资源通
+信，使用HTTP方法给资源传递POST/PUT/GET/DELETE指令。URL可能有扩展
+名，例如``json``，指定协议如何编码数据。
+因此，例如POST要求 
 
 ``
 http://127.0.0.1/myapp/default/api/person
 ``
 
-means that you want to create a new ``person``. In this case a ``person`` may correspond to a record in table ``person`` but may also be some other type of resource (for example a file).
-
-Similarly a GET request to
+意味着你想创建新``person``。这种情况，``person`` 对象可以响应表``person``中的记
+录，但也可能是其它资源类型（例如文件）。
+相似地，GET请求到
 
 ``
 http://127.0.0.1/myapp/default/api/persons.json
 ``
 
-indicates a request for a list of persons (records from the data ``person``) in json format.
+表明以json格式请求person记录的列表（从数据``person``表来的记录）。
+GET请求到
 
-A GET request to
+
 
 ``
 http://127.0.0.1/myapp/default/api/person/1.json
 ``
 
-indicates a request for the information associated to ``person/1`` (the record with ``id==1``) and in json format.
+表明请求关联到 ``person/1`` (``id==1``的记录) 的信息并且以json格式。
 
-In the case of web2py each request can be split into three parts:
+在web2py的情况，每个请求可以被分成三部分：
 
-- A first part that identify the location of the service, i.e. the action that exposes the service:
+- 第一部分表示资源的位置，即公开服务的动作：
 ``
 http://127.0.0.1/myapp/default/api/
 ``
-- The name of the resource (``person``, ``persons``, ``person/1``, etc.)
-- The communication protocol specified y the extension.
+- 资源的名字 (``person``, ``persons``, ``person/1``,等等)
+- 由扩展指定的通信协议
 
-Notice that we can always use the router to eliminate any unwanted prefix in the URL and for example simplify this:
+注意我们总能使用路由器去除在URL中任何不想要的前缀，例如简化如下：
 
 ``
 http://127.0.0.1/myapp/default/api/person/1.json
 ``
 
-into this:
+成为：
 
 ``
 http://127.0.0.1/api/person/1.json
 ``
 
-yet this is a matter of test and we have already discussed it at length in chapter 4.
+但这是个测试问题，我们已经在第四章详尽讨论了。
 
-In our example we used an action called ``api`` but this is not a requirement. We can in fact name the action that exposes the RESTful service any way we like and we can in fact even create more than one. For the same of the argument we will continue to assume that our RESTful action is called ``api``.
+我们的例子中，我们使用叫做``api`` 的动作，但这不是必须的。事实上我们可
+以给公开RESTful服务动作任何我们想取的名字，而且实际上我们可以创建不
+止一个。同理对于参数也一样，我们将继续假定我们的RESTful动作叫做``api``。
 
-We will also assume we have defined the following two tables:
+我们假定我们已经定义了下面两张表：
 
 ``
 db.define_table('person',Field('name'),Field('info'))
 db.define_table('pet',Field('owner',db.person),Field('name'),Field('info'))
 ``
 
-and they are the resources we want to expose.
-
-The first thing we do is create the RESTful action:
+并且它们是我们想公开的资源。
+第一件我们要做的事是创建RESTful动作：
 
 ``
 def api():
     return locals()
 ``
 
-Now we modify it so that the extension is filtered out of the request args (so that ``request.args`` can be used to identify the resource) and so that it can handle the different methods separately:
+现在，我们修改它以使扩展名过滤掉request.args（以便 ``request.args`` c能用来标示资源）而且它能分别处理不同方法：
 
 ``
 @request.restful()
@@ -994,22 +1042,23 @@ def api():
     return locals()
 ``
 
-Now when we make a GET http request to
+现在当我们发出GET http请求到
 
 ``
 http://127.0.0.1:8000/myapp/default/api/person/1.json
 ``
 
-it calls and returns ``GET('person','1')`` where GET is the function defined inside the action. Notice that:
-- we do not need to define all four methods, only those that we wish to expose.
-- the method function can take named arguments
-- the extension is stored in ``request.extension`` and the content type is set automatically.
+它调用并返回``GET('person','1')``， GET是定义在动作里的函数。注意：
+- 我们不需要定义所有四个方法，只有那些我们想公开的。
+- 方法函数能用命名的参数。
+- 扩展名存储在 ``request.extension`` ，内容类型自动设置。
 
 --------
-The ``@request.restful()`` decorator makes sure that the extension in the path info is stored into ``request.extension``, maps the request method into the corresponding function within the action (POST, GET, PUT, DELETE), and passes ``request.args`` and ``request.vars`` to the selected function.
+``@request.restful()`` 装饰器确认在路径信息里的扩展名存储在``request.extension``，映
+射请求方法为相应的函数在动作（POST, GET, PUT, DELETE）内，并传递``request.args`` 和 ``request.vars`` to给选择到的函数。
 --------
 
-Now we build a service to POST and GET individual records:
+现在我们构建到POSP和GET个人记录的服务
 
 ``
 @request.restful()
@@ -1024,53 +1073,60 @@ def api():
     return locals()
 ``
 
-Notice that:
-- the GET and POST are dealt with by different functions
-- the function expect the correct arguments (un-named arguments parsed by ``request.args`` and named arguments are from ``request.vars``)
-- they check the input is correct and eventually raise an exception
-- GET perform a select and returns the record, ``db.person(id)``. The output is automatically converted to JSON because the generic view is called.
-- POST performs a ``validate_and_insert(..)`` and returns the ``id`` of the new record or, alternatively, validation errors. The POST variables, ``**fields``, are the post variables.
+注意：
+- GET和POST用不同方法处理
+- 函数预期正确的参数（未命名参数被``request.args`` 解析，命名的参数来自
+``request.vars``）
+- 它们检查输入是否正确，否则引发异常
+- GET执行查询并返回记录 ``db.person(id)``。输出自动转换为JSON因为通用视图
+调用。
+- POST执行``validate_and_insert(..)`` 并返回新记录``id`` 或，另外，验证错误。POST变量，``**fields``是post变量。
 
-#### ``parse_as_rest`` (experimental)
+#### ``parse_as_rest`` 方法(实验性的)
 
-The logic explained so far is sufficient to create any type of RESTful web service yet web2py helps us even more.
+迄今解释的逻辑足够创建任何RESTful类型web服务但web2py能帮助我们更
+多。
 
-In fact, web2py provides a syntax to describe which database tables we want to expose and how to map resource into URLs and vice versa.
+事实上，web2py提供语法描述哪一个数据库表我们想公开，及如何映射资
+源到URL，反之亦然。
 
 ``parse_as_rest``:inxx
 
-This is done using URL patterns.
-A pattern is a string that maps the request args from a URL into a database query.
-There 4 types of atomic patterns:
+这用URL模式实现。模式是映射URL请求参数为数据库查询的字符串。有四种
+类型原子模式：
 
-- String constants for example "friend"
-- String constant corresponding to a table. For example "friend[person]" will match "friends" in the URL to the "person" table.
-- Variables to be used to filter. For example "{person.id}" will apply a ``db.person.name=={person.id}`` filter.
-- Names of fields, represented by ":field"
+- 字符串常量比如“friend”。
+- 表相应的字符串常量。例如“friend[person]”匹配URL“friend”到
+“person”表。
+- 过滤器用的变量。例如“person.id” 会用到 ``db.person.name=={person.id}`` 过
+滤器。
+- 字段的名字，用“:field”表示的
 
-Atomic patters can be combined into complex URL patters using "/" such as in
+原子模式用“/”可以组合成复杂URL，比如
 
 ``
 "/friend[person]/{person.id}/:field"
 ``
 
-which gives a url of the form
+给出表单的url
 
 ``
 http://..../friend/1/name
 ``
 
-Into a query for a person.id that returns the name of the person. Here "friend[person]" matches "friend" and filters the table "person". "{person.id}" matches "1" and filters "person.id==1". ":field" matches "name" and returns:
+查询返回人名的person.id。“friend[person]”匹配 “friend”并过滤表
+“person”。“{person.id}”匹配“1”并过滤“person.id==1”。“:field”匹配
+“name”并返回：
 
 ``
 db(db.person.id==1).select().first().name
 ``
 
-Multiple URL patters can be combined into a list so that one single RESTful action can serve different types of requests.
+多URL模式能组合为列表以便单个RESTful动作能服务不同类型的请求。
 
-The DAL has a method ``parse_as_rest(pattern,args,vars)`` that given a list of patterns, the ``request.args`` and the ``request.vars`` matches the pattern and returns a response (GET only).
+DAL有方法 ``parse_as_rest(pattern,args,vars)`` 给出模式列表， ``request.args`` 和``request.vars`` 匹配模式并返回相应（仅GET）。
 
-So here is a more complex example:
+下面是更复杂的例子：
 
 ``
 
@@ -1101,39 +1157,39 @@ def api():
     return locals()
 ``:code
 
-Which understands the following URLs that correspond to the listed patters:
+理解下列相应列出的URL
 
-- GET all persons
+- GET所有人
 ``
 http://.../api/friends
 ``
-- GET one person with name starting with "t"
+- GET以“t” 开始名字的人
 ``
 http://.../api/friend/t
 ``
-- GET the "info" field value of the first person with name equal to "Tim"
+- GET第一个名字等于“Tim”的人“info”字段值
 ``
 http://.../api/friend/Tim/info
 ``
-- GET a list of pets of the person (friend) above
+- GET上面人（friend）的宠物列表
 ``
 http://.../api/friend/Tim/pets
 ``
-- GET the pet with name "Snoopy of person with name "Tim"
+- GET名字“Tim”的人叫“Snoopy”的宠物
 ``
 http://.../api/friend/Tim/pet/Snoopy
 ``
-- GET the "info" field value for the pet
+- 宠物“info”字段值
 ``
 http://.../api/friend/Tim/pet/Snoopy/info
 ``
 
-The action also exposes two POST urls:
+该动作公开两个POST url：
 
-- POST a new friend
-- POST a new pet
+- POST 新朋友
+- POST 新宠物
 
-If you have the "curl" utility installed you can try:
+如果你有“curl”应用安装了，你可以试试：
 
 ``
 $ curl -d "name=Tim" http://127.0.0.1:8000/myapp/default/api/friend.json
@@ -1146,61 +1202,65 @@ $ curl http://127.0.0.1:8000/myapp/default/api/friend/Tim/pet/Snoopy.json
 {"content": [{"info": null, "owner": 1, "name": "Snoopy", "id": 1}]}
 ``
 
-It is possible to declare more complex queries such where a value in the URL is used to build a query not involving equality. For example
+能声明更复杂的查询，URL中的值用来构建不牵扯公平性的查询。例如
 
 ``patterns = ['friends/{person.name.contains}'``
 
-maps
+映射
 
 ``
 http://..../friends/i
 ``
 
-into
+为
 
 ``
 db.person.name.contains('i')
 ``
 
-And similarly:
+相似的：
 
 ``patterns = ['friends/{person.name.ge}/{person.name.gt.not}'``
 
-maps
+映射
 
 ``
 http://..../friends/aa/uu
 ``
 
-into
+为
 
 ``
 (db.person.name>='aa')&(~(db.person.name>'uu'))
 ``
 
-valid attributes for a field in a pattern are: ``contains``, ``startswith``, ``le``, ``ge``, ``lt``, ``gt``, ``eq`` (equal, default), ``ne`` (not equal). Other attributes specifically for date and datetime fields are ``day``, ``month``, ``year``, ``hour``, ``minute``, ``second``.
+模式中字段的合法属性是： ``contains``, ``startswith``, ``le``, ``ge``, ``lt``, ``gt``, ``eq`` (equal, default), ``ne`` (not equal)。。其它属性特别是日期和日期时间字段的是 ``day``, ``month``, ``year``, ``hour``, ``minute``, ``second``。
 
-Notice that this pattern syntax is not designed to be general. Not every possible query can be described via a pattern but a lot of them are. The syntax may be extended in the future.
+注意该模式语法不是设计通用的。不是每个可能的查询能通过模式描述但
+是其中大量是。语法可能在将来扩展。
 
-Often you want to expose some RESTful URLs but you want to restrict the possible queries. This can be done by passing an extra argument ``queries`` to the ``parse_as_rest`` method. ``queries`` is a dictionary of ``(tablename,query)`` where query is a DAL query to restrict access to table ``tablename``.
+你经常想公开一些RESTful URL，但你想限制可能的查询。这能通过传递额外参
+数``queries``给 ``parse_as_rest`` 方法实现。``queries``是``(tablename,query)``字典，query是DAL
+查询限制到表``tablename``的访问。
+你也能用GET排序变量排序结果。
 
-We can also order results using the order GET variables
 
 ``
 http://..../api/friends?order=name|~info
 ``
-which order alphabetically (``name``) and then by reversed info ``order``.
+字母排序(``name``) ，也可以相反的信息 ``order``.
 
-We can also limit the number of records by specifying a ``limit`` and ``offset`` GET variables
+我们也可以限制记录数通过指定``limit`` 和 ``offset`` GET变量
 
 ``
 http://..../api/friends?offset=10&limit=1000
 ``
-which will return up to 1000 friends (persons) and skip the first 10. ``limit`` defaults to 1000 and ``offset`` default to 0.
+它返回上限1000朋友（人），并跳过开始10条。``limit`` 默认到1000， ``offset``默认0。
 
-Let's now consider an extreme case. We want to build all possible patterns for all tables (except ``auth_`` tables). We want to be able to search by any text field, any integer field, any double field (by range) and any date (also by range). We also want to be able to POST into any table:
-
-In the general case this requires a lot of patterns. Web2py makes it simple:
+现在我们考虑极端情况。我们想给所有表（除``auth_`` 表）构建全部可能的模
+式。我们想能用任意文本字段、任意整型字段、任意浮点字段（范围）和任意日
+期（也是范围）进行搜索。我们也想能POST任意表：
+通常情况，我们需要许多模式。web2py让它变得简单：
 
 ``
 @request.restful()
@@ -1218,14 +1278,14 @@ def api():
     return locals()
 ``
 
-Settings ``patterns='auto'`` results in web2py generating all possible patterns for all non-auth tables.
-There is even a pattern for querying about patterns:
+设置 ``patterns='auto'`` 让web2py给所有非auth表生成全部可能模式。甚至有查
+询有关模式的模式：
 
 ``
 http://..../api/patterns.json
 ``
 
-which for out ``person`` and ``pet`` tables results in:
+它为输出 ``person`` 和``pet`` 表结果是：
 
 ``
 {"content": [
@@ -1255,23 +1315,23 @@ which for out ``person`` and ``pet`` tables results in:
 ]}
 ``
 
-You can specify auto patterns for some tables only:
+你能给一些表指定自动模式，只需：
 
 ``
 patterns = [':auto[person]',':auto[pet]']
 ``
 
-#### ``smart_query`` (experimental)
+#### ``smart_query`` 方法(实验性的)
 
 ``smart_query``:inxx
 
-There are time when you need more flexibility and you want to be able to pass to a RESTful service an arbitrary query like
+有时当你需要更多灵活性，你想能够传递任意如下查询到RESTful服务
 
 ``
 http://.../api.json?search=person.name starts with 'T' and person.name contains 'm'
 ``
 
-You can do this using
+你能用下面实现
 
 ``
 @request.restful()
@@ -1288,17 +1348,17 @@ def api():
     return locals()
 ``
 
-The method ``db.smart_query`` takes two arguments:
-- a list of field or table that should be allowed in the query
-- a string containing the query expressed in natural language
-and it returns a ``db.set`` object with the records that have been found.
+方法``db.smart_query`` 用两个参数：
+- 字段或表的列表，在查询中允许的
+- 字符串，包含自然语言形式的查询
+它返回找到的包含记录的``db.set`` 对象。
 
-Notice that the search string is parsed, not evaluated or executed and therefore it provides no security risk.
+注意搜索字符串被解析，不是计算或者执行，因此它没有安全风险。
 
 
-#### Access Control
+#### 访问控制
 
-Access to the API can be restricted as usual by using decorators. So, for example
+访问API以往能用装饰器限制。因此，例如：
 
 ``
 auth.settings.allow_basic_login = True
@@ -1311,32 +1371,35 @@ def api():
    return locals()
 ``
 
-can now be accessed with
+现在可以访问，用
 
 ``
 $ curl --user name:password http://127.0.0.1:8000/myapp/default/api/hello
 access granted, you said hello
 ``
 
-### Services and Authentication
+### 服务与认证 Services and Authentication
 ``Authentication``:inxx
 
-In the previous chapter we have discussed the use of the following decorators:
+前面的章节，我们讨论了下面装饰器的使用：
 ``
 @auth.requires_login()
 @auth.requires_membership(...)
 @auth.requires_permission(...)
 ``:code
 
-For normal actions (not decorated as services), these decorators can be used even if the output is rendered in a format other than HTML.
+对通常的动作（不装饰为服务），这些装饰器可以使用，即使输出呈现为
+HTML以外的格式。
 
-For functions defined as services and decorated using the ``@service...`` decorators, the ``@auth...`` decorators should not be used. The two types of decorators cannot be mixed. If authentication is to be performed, it is the ``call`` actions that needs to be decorated:
+定义为服务并用 ``@service...`` decorators和 ``@auth...`` 装饰的函数，不该使用。两钟类型装饰器不
+能混用。如果认证不执行，正是``call``
 ``
 @auth.requires_login()
 def call(): return service()
 ``:code
 
-Notice that it also possible to instantiate multiple service objects, register the same different functions with them, and expose some of them with authentication and some not:
+注意也可能实例化多服务对象，用它们注册相样不同的函数，用认证公开其中
+一些而有一些不公开。
 ``
 public_services=Service()
 private_services=Service()
@@ -1354,6 +1417,7 @@ def public_call(): return public_service()
 def private_call(): return private_service()
 ``:code
 
-This assumes that the caller is passing credentials in the HTTP header (a valid session cookie or using basic authentication, as discussed in the previous section). The client must support it; not all clients do.
+这假定调用函数在HTTP报头传递凭据（合法绘画cookie或使用基本认证，如
+前一章讨论）。客户需要支持它；不是所有的客户都支持。
 
 
