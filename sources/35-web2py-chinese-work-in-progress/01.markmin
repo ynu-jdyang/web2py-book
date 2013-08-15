@@ -429,3 +429,6 @@ Guido van Rossum for Python``python``:cite, Peter Hunt, Richard Gordon, Timothy 
 对于所有其它情况，我们相信已尽可能多的遵循了Python样式指南（PEP8）。例如，所有的实例对象都是小写（request, response, session, cache），所有的内部类都是大写。
 
 在本书的所有例子中，web2py关键字都以粗体显示，字符串和注释都以斜体显示。
+
+
+在本书的所有例子中，web2py关键字都以粗体显示，字符串和注释都以斜体显示。
