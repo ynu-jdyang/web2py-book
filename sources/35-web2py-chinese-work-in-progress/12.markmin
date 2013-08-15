@@ -1,37 +1,42 @@
 
-## Components and plugins
+## 组件和插件Components and plugins
 ``component``:inxx
 ``plugin``:inxx
 
-Components and plugins are relatively new features of web2py, and there is some disagreement between developers about what they are and what they should be. Most of the confusion stems from the different uses of these terms in other software projects and from the fact that developers are still working to finalize the specifications.
+组件和插件是web2py相对较新的功能，在开发者间关于它们是什么和它们应该是什
+么存在一些不同意见。大部分的困惑源于在其它软件项目对这些术语不同的使用，以及开发者继续完善技术要求的事实。
 
-However, plugin support is an important feature and we need to provide some definitions. These definitions are not meant to be final, just consistent with the programming patterns we want to discuss in this chapter.
+但是，插件支持是重要特性而且我们需要提供一些定义。这些定义不意味着是最终的，
+而是与编程模式保持一致，我们将在本章讨论。
 
-We will try to address two issues here:
 
-- How can we build modular applications that minimize server load and maximize code reuse?
-- How can we distribute pieces of code in a more or less plugin-and-play fashion?
+- 我们如何能构建模块应用最小化服务器负荷并最大化代码重用？
+- 我们如何能发布代码为或多或少即插即用的风格？
 
-''Components'' address the first issue; ''plugins'' address the second.
+''Components'' 解决第一个问题； ''plugins'' 解决第二个问题。
 
-### Components
+### 组件 Components
 ``load``:inxx
 ``LOAD``:inxx
 ``Ajax``:inxx
 
 ------
-A **component** is a functionally autonomous part of a web page.
+**component** 是web页面功能自治的部分。
 ------
 
-A component may be composed of modules, controllers and views, but there is no strict requirement other than, when embedded in a web page, it must be localized within an html tag (for example a DIV, a SPAN, or an IFRAME) and it must perform its task independently of the rest of the page. We are specifically interested in components that are loaded in the page and communicate with the component controller function via Ajax.
+组件可以由模块、控制器和视图组成，没有严格的要求，除了嵌在web页面，它必须
+局部化在html标签（例如DIV、SPAN或IFRAME）范围内并且必须独立于页面其它部分执
+行任务。我们尤其关注加载在页面内并且通过Ajax和组件控制器通信的页面。
 
-An example of a component is a "comments component" that is contained into a DIV and shows users' comments and a post-new-comment form. When the form is submitted, it is sent to the server via Ajax, the list is updated, and the comment is stored server-side in the database. The DIV content is refreshed without reloading the rest of the page.
+组件的一个例子是“comments component”，包含在DIV并显示用户的评论以及粘贴
+新评论表单。当表单提交，它通过Ajax发送到服务器，列表更新并且评论存储在服务器的数据库。DIV内容无需重载页面的其余部分就得到刷新。
 
-The web2py LOAD function makes this easy to do without explicit JavaScript/Ajax knowledge or programming.
+web2py LOAD函数使它易于实现，不需要太多JavaScript/Ajax知识和编程。
 
-Our goal is to be able to develop web applications by assembling components into page layouts.
+我们的目标是能通过装配组件到页面布局开发web应用。
 
-Consider a simple web2py app "test" that extends the default scaffolding app with a custom model in file "models/db_comments.py":
+考虑简单web2py应用“test”用“models/db_comments.py”中自定义的模型扩展默认基
+本构建应用。
 
 ``
 db.define_table('comment',
@@ -42,7 +47,7 @@ db.comment.posted_on.writable=db.comment.posted_on.readable=False
 db.comment.posted_by.writable=db.comment.posted_by.readable=False
 ``:code
 
-one action in "controllers/comments.py"
+在“controllers/comments.py”中的动作
 
 ``
 @auth.requires_login()
@@ -51,7 +56,7 @@ def post():
                 comments=db(db.comment).select())
 ``:code
 
-and the corresponding "views/comments/post.html"
+相应的视图“views/comments/post.html”
 
 ``
 {{extend 'layout.html'}}
@@ -64,7 +69,7 @@ and the corresponding "views/comments/post.html"
 {{=form}}
 ``:code
 
-You can access it as usual at:
+你可以象以往一样访问，在：
 
 ``
 http://127.0.0.1:8000/test/comments/post
@@ -72,9 +77,10 @@ http://127.0.0.1:8000/test/comments/post
 
 [[image @///image/en7900.png center 480px]]
 
-So far there is nothing special in this action, but we can turn it into a component by defining a new view with extension ".load" that does not extend the layout.
+到目前，该动作没有什么特殊的，但通过定义新视图带扩展名“.load”，我们把它转
+换为一个组件不扩展布局。
 
-Hence we create a "views/comments/post.load":
+因此，我们创建“views/comments/post.load”：
 
 ``
 {{#extend 'layout.html' <- notice this is commented out!}}
@@ -87,30 +93,30 @@ Hence we create a "views/comments/post.load":
 {{=form}}
 ``:code
 
-We can access it at the URL
+我们可以访问它，在URL ：
 
 ``
 http://127.0.0.1:8000/test/comments/post.load
 ``:code
 
-and it will look like this:
+它看起来会象下面这样：
 
 [[image @///image/en8000.png center 480px]]
 
-This is a component that we can embed into any other page by simply doing
+该组件我们可以嵌入到另外任意的页面，只需通过：
 
 ``
 {{=LOAD('comments','post.load',ajax=True)}}
 ``:code
 
-For example in "controllers/default.py" we can edit
+例如在“controllers/default.py”我们可以编辑
 
 ``
 def index():
     return dict()
 ``:code
 
-and in the corresponding view add the component:
+并且在相应的视图添加组件：
 
 ``
 {{extend 'layout.html'}}
@@ -118,17 +124,17 @@ and in the corresponding view add the component:
 {{=LOAD('comments','post.load',ajax=True)}}
 ``:code
 
-Visiting the page
+访问该页面
 
 ``
 http://127.0.0.1:8000/test/default/index
 ``:code
 
-will show the normal content and the comments component:
+将显示正常内容以及评论组件：
 
 [[image @///image/en8100.png center 480px]]
 
-The ``{{=LOAD(...)}}`` component is rendered as follows:
+``{{=LOAD(...)}}`` 组件呈现如下：
 
 ``
 <script type="text/javascript"><!--
@@ -136,11 +142,13 @@ web2py_component("/test/comment/post.load","c282718984176")
 //--></script><div id="c282718984176">loading...</div>
 ``:code
 
-(the actual generated code depends on the options passed to the LOAD function).
+（实际生产的代码取决于传递给LOAD函数的选项）。
 
-The ``web2py_component(url,id)`` function is defined in "web2py_ajax.html" and it performs all the magic: it calls the ``url`` via Ajax and embeds the response into the DIV with corresponding ``id``; it traps every form submission into the DIV and submits those forms via Ajax. The Ajax target is always the DIV itself.
+``web2py_component(url,id)``函数定义在“web2py_ajax.html”，它执行所有的魔
+法：它通过Ajax调用 ``url`` 并依据相应的``id``把响应嵌到DIV；它陷阱每个表单提交
+到DIV并通过Ajax提交那些表单。Ajax目标总是DIV自己。
 
-The full signature of the LOAD helper is the following:
+完整的LOAD帮助对象的代码如下：
 
 ``
 LOAD(c=None, f='index', args=[], vars={},
@@ -150,75 +158,82 @@ LOAD(c=None, f='index', args=[], vars={},
      content='loading...',**attr):
 ``:code
 
-Here:
-- the first two arguments ``c`` and ``f`` are the controller and the function that we want to call respectively.
-- ``args`` and ``vars`` are the arguments and variables that we want to pass to the function. The former is a list, the latter is a dictionary.
-- ``extension`` is an optional extension. Notice that the extension can also be passed as part of the function as in ``f='index.load'``.
-- ``target`` is the ``id`` of the target DIV. If it is not specified a random target ``id`` is generated.
-- ``ajax`` should be set to ``True`` if the DIV has to be filled via Ajax and to ``False`` if the DIV has to be filled before the current page is returned (thus avoiding the Ajax call).
-- ``ajax_trap=True`` means that any form submission in the DIV must be captured and submitted via Ajax, and the response must be rendered inside the DIV. ``ajax_trap=False`` indicates that forms must be submitted normally, thus reloading the entire page. ``ajax_trap`` is ignored and assumed to be ``True`` if ``ajax=True``.
-- ``url``, if specified, overrides the values of ``c``, ``f``, ``args``, ``vars``, and ``extension`` and loads the component at the ``url``. It is used to load as components pages served by other applications (which my or may not be created with web2py).
-- ``user_signature`` defaults to False but, if you are logged in, it should be set to True. This will make sure the ajax callback is digitally signed. This is documented in chapter 4.
+此处：
+- 头两个参数``c`` 和 ``f``分别是控制器和我们想调用的函数。
+- ``args``和``vars``是我们想传递给函数的参数和变量。前者是列表，后者是字典。
+- ``extension`` 是可选的扩展。
+注意扩展名也能象在函数``f='index.load'``部分那样传递。
+- ``target``是目标DIV的 ``id`` 。如果没有指定，生成随机的目标``id`` 。
+- 如果DIV没有通过``ajax`` 填充，``ajax``该设置为``True`` ，如果DIV在当前页面返回以前已被填充（如此避免Ajax调用），设置为 ``False`` 
+- ``ajax_trap=True`` 意味着DIV任何表单提交必须通过Ajax捕获和提交，响应必须呈现
+在DIV里。 ``ajax_trap=False`` 表明表单必须正常提交，如此重载整个页面。 ``ajax_trap``忽略，如果 ``ajax=True``，假定为``True``。 
+- ``url``，如果指定，则覆盖 ``c``, ``f``, ``args``, ``vars``, 和 ``extension`` 的值，在 ``url``载入组建。它用来
+象其它应用服务的组建页面那样载入（可能或也可不是用web2py创建的）。
+- ``user_signature`` 载入组建。它用来
+象其它应用服务的组建页面那样载入（可能或也可不是用web2py创建的）。
 - ``content`` is the content to be displayed while performing the ajax call. It can be a helper as in ``content=IMG(..)``.
-- optional ``**attr`` (attributes) can be passed to the contained ``DIV``.
+- 可选 ``**attr`` （属性）能被传递给contained``DIV``。
 
-If no ``.load`` view is specified, there is a ``generic.load`` that renders the dictionary returned by the action without layout. It works best if the dictionary contains a single item.
+如果没有指定 ``.load``d视图，用``generic.load`` 呈现动作返回的字典没有布局。如果字典包含单个项它工作得更好。
 
-If you LOAD a component having the ``.load`` extension and the corresponding controller function redirects to another action (for example a login form), the ``.load`` extension propagates and the new url (the one to redirect too) is also loaded with a ``.load`` extension.
+如果你LOAD有 ``.load`` 扩展名的组件并且相应的控制器函数重定向到另外一个动作（例
+如，登录表单）， ``.load`` 传播且新的url（也是重定向到的）也用``.load`` 扩展名载入。
 
 *Please note:*
-Because Ajax post does not support multipart forms, i.e. file uploads, upload fields will not work with the LOAD component. You could be fooled into thinking it would work because upload fields will function normally if POST is done from the individual component's .load view. Instead, uploads are done with ajax-compatible 3rd-party widgets and web2py manual upload store commands.
+因为Ajax post不支持多部分表单，即文件上传、上传字段用LOAD组件不工作。
+你可能觉得被愚弄，想它能用因为上传字段会正常工作如果POST从单个组件.load视图完成。然而，上传要用ajax兼容第三方widget，web2py手动上传存储命令。
 
-#### Client-Server component communications
+#### 客户-服务器组件通信
 
-When the action of a component is called via Ajax, web2py passes two HTTP headers with the request:
+当通过Ajax调用组件动作，web2py用请求传递两个HTTP报头：
 
 ``
 web2py-component-location
 web2py-component-element
 ``:code
 
-which can be accessed by the action via the variables:
+通过变量被动作访问：
 
 ``
 request.env.http_web2py_component_location
 request.env.http_web2py_component_element
 ``:code
 
-The latter is also accessible via: ``request.cid``:inxx
+后者也能通过下面访问： ``request.cid``:inxx
 
 ``
 request.cid
 ``:code
 
-The former contains the URL of the page that called the component action.
-The latter contains the ``id`` of the DIV that will contain the response.
+前者包含调用组件动作页面URL。
+后者包含DIV的 ``id`` ，DIV包含响应。
 
-The component action can also store data in two special HTTP response headers that will be interpreted by the full page upon response. They are:
+组件动作也存储数据到两个特殊的HTTP响应报头，就响应会被整个页面解释。它们是：
 
 ``
 web2py-component-flash
 web2py-component-command
 ``:code
 
-and they can be set via:
+它们可以设置，通过：
 
 ``
 response.headers['web2py-component-flash']='....'
 response.headers['web2py-component-command']='...'
 ``:code
 
-or (if the action is called by a component) automatically via:
+或（如果动作被组件调用）自动通过：
 
 ``
 response.flash='...'
 response.js='...'
 ``:code
 
-The former contains text that you want to be flashed upon response.
-The latter contains JavaScript code that you want to be executed upon response. It cannot contain newlines.
+前者包含关于响应你想flash显示的文本。后者包含关于响应你想要执行的JavaScript代
+码。它不包含新行。
 
-As an example, let's define a contact form component in "controllers/contact/ask.py" that allows the user to ask a question. The component will email the question to the system administrator, flash a "thank you" message, and remove the component from the page:
+作为例子，让我们定义联系表单组件在文件“controllers/contact/ask.py”允许用户提问
+题。组件用电子邮件发送问题给系统管理员，flash“thank you”消息，从页面移出组件：
 
 ``
 def ask():
@@ -236,25 +251,26 @@ def ask():
     return dict(form=form)
 ``:code
 
-The first four lines define the form and accept it. The mail object used for sending is defined in the default scaffolding application. The last four lines implement all the component-specific logic by getting data from the HTTP request headers and setting the HTTP response headers.
+头四行定义表单并接受它。用来发送的mail对象定义在默认的基本构建应用中。最后四
+行通过从HTTP请求报头得到数据以及设置HTTP响应报头实现全部组件指定逻辑
 
-Now you can embed this contact form in any page via
+现在你可以嵌入这个联系表单到任意页面，通过
 
 ``
 {{=LOAD('contact','ask.load',ajax=True)}}
 ``:code
 
-Notice that we did not define a ``.load`` view for our ``ask`` component. We do not have to because it returns a single object (form) and therefore the "generic.load" will do just fine. Remember that generic views are a development tool. In production you should copy "views/generic.load" into "views/contact/ask.load".
+注意我们不给我们的 ``ask``组件定义 ``.load`` 视图。我们也不需要因为它返回单个对象（表单），因此“generic.load”就非常好了。注意通用视图是开发工具。在生成你要复制
+“views/generic.load”到“views/contact/ask.load”。
 
 ``user_signature``:inxx ``requires_signature``:inxx
-We can block access to a function called via Ajax by digitally signing the URL using the ``user_signature`` argument:
+我们能阻止访问通过Ajax调用的函数，用``user_signature`` 参数数字签名URL：
 
 ``
 {{=LOAD('contact','ask.load',ajax=True,user_signature=True)}}
 ``:code
 
-which add a digital signature to the URL.
-The digital signature must then be validated using a decorator in the callback function:
+它添加了数字签名到URL。那么数字签名在回调函数中使用装饰器验证。
 
 ``
 @auth.requires_signature()
@@ -262,70 +278,78 @@ def ask(): ...
 ``:code
 
 
-#### Trapped Ajax links
+#### 捕获Ajax链接
 ``A``:inxx
 ``Ajax links``:inxx
 
-Normally a link is not trapped, and by clicking in a link inside a component, the entire linked page is loaded. Sometimes you want the linked page to be loaded inside the component. This can be achieved using the ``A`` helper:
+通常链接不被捕获，点击组件内的链接，整个链接的页面载入。有时，你想链接的页面
+载入组件内。这能用``A`` 帮助对象实现：
 
 ``
 {{=A('linked page',_href='http://example.com',cid=request.cid)}}
 ``:code
 
-If ``cid`` is specified, the linked page is loaded via Ajax.
-The ``cid`` is the ``id`` of the html element where to place the loaded page content.
-In this case we set it to ``request.cid``, i.e. the ``id`` of the component that generates the link. The linked page can be and usually is an internal URL generated using the URL command.
+如果``cid`` 指定，链接的页面通过Ajax载入。
+``cid``是html元素的``id`` ，放置被载入页面的内容。
+。这个例子，我们设置它为``request.cid``，即组件的``id`` 生成链接。链接的页面可能是并通常
+是使用URL命令生成的内部URL。
 
-### Plugins
+### 插件Plugins
 
 -------
-A **plugin** is any subset of the files of an application.
+**plugin**是应用文件的任意子集。
 -------
 
-and we really mean ''any'':
+而且我们认为是 ''any'':
 
-- A plugin is not a module, is not a model, it is not a controller, is not a view, yet it may contain modules, models, controllers and/or views.
-- A plugin does not need to be functionally autonomous and it may depend on other plugins or specific user code.
-- A ''plugin'' is not a ''plugins system'' and therefore has no concept of registration nor isolation, although we will give rules to try to achieve some isolation.
-- We are talking about a plugin for your app, not a plugin for web2py.
+- 插件不是模块，不是模型，它不是控制器不是视图，
+但它可能包含模块、模型、控制器和/或视图。
+- 插件不需要功能上是自治的，它可能依赖其它插件或特定用户代码。
+- plugin不是plugin system，因此没有注册概念也没有隔离，
+但是我们给规则尝试实现一些隔离。
+- 我们讨论你应用的插件，而不是web2py的插件。
 
-So why is it called a ''plugin''? Because it provides a mechanism for packing a subset of an app and unpacking it over another app (i.e. ''plug-in''). Under this definition, any file in your app can be treated as a plugin.
+因此，为什么把它叫做plugin？因为它提供一种机制打包应用的子集并给另外应用拆
+包（即plug-in）。在这个定义下，你应用中的任何文件可以视为插件。
+当应用程序发布时，它的插件是打包的并一同发布。
 
-When the app is distributed, its plugins are packed and distributed with it.
-
-In practice, the **admin** provides an interface for packing and unpacking plugins separately from your app. Files and folder of your application that have names with the prefix ``plugin_``''name'' can be packed together into a file called:
+实践中， **admin** 提供界面从你的应用分开地打包和拆包插件。你应用的文件和文件夹，
+有有前缀 ``plugin_``''name'' 名字的能被一起打包到一个文件，叫做：
 
 ``web2py.plugin.``''name''``.w2p``
 
-and distributed together.
+并一起发布。
 
 [[image @///image/en8200.png center 480px]]
 
-The files that compose a plugin are not treated by web2py any differently than other files except that **admin** understands from their names that they are meant to be distributed together, and it displays them in a separate page:
+web2py处理组成插件的文件与其它任何不同的文件没有什么区别，除了 **admin** 从它们的名字理解它们意味着要一同发布，admin显示它们在分开的页面：
 
 [[image @///image/en8300.png center 480px]]
 
-Yet as a matter of fact, by the definition above, these plugins are more general than those recognized as such by **admin**.
+作为实际问题，通过上面的定义，这些插件比哪些被认识的比如被 **admin**更常见。
 
-In practice we will only be concerned with two types of plugins:
+在实践中我们仅关心两类插件：
 
-- ''Component Plugins''. These are plugins that contain components as defined in the previous section. A component plugin can contain one or more components. We can think for example of a ``plugin_comments`` that contains the ''comments'' component proposed above. Another example could be ``plugin_tagging`` that contains a ''tagging'' component and a ''tag-cloud'' component that share some database tables also defined by the plugin.
-- ''Layout Plugins''. These are plugins that contain a layout view and the static files required by such layout. When the plugin is applied it gives the app a new look and feel.
+- ''Component Plugins''。这些是包含前面章所定义的组件。组件插件可以包含一个或更多组
+件。我们可以思考例子 ``plugin_comments`` ，包含上面建议的comments组件。另外一个例子是``plugin_tagging``，包含tagging组件和tag-cloud组件，共享一些被插件应以的数据库表。
+- ''Layout Plugins''。这些是包含布局视图及该视图所需静态文件的插件。当插件应用时，它
+给应用新面貌和感受。
 
-By the above definitions, the components created in the previous section, for example "controllers/contact.py", are already plugins. We can move them from one app to another and use the components they define. Yet they are not recognized as such by **admin** because there is nothing that labels them as plugins. So there are two problems we need to solve:
+根据上面定义，之前章节生成的组件，例如“controllers/contact.py”也是插件。我们能移动它们从一个应用到另一个，以及使用它们定义的组件。
+但是，它们不被**admin**视为如此，因为没有把它们标识为插件的东西。因此，我们有两个问题需要解决：
 
-- Name the plugin files using a convention, so that **admin** can recognize them as belonging to the same plugin
-- If the plugin has model files, establish a convention so that the objects it defines do not pollute the namespace and do not conflict with each other.
+- 用规则命名插件文件，以便 **admin** 能识别它们属于同样的插件。
+- 如果插件有模型文件，建立规则以便它定义的对象不污染命名空间而且不相互冲突。
 
-Let's assume a plugin is called ''name''. Here are the rules that should be followed:
+让我们假定插件叫做name。下面是应该遵守的规则：
 
 **Rule 1**:
-Plugin models and controllers should be called, respectively
+插件模型和控制器应该分别命名为
 
 - ``models/plugin_``''name''``.py``
 - ``controllers/plugin_``''name''``.py``
 
-and plugin views, modules, static, and private files should be in folders called, respectively:
+插件视图、模块、静态和私有文件应该分别在叫做的文件件内：
 
 - ``views/plugin_``''name''``/``
 - ``modules/plugin_``''name''``/``
@@ -333,49 +357,49 @@ and plugin views, modules, static, and private files should be in folders called
 - ``private/plugin_``''name''``/``
 
 **Rule 2**:
-Plugin models can only define objects with names that start with
+插件模型仅能用下列开头的名字定义对象
 - ``plugin_``''name''
 - ``Plugin``''Name''
 - ``_``
 
 **Rule 3**:
-Plugin models can only define session variables with names that start with
+插件模型仅能用下列开头的名字定义会话变量
 - ``session.plugin_``''name''
 - ``session.Plugin``''Name''
 
 **Rule 4**:
-Plugins should include license and documentation. These should be placed in:
+插件应该包含许可和文档。这些被放在：
 - ``static/plugin_``''name''``/license.html``
 - ``static/plugin_``''name''``/about.html``
 
 **Rule 5**:
-The plugin can only rely on the existence of the global objects defined in scaffolding "db.py", i.e.
+插件仅依赖于定义在基本构建应用“db.py”的全局对象存在，即
 
-- a database connection called ``db``
-- an ``Auth`` instance called ``auth``
-- a ``Crud`` instance called ``crud``
-- a ``Service`` instance called ``service``
+- 数据库连接 ``db``
+- ``Auth`` 实例 ``auth``
+- ``Crud`` 实例 ``crud``
+- ``Service`` 实例``service``
 
-Some plugins may be more sophisticated and have a configuration parameter in case more than one db instance exists.
+有些插件可能更高级，有配置以防参数超过一个db实例存在。
 
 **Rule 6**:
-If a plugin needs configuration parameters, these should be set via a PluginManager as described below.
+如果插件需要配置参数，这些该通过PluginManager设置，下面描述。
 ``PluginManager``:inxx
 
-By following the above rules we can make sure that:
-- **admin** recognizes all the ``plugin_``''name'' files and folder as part of a single entity.
-- plugins do not interfere with each other.
+遵守上面的规则，我们能确认：
+- **admin** 识别所有``plugin_``''name'' 文件和文件夹为当个实体的一部分。
+- 插件不会相互干扰。
 
-The rules above do not solve the problem of plugin versions and dependencies. That is beyond our scope.
+上面的规则不解决插件版本问题和依赖性。这超出了我们的范围。
 
-#### Component plugins
+#### 组件插件Component plugins
 ``component plugin``:inxx
 
-Component plugins are plugins that define components. Components usually access the database and define with their own models.
+组件插件是定义组件的插件。组件经常访问数据库并用它们自己的模型定义。
 
-Here we turn the previous ``comments`` component into a ``comments_plugin`` by using the same code we wrote before, but following all of the previous rules.
+这里我们通过使用之前相同的代码，把前面的 ``comments`` 组件变为 ``comments_plugin`` ，遵守所有前面规则。
 
-First, we create a model called "models/plugin_comments.py":
+首先，我们创建模型叫做“models/plugin_comments.py”：
 
 ``
 db.define_table('plugin_comments_comment',
@@ -390,9 +414,9 @@ db.plugin_comments_comment.posted_by.readable=False
 def plugin_comments():
     return LOAD('plugin_comments','post',ajax=True)
 ``:code
-(notice the last two lines define a function that will simplify the embedding of the plugin)
+（注意最后两行定义函数，会简化插件嵌入）
 
-Second, we define a "controllers/plugin_comments.py"
+其次，我们定义“controllers/plugin_comments.py”
 
 ``
 @auth.requires_login()
@@ -402,7 +426,7 @@ def post():
                 comments=db(comment).select())
 ``:code
 
-Third, we create a view called "views/plugin_comments/post.load":
+第三步，我们创建视图叫“views/plugin_comments/post.load”：
 
 ``
 {{for comment in comments:}}
@@ -414,35 +438,34 @@ Third, we create a view called "views/plugin_comments/post.load":
 {{=form}}
 ``:code
 
-Now we can use **admin** to pack the plugin for distribution. Admin will save this plugin as:
+现在，为发布我们能用 **admin** 打包插件。Admin会保存该插件为：
 
 ``
 web2py.plugin.comments.w2p
 ``:code
 
-We can use the plugin in any view by simply installing the plugin via the **edit** page in **admin** and adding this to our own views
+我们可以在任意视图使用插件，只要通过在**admin**里 **edit** 页面安装插件添加这个到我们自己的视图
 
 ``
 {{=plugin_comments()}}
 ``:code
 
-Of course we can make the plugin more sophisticated by having components that take parameters and configuration options. The more complex the components, the more difficult it becomes to avoid name collisions. The Plugin Manager described below is designed to avoid this problem.
+当然通过用带参数和配置选项的组件我们可以使插件更高级。组件越复杂，避免名字冲突就变得越难。下面描述的Plugin Manager设计来避免这个问题。
 
-#### Plugin manager
+#### 插件管理对象Plugin manager
 
-The ``PluginManager`` is a class defined in ``gluon.tools``. Before we explain how it works inside, we will explain how to use it.
+``PluginManager``是在``gluon.tools``定义的类。在我们解释它内如如何工作之前，我们解释如何使用它。
 
-Here we consider the previous ``comments_plugin`` and we make it better. We want to be able to customize:
+这里我们考虑之前的 ``comments_plugin`` 并且使它更好。我们想能够定制：
 
 ``
 db.plugin_comments_comment.body.label
 ``:code
 
-without having to edit the plugin code itself.
+无需编辑插件代码自身。
 
-Here is how we can do it:
-
-First, rewrite the plugin "models/plugin_comments.py" in this way:
+下面是我们如何实现它：
+首先，用下面方式重写插件“models/plugin_comments.py”：
 
 ``
 db.define_table('plugin_comments_comment',
@@ -463,9 +486,9 @@ def plugin_comments()
     return LOAD('plugin_comments','post.load',ajax=True)
 ``:code
 
-Notice how all the code except the table definition is encapsulated in a single function. Also notice how the function creates an instance of a ``PluginManager``.
+注意所有的代码除了表的定义如何封装在单个函数内。也要注意函数如何创建``PluginManager``实例。
 
-Now in any other model in your app, for example in "models/db.py", you can configure this plugin as follows:
+现在你应用中的任何模型，例如“models/db.py”，你能配置该插件如下：
 
 ``
 from gluon.tools import PluginManager
@@ -474,25 +497,23 @@ plugins.comments.body_label = T('Post a comment')
 ``:code
 
 -----
-The ``plugins`` object is already instantiated in the default scaffolding app in "models/db.py"
+``plugins`` 对象已经在默认基本构建应用“models/db.py”中实例化。
 -----
 
-The PluginManager object is a thread-level singleton Storage object of Storage objects. That means you can instantiate as many as you like within the same application but (whether they have the same name or not) they act as if there were a single PluginManager instance.
-
-In particular each plugin file can make its own PluginManager object and register itself and its default parameters with it:
-
+PluginManager对象是线程级Storage对象的独个存储对象。意味着在同个应用中你能实例化你想要数量的，但（不论它们有相同的名字或没有）它们行为如同仅有单个PluginManager实例
+特别是，每个插件文件生成它们自己的PluginManager对象并注册自己以及它默认的参数，用：
 ``
 plugins = PluginManager('name', param1='value', param2='value')
 ``:code
 
-You can override these parameters elsewhere (for example in "models/db.py") with the code:
+你可以在其它地方覆盖这些参数（例如“models/db.py”），用下面的代码：
 
 ``
 plugins = PluginManager()
 plugins.name.param1 = 'other value'
 ``:code
 
-You can configure multiple plugins in one place.
+你能在一个地方配置多个插件：
 
 ``
 plugins = PluginManager()
@@ -504,63 +525,72 @@ plugins.name3.param5 = '...'
 ``:code
 
 -----
-When the plugin is defined, the PluginManager must take arguments: the plugin name and optional named arguments which are default parameters. However, when the plugins are configured, the PluginManager constructor must take no arguments. The configuration must precede the definition of the plugin (i.e. it must be in a model file that comes first alphabetically).
+当插件定义了，PluginManager必须用参数：plugin名字和可选命名的参数，默认参数。但是，当插件配置时，PluginManager构造函数必须不带参数。配置必须在插件定义之前（即，它必须是模型文件以第一个字母顺序）。
 -----
 
-#### Layout plugins
+#### 布局插件 Layout plugins
 ``layout plugin``:inxx
 
-Layout plugins are simpler than component plugins because usually they do not contain code, but only views and static files. Yet you should still follow  good practice:
-
-First, create a folder called "static/plugin_layout_''name''/" (where name is the name of your layout) and place all your static files there.
-
-Second, create a layout file called "views/plugin_layout_''name''/layout.html" that contains your layout and links the images, CSS and JavaScript files in "static/plugin_layout_''name''/"
-
-Third, modify the "views/layout.html" so that it simply reads:
+布局插件比组件插件简单，因为经常地它不包含代码，仅含视图和静态文件。但你仍要遵
+从好的实践：
+首先，创建叫做“static/plugin_layout_name/”的文件夹（name是你布局的名字），放置你
+所有的静态文件在此。
+其次，创建布局文件叫做“views/plugin_layout_name/layout.html”，包含你的布局链接
+“static/plugin_layout_name/”图像、CSS和JavaScript files文件。
+再次，修改“views/layout.html”以便它仅是读取：
 
 ``
 {{extend 'plugin_layout_name/layout.html'}}
 {{include}}
 ``:code
 
-The benefit of this design is that users of this plugin can install multiple layouts and choose which one to apply simply by editing "views/layout.html". Moreover, "views/layout.html" will not be packed by **admin** together with the plugin, so there is no risk that the plugin will override the user's code in the previously installed layout.
+该设计的好处是，这个插件的用户能安装多个布局并通过编辑“views/layout.html” 选择应用哪个。而且，“views/layout.html”不被**admin** 与插件一道打包，因此不存在插件覆盖之前安装的布局中用户代码的风险。
+
 
 ### ``plugin_wiki``
 ``plugin_wiki``:inxx ``wiki``:inxx
 
 -----
-DISCLAIMER: plugin_wiki is still very much under development and therefore we do not promise backward compatibility to the same level as for web2py core functions.
+免责声明：plugin_wiki是仍正在开发的，因此我们不保证与web2py核心功能同一个级别的后向兼容性。
 -----
 
-**plugin_wiki** is a plugin on steroids.  What we mean is that it defines multiple useful components and it may change the way you develop your applications:
+**plugin_wiki** 是插件on steroids类固醇。
+我们的意思是它定义多个应用的组件，它能改变你开发你应用的方式：
 
-You can download it from
+你能从以下链接下载：
 
 ``
 http://web2py.com/examples/static/web2py.plugin.wiki.w2p
 ``:code
 
-The idea behind **plugin_wiki** is that most applications include pages that are semi-static. These are pages that do not include complex custom logic. They contain structured text (think of a help page), images, audio, video, crud forms, or a set of standard components (comments, tags, charts, maps), etc. These pages may be public, require login or have other authorization restrictions. These pages may be linked by a menu or only be reachable via wizard form. **plugin_wiki** provides an easy way to add pages that fit in this category to your regular web2py applications.
+**plugin_wiki**背后的理念是大部分应用包括页面是半静态的。这些是不包含复杂自定义逻辑
+的页面。它们包含结构化的文本（想想帮助页面）、图像、音频、视频、crud表单或标准组件
+的集合（评论、标签、表和地图）等。这些页面可能是公开的，需要登录或有其它认证限制。
+这些页面可能用菜单链接或只有通过向导表单到达。**plugin_wiki**提供简便的方法增加页面适应这个类别到你的规则的web2py应用。
 
-In particular **plugin_wiki** provides:
+特别是， **plugin_wiki** 提供：
 ``widget in plugin_wiki``:inxx
 
-- A wiki-like interface that allows to add pages to your app and reference them by a slug. These pages (which we will refer to as wiki pages) have versions and are stored in the database.
-- Public and private pages (require login). If a page requires login, it may also require that the user have a particular group membership.
-- Three levels: 1,2,3. At level 1, pages can only include text, images, audio and video. At level 2, pages can also include widgets (these are components as defined in the previous section that can be embedded in wiki pages). At level 3, pages can also include web2py template code.
-- A choice of editing pages with the markmin syntax or in HTML using a WYSIWYG editor.
-- A collection of widgets: implemented as components. They are self documenting and they can be embedded as regular components in normal web2py views or, using a simplified syntax, into wiki pages.
-- A set of special pages (``meta-code``, ``meta-menu``, etc.) that can be used to customize the plugin (for example define code the plugin should run, customize the menu, etc.)
+- 类似wiki的界面允许添加页面到你的应用并通过slug引用它们。这些页（我们称它们
+为wiki页面）有版本并存储在数据库。
+- 公开和私有页面（需要登录）。如果页面要求登录，它可能需要用户有特定组成员资
+格。
+- 三个级别：1、2和3. 级别1，页面只包括文本、图像、音频和视频。级别2，页面也包括
+widget（小工具）（这些是之前章节定义能嵌在wiki页的组件）。级别3，页面也能
+包含web2py模板代码。
+- 用markin语法编辑页面选择或在HTML用WYSIWYG编辑器（编辑对象）
+- 一组widget（小工具）：以组件实现。它们是自己记录并作为规则组件嵌入通常
+web2py视图或，使用简化的语法，到wiki页面。
+- 一组特殊页面（``meta-code``,``meta-menu``等）
+能用来定制插件（例如，定义插件运行的代码，定制菜单等）
 
 ------
-The **welcome** app plus the **plugin_wiki** can be thought of as a development environment in itself that is suitable for building simple web applications such as a blog.
+**welcome** 应用加上 **plugin_wiki** 可以视为开发环境，这个环境下适于构建简单web应用比如博客。
 ------
 
-From here on we will assume the **plugin_wiki** is applied to a copy of the **welcome** scaffolding app.
 
-The first thing you notice after installing the plugin is that it adds a new menu item called ''pages''.
-
-Click on the ''pages'' menu item and you will be redirected to the plugin action:
+安装插件之后你注意到的第一件事是它增加了一个叫pages的新菜单项。
+点击pages菜单项，你会被重定向到插件动作：
 
 ``
 http://127.0.0.1:8000/myapp/plugin_wiki/index
@@ -568,24 +598,25 @@ http://127.0.0.1:8000/myapp/plugin_wiki/index
 
 [[image @///image/en8400.png center 480px]]
 
-The plugin index page lists the pages created using the plugin itself and allows you to create new ones by choosing a ''slug''. Try creating a ``home`` page. You will be redirected to
+插件索引页列出用插件本身创建的页面并允许你通过选择slug创建新的。
+尝试创建``home``页面。你将重定向到
 
 ``
 http://127.0.0.1:8000/myapp/plugin_wiki/page/home
 ``:code
 
-Click on ''create page'' to edit its content.
+点击''create page''编辑它的内容。
 
 [[image @///image/en8500.png center 480px]]
 
 -----
-By default, the plugin is at level 3, which means you can insert widgets as well as code in pages. By default it uses the markmin syntax to describe the page content.
+默认情况，该plugin在级别3，意味着你能插入widget（小工具）和代码到页面。默认，它使用markin语法来描述页面内容。
 -----
 
-#### ``MARKMIN`` syntax
+#### ``MARKMIN`` 语法
 ``MARKMIN syntax``:inxx
 
-Here is a primer for the markmin syntax:
+下面是主要的markin语法：
 
 ------
 **markmin** | **html**
@@ -602,37 +633,37 @@ Here is a primer for the markmin syntax:
 ``embed:http://...`` | ``<iframe src="http://..."></iframe>``
 ------
 
-Notice that links, images, audio, and video files are embedded automatically. For more information on MARKMIN syntax, please refer to Chapter 5.
+注意链接、图像、音频和视频文件是自动嵌入的。
+更多MARKIN语法信息，请参考第5章。
 
-If the page does not exist, you will be asked to create one.
-
-The edit page allows you to add attachments to pages (i.e. static files)
+如果页面不存在，你将要求创建一个。
+编辑页面允许你添加附件到页面（即静态文件）
 
 [[image @///image/en8600.png center 480px]]
 
-and you can link to them as
+你也能链接它们：
 
 ``
 [[mylink name attachment:3.png]]
 ``:code
 
-or embed them with
+或嵌入它们，用：
 
 ``
 [[myimage attachment:3.png center 200px]]
 ``:code
 
-The size (``200px``) is optional. ``center`` is not optional but it may be replaced by ``left`` or ``right``.
+大小(``200px``) 是可选的。 ``center``不是可选但它可以用``left`` 或``right``替换。
 
-You can embed blockquoted text with
+你能用下面方式嵌入块引用文本
 
 ``
 -----
-this is blockquoted
+这是区块引言
 -----
 ``:code
 
-as well as tables
+表也一样
 
 ``
 -----
@@ -642,7 +673,7 @@ X | 0 | 0
 -----
 ``:code
 
-and verbatim text
+逐字文本
 
 ``
 !`!!`!
@@ -650,7 +681,7 @@ verbatim text
 !`!!`!
 ``:code
 
-You can also prepend an optional ``:class`` to the final ``-----`` or the final ``!`!!`!``. For blockquoted text and tables it will be translated in the class of the tag, for example:
+你也可以在前面加选项``:class`` 到最后``-----``或到最后 ``!`!!`!``。对于块引用文本和表，它被翻译为标签类，例如：
 
 ``
 -----
@@ -658,15 +689,13 @@ test
 -----:abc
 ``:code
 
-renders as
+呈现为：
 
 ``
 <blockquote class="abc">test</blockquote>
 ``:code
 
-For verbatim text the class can be used to embed content of different types.
-
-You can, for example, embed code with syntax highlighting by specifying the language with ``:code_``''language''
+对于逐字文本，类能用来嵌入到不同类型的内容。你能，例如，用 ``:code_``''language''指定语言高亮语法嵌入代码
 
 ``
 !`!!`!
@@ -674,7 +703,7 @@ def index(): return 'hello world'
 !`!!`!:code_python
 ``:code
 
-You can embed widgets:
+你能嵌入widget：
 
 ``
 !`!!`!
@@ -684,13 +713,12 @@ attribute2: value2
 !`!!`!:widget
 ``:code
 
-From the edit page you can click on "widget builder" to insert widgets from a list, interactively:
+从编辑页面你能点击“widget builde”从列表交互地插入widget：
 
 [[image @///image/en8700.png center 480px]]
 
-(for a list of widgets see the next subsection).
-
-You can also embed web2py template language code:
+（widget列表参看下一节）。
+你也能嵌入web2py模版语言代码：
 
 ``
 !`!!`!
@@ -698,17 +726,20 @@ You can also embed web2py template language code:
 !`!!`!:template
 ``:code
 
-#### Page permissions
+#### 页面权限Page permissions
 
-When editing a page you will find the following fields:
-- **active** (defaults to ``True``). If a page is not active, it will not be accessible to visitors (even if public).
-- **public** (defaults to ``True``). If a page is public, it can be accessed by visitors without logging in.
-- **role** (defaults to None). If a page has a role, the page can be accessed only by visitors who are logged in and are members of the group with the corresponding role.
+当编辑一个页面你将找到下列字段：
+- **active** (默认 ``True``)。如果页面不是活动的，
+它不能被访问者访问（即便是public）
+- **public** (默认 ``True``)。如果页面是公开的，它能被访问者访问无需登录。
+- **role** (默认 None)。如果页面有角色，
+页面只能被登录用户有相应角色的组的成员访问。
 
-#### Special pages
+#### 特殊页面Special pages
 ``menu in plugin_wiki``:inxx
 
-**meta-menu** contains the menu. If this page does not exist, web2py uses the ``response.menu`` defined in "models/menu.py". The content of the meta-menu page overrides the menu. The syntax is the following:
+**meta-menu** 包含菜单。如果该页面不存在，
+web2py使用定义在“models/menu.py”的``response.menu``。meta-menu页面内容覆盖菜单。语法如下：
 
 ``
 Item 1 Name http://link1.com
@@ -723,9 +754,9 @@ Item 2 Name http://link1.com
    Submenu Item 23 Name http://link23.com
 ``:code
 
-where the indentation determines the submenu structure. Each item is composed of the text of the menu item followed by a link. A link can be ``page:``''slug''. A link ``None`` does not link to any page. Extra spaces are ignored.
+缩进决定了子菜单结构。每个项由菜单项文本紧随链接组成。链接可以是 ``page:``''slug''。链接``None`` 不链接到任何页面。额外的空格被忽略。
 
-Here is another example:
+下面是另外一个例子：
 
 ``
 Home             page:home
@@ -736,22 +767,23 @@ Search Engines   None
 Help             page:help
 ``:code
 
-This renders as follows:
+呈现如下效果：
 
 [[image @///image/en8800.png center 480px]]
 
 ``meta-menu``:inxx ``meta-code``:inxx ``meta-header``:inxx ``meta-sidebar``:inxx ``meta-footer``:inxx
-**meta-code** is another special page and it must contain web2py code. This is an extension of your models, and in fact you can put model code here. It is executed when "models/plugin_wiki.py" code is executed.
+**meta-code** 是另一个特殊页面而且它必须包含web2py代码。
+这是你模型的扩展，事实上你能在这里放置模型代码。当“models/plugin_wiki.py”代码执行时，它被执行。
 
-You can define tables in ``meta-code``.
+你能在``meta-code``里定义表。
 
-For example, you can create a simple table "friends" by placing this in ``meta-code``:
+例如，你能创建简单表“friends”放置如下代码在``meta-code``里：
 
 ``
 db.define_table('friend',Field('name',requires=IS_NOT_EMPTY()))
 ``:code
 
-and you can create a friend-management interface by embedding in a page of your choice the following code:
+你能通过选择把下面的代码嵌入页面创建friend管理界面：
 ``jqGrid``:inxx ``CRUD``:inxx
 
 ``
@@ -769,11 +801,11 @@ table: friend
 
 ``:code
 
-The page has two headers (starting with #): "List of friends" and "New friend". The page contains two widgets (under the corresponding headers): a jqgrid widget that lists friends and a crud create widget to add a new friend.
+该页面有两个标头（以#开头）：“List of friends”和“"New friend”。该页面包含两个widget（小工具）（在相应的标头下）：jqgrid widget列出friends，crud widget添加新的friend。
 
 [[image @///image/en8900.png center 480px]]
 
-``meta-header``, ``meta-footer``, ``meta-sidebar`` are not used by the default layout in "welcome/views/layout.html". If you want to use them, edit "layout.html" using **admin** (or the shell) and place the following tags in the appropriate places:
+在“welcome/views/layout.html”中，``meta-header``, ``meta-footer``, ``meta-sidebar`` 不被默认布局视图使用。如果你想使用它们，用 **admin** （或shell）编辑“layout.html”并放置下列标签在合适的位置：
 
 ``
 {{=plugin_wiki.embed_page('meta-header') or ''}}
@@ -781,11 +813,11 @@ The page has two headers (starting with #): "List of friends" and "New friend". 
 {{=plugin_wiki.embed_page('meta-footer') or ''}}
 ``:code
 
-In this way, the content of those pages will show up in the header, sidebar and footer in the layout.
+用这种方式，那些页面的内容会显示在布局的页头、侧边栏和页脚。
 
-#### Configuring plugin_wiki
+#### 配置plugin_wiki
 
-As with any other plugins in "models/db.py" you can do
+如同任何其它“models/db.py”中的插件，你能
 
 ``
 from gluon.tools import PluginManager
@@ -796,23 +828,23 @@ plugins.wiki.mode = 'markmin' or 'html'
 plugins.wiki.theme = 'ui-darkness'
 ``:code
 
-where
-- **editor** is true if the current logged-in user is authorized to edit plugin_wiki pages
-- **level** is the permission: 1 to edit regular pages, 2 to embed widgets in pages, 3 to embed code
-- **mode** determines whether to use a "markmin" editor or a WYSIWYG "html" editor. ``WYSIWYG``:inxx
-- **theme** is the name of the required jQuery UI Theme. By default only the color-neutral "ui-darkness" is installed.
+此处
+- **editor** 是True如果当前已登录用户授权到编辑plugin_wiki页面
+- **level** 是权限：1 编辑规则页面，2 嵌入widget到页面，3 嵌入代码
+- **mode** 决定使用“markin”编辑器还是WYSIWYG“html”编辑器。 ``WYSIWYG``:inxx
+- **theme** 是要求jQuery UI Theme的名字。
+默认，仅中性色彩“ui-darkness”被安装。
 
-You can add themes here:
+你能在这添加主题：
 
 ``
 static/plugin_wiki/ui/%(theme)s/jquery-ui-1.8.1.custom.css
 ``:code
 
-#### Current widgets
+#### 当前小工具Current widgets
 
-Each widget can be embedded both in plugin_wiki pages and in normal web2py templates.
-
-For example, to embed a YouTube video in a plugin_wiki page, you can do
+每个widget能嵌入到plugin_wiki页面和通常的web2py模板。
+例如，嵌入YouTube视频到plugin_wiki页面，你能做
 
 ``
 !`!!`!
@@ -821,28 +853,27 @@ code: l7AWnfFRc7g
 !`!!`!:widget
 ``
 
-or to embed the same widget in a web2py view, you can do:
+或嵌入同样的widget到web2py视图，你能做
 
 ``
 {{=plugin_wiki.widget('youtube',code='l7AWnfFRc7g')}}
 ``:code
 
-In either case, this is the output:
+无论哪种情况，输出如下：
 
 [[image @///image/en9000.png center 480px]]
 
-Widget arguments that do not have a default value are required.
-
-Here is a list of all current widgets:
+widget参数没有默认值的是需要的。
+下面是所有当前的widget列表：
 
 **read**
 ``
 read(table,record_id=None)
 ``:code
 
-Reads and displays a record
-- ``table`` is the name of a table
-- ``record_id`` is a record number
+读取并显示记录
+- ``table`` 表的名字
+- ``record_id`` 记录号
 
 **create**
 ``
@@ -850,13 +881,13 @@ create(table,message='',next='',readonly_fields='',
        hidden_fields='',default_fields='')
 ``:code
 
-Displays a record create form
-- ``table`` is the name of a table
-- ``message`` is a the message to be displayed after record is created
-- ``next`` is where to redirect, example "page/index/[id]"
-- ``readonly_fields`` is a list of comma separated fields
-- ``hidden_fields`` is a list of comma separated fields
-- ``default_fields`` is a list of comma separated ``fieldname=value``
+显示记录创建表单
+- ``table`` 表的名字
+- ``message`` 记录创建后显示的消息
+- ``next`` 要重定向到的，例如“page/index/[id]”
+- ``readonly_fields`` i逗号分隔的字段列表
+- ``hidden_fields`` 逗号分隔的字段列表
+- ``default_fields`` 逗号分隔的``fieldname=value``列表
 
 **update**
 ``
@@ -864,33 +895,34 @@ update(table,record_id='',message='',next='',
        readonly_fields='',hidden_fields='',default_fields='')
 ``:code
 
-Displays a record update form
-- ``table`` is the name of a table
-- ``record_id`` is he record to be updated or ``{{=request.args(-1)}}``
-- ``message`` is a the message to be displayed after record is created
-- ``next`` is where to redirect, example "page/index/[id]"
-- ``readonly_fields`` is a list of comma separated fields
-- ``hidden_fields`` is a list of comma separated fields
-- ``default_fields`` is a list of comma separated ``fieldname=value``
+显示记录更新表单
+- ``table`` 表的名字
+- ``record_id`` 是要被更新的记录或``{{=request.args(-1)}}``
+- ``message`` 记录创建后显示的消息
+- ``next`` 要重定向到的，例如“page/index/[id]”
+- ``readonly_fields`` 逗号分隔的字段列表
+- ``hidden_fields`` 逗号分隔的字段列表
+- ``default_fields`` 逗号分隔的``fieldname=value``列表
 
 **select**
 ``
 select(table,query_field='',query_value='',fields='')
 ``:code
 
-Lists all records in the table
-- ``table`` is the name of a table
-- ``query_field`` and ``query_value`` if present will filter records by according to the query ``query_field == query_value``
-- ``fields`` is a list of comma separate fields to be displayed
+列出表中所有记录
+- ``table`` 表的名字
+- ``query_field`` 和 ``query_value`` 如果有，
+用查询``query_field == query_value``过滤记录
+- ``fields`` 是要显示的逗号分隔的字段列表
 
 **search**
 ``
 search(table,fields='')
 ``:code
 
-Widgets for selecting records
-- ``table`` is the name of a table
-- ``fields`` is a list of comma separated fields to be displayed
+查询记录的widget
+- ``table`` 表的名字
+- ``fields`` 是要显示的逗号分隔的字段列表
 
 **jqgrid**
 ``jqGrid``:inxx
@@ -899,18 +931,18 @@ jqgrid(table,fieldname=None,fieldvalue=None,col_widths='',
        colnames=None,_id=None,fields='',col_width=80,width=700,height=300)
 ``:code
 
-Embeds a jqGrid plugin
-- ``table`` is the table name
-- ``fieldname``, ``fieldvalue`` are an optional filter: ``fieldname==fieldvalue``
-- ``col_widths`` is the width of each column
-- ``colnames`` is a list of column names that are displayed
-- ``_id`` is the "id" of the TABLE that contains the jqGrid
-- ``fields`` is a list of columns to be displayed
-- ``col_width`` is the default width of columns
-- ``height`` is the height of the jqGrid
-- ``width`` is the width of the jqGrid
+嵌入jqgrid插件
+- ``table`` 表的名字
+- ``fieldname``, ``fieldvalue`` 是可选过滤器：``fieldname==fieldvalue``
+- ``col_widths`` 是每列的宽度
+- ``colnames`` 是要显示的列名字的列表
+- ``_id`` 是包含jqGrid的TABLE“id”
+- ``fields`` 是要显示的列的列表
+- ``col_width`` 是每列的默认宽度
+- ``height`` 是jqGrid的高度
+- ``width`` 是jqGrid的宽度
 
-Once you have the plugin_wiki installed, you can easily use the jqGrid in your other views too. Example usage (displays yourtable filtered by fk_id==47):
+一旦你安装了plugin_wiki，你也能在你其它视图容易地使用jqGrid。使用示例（显示用fk_id==47过滤你的表格）：
 ``
 {{=plugin_wiki.widget('jqgrid','yourtable','fk_id',47,'70,150',
     'Id,Comments',None,'id,notes',80,300,200)}}
@@ -922,7 +954,7 @@ Once you have the plugin_wiki installed, you can easily use the jqGrid in your o
 latex(expression)
 ``:code
 
-Uses Google charting API to embed LaTeX
+使用Google图表API嵌入LaTeX
 
 **pie_chart**
 ``pie chart``:inxx
@@ -930,12 +962,12 @@ Uses Google charting API to embed LaTeX
 pie_chart(data='1,2,3',names='a,b,c',width=300,height=150,align='center')
 ``:code
 
-Embed a pie chart
-- ``data`` is a list of comma separated values
-- ``names`` is a list of comma separated labels (one for data item)
-- ``width`` is the width of the image
-- ``height`` is the height of the image
-- ``align`` determines the alignment of the image
+嵌入饼图
+- ``data`` 是逗号分隔值的列表
+- ``names`` 是逗号分隔标签列表（数据一个）
+- ``width`` 是图像宽度
+- ``height`` 是图像高度
+- ``align`` 决定图像对齐
 
 **bar_chart**
 ``bar chart``:inxx
@@ -943,12 +975,12 @@ Embed a pie chart
 bar_chart(data='1,2,3',names='a,b,c',width=300,height=150,align='center')
 ``:code
 
-Uses Google charting API to embed a bar chart
-- ``data`` is a list of comma separated values
-- ``names`` is a list of comma separated labels (one for data item)
-- ``width`` is the width of the image
-- ``height`` is the height of the image
-- ``align`` determines the alignment of the image
+使用Google图表API嵌入条状图
+- ``data`` 是逗号分隔值的列表
+- ``names`` 是逗号分隔标签列表（数据一个）
+- ``width`` 是图像宽度
+- ``height`` 是图像高度
+- ``align`` 决定图像对齐
 
 **slideshow**
 ``slideshow``:inxx
@@ -956,13 +988,13 @@ Uses Google charting API to embed a bar chart
 slideshow(table, field='image', transition='fade', width=200, height=200)
 ``:code
 
-Embeds a slideshow. It gets the images from a table.
+嵌入幻灯片。它从表得到图片。
 
-- ``table`` is the table name
-- ``field`` is the upload field in the table that contains images
-- ``transition`` determines the type of transition, e.g. fade, etc.
-- ``width`` is the width of the image
-- ``height`` is the height of the image
+- ``table`` 是表名
+- ``field``是表中上传字段包含图片
+- ``transition`` 决定过渡类型，比如 渐变等
+- ``width`` 是图像宽度
+- ``height`` 是图像高度
 
 **youtube**
 ``YouTube``:inxx
@@ -970,10 +1002,10 @@ Embeds a slideshow. It gets the images from a table.
 youtube(code, width=400, height=250)
 ``:code
 
-Embeds a YouTube video (by code)
-- ``code`` is the code of the video
-- ``width`` is the width of the image
-- ``height`` is the height of the image
+嵌入YouTube视频（用代码）
+- ``code`` 是视频代码
+- ``width`` 是图像宽度
+- ``height`` 是图像高度
 
 **vimeo**
 ``Vimeo``:inxx
@@ -981,10 +1013,10 @@ Embeds a YouTube video (by code)
 vimeo(code, width=400, height=250)
 ``:code
 
-Embeds a Vimeo video (by code)
-- ``code`` is the code of the video
-- ``width`` is the width of the image
-- ``height`` is the height of the image
+嵌入Vimeo视频（用代码）
+- ``code`` 是视频代码
+- ``width``是图像宽度
+- ``height`` 是图像高度
 
 **mediaplayer**
 ``flash mediaplayer``:inxx
@@ -992,10 +1024,10 @@ Embeds a Vimeo video (by code)
 mediaplayer(src, width=400, height=250)
 ``:code
 
-Embeds a media file (such as Flash video or an mp3 file)
-- ``src`` is the src of the video
-- ``width`` is the width of the image
-- ``height`` is the height of the image
+嵌入媒体文件（比如Flash视频或mp3文件）
+- ``src`` 是视频的scr
+- ``width`` 是图像宽度
+- ``height`` 是图像高度
 
 **comments**
 ``comments``:inxx
@@ -1003,12 +1035,11 @@ Embeds a media file (such as Flash video or an mp3 file)
 comments(table='None', record_id=None)
 ``:code
 
-Embeds comments in the page
+嵌入评论到页面
+评论可能被链接到表和/或记录
 
-Comments can be linked to a table and/or a record
-
-- ``table`` is the table name
-- ``record_id`` is the id of the record
+- ``table`` 是表名
+- ``record_id`` 是记录的id
 
 **tags**
 ``tags``:inxx
@@ -1016,12 +1047,10 @@ Comments can be linked to a table and/or a record
 tags(table='None', record_id=None)
 ``:code
 
-Embeds tags in the page
+嵌入标签到页面，标签可能被链接到表和/或记录
 
-tags can be linked to a table and/or a record
-
-- ``table`` is the table name
-- ``record_id`` is the id of the record
+- ``table`` 是表名
+- ``record_id``是记录的id
 
 **tag_cloud**
 ``tag cloud``:inxx
@@ -1029,24 +1058,22 @@ tags can be linked to a table and/or a record
 tag_cloud()
 ``:code
 
-Embeds a tag cloud
+嵌入标签云
 
 **map**
 ``Google map``:inxx
 ``
 map(key='....', table='auth_user', width=400, height=200)
 ``:code
-Embeds a Google map.
+嵌入Google地图
+它从表得到地图上的点
 
-It gets points on the map from a table
+- ``key`` 是google地图api 的键（默认为127.0.0.1工作）
+- ``table`` 是表名
+- ``width`` 是地图宽度
+- ``height`` 是地图高度
 
-- ``key`` is the google map api key (default works for 127.0.0.1)
-- ``table`` is the table name
-- ``width`` is the map width
-- ``height`` is the map height
-
-The table must have columns: ``latitude``, ``longitude`` and ``map_popup``.
-When clicking on a dot, the ``map_popup`` message will appear.
+地图必须有列: ``latitude``, ``longitude`` 和``map_popup``。当点击一个点，``map_popup``消息会出现。
 
 **iframe**
 ``iframe``:inxx
@@ -1054,7 +1081,7 @@ When clicking on a dot, the ``map_popup`` message will appear.
 iframe(src, width=400, height=300)
 ``:code
 
-Embeds a page in an ``<iframe></iframe>``
+嵌入页面 ``<iframe></iframe>``之间
 
 
 **load_url**
@@ -1063,7 +1090,7 @@ Embeds a page in an ``<iframe></iframe>``
 load_url(src)
 ``:code
 
-Loads the content of the url using the LOAD function
+用LOAD函数载入url内容
 
 **load_action**
 ``load_action``:inxx
@@ -1071,12 +1098,13 @@ Loads the content of the url using the LOAD function
 load_action(action, controller='', ajax=True)
 ``:code
 
-Loads the content of URL(request.application, controller, action) using the LOAD function
+用LOAD函数载入url内容（(request.application，控制器，动作）
 
 
-#### Extending widgets
+#### 扩展widget
 
-Widgets to plugin_wiki can be added by creating a new model file called "models/plugin_wiki_"''name'' where ''name'' is arbitrary and the file contains something like:
+plugin_wiki的widget能通过创建新模型文件“models/plugin_wiki_” name被添加，此
+处name是任意的也是包含下面类似内容的文件：
 
 ``
 class PluginWikiWidgets(PluginWikiWidgets):
@@ -1088,15 +1116,17 @@ class PluginWikiWidgets(PluginWikiWidgets):
         return "body of the widget"
 ``:code
 
-The first line states that you are extending the list of widgets. Inside the class, you can define as many functions as needed. Each static function is a new widget, except for functions that start with underscores. The function can take an arbitrary number of arguments which may or not have default values. The docstring of the function must document the function using the markmin syntax itself.
+第一行说明你正扩展widget列表。类内，你能定义你需要的函数。每个静态函数使新的widget，除了以下划线开始的函数不是。函数带任意数量的参数，可以有或可以没有默认值。函数的docstring必须使用markin语法归档函数自己。
 
-When widgets are embedded into plugin_wiki pages, arguments will be passed to the widget as strings. This means the widget function must be able to accept strings for every argument and eventually convert them into the required representation. You can decide what the string representation must be - just make sure this is documented in the docstring.
+当widget嵌到plugin_wiki页面，参数以字符串传递给widget。这意味着widget函数能
+够给每个参数接受字符串并最终把它们转换为所需要的表示。你能决定哪种字符串表示，就确认这在docstring中记录了。
 
-The widget can return a string of web2py helpers. In this latter case they will be serialized using ``.xml()``.
+Widget可以返回web2py帮助对象的字符串。后一种情况，它们会被使用 ``.xml()``序列化。
 
-Notice how the new widget can access any variable declared in the global namespace.
+注意新widget如何访问任何声明在全局名称空间内的变量。
 
-As an example, we are going to create a new widget that display the "contact/ask" form created at the beginning of this chapter. This can be done by creating a file "models/plugin_wiki_contact" that contains:
+例如，我们打算创建一个新widget显示“contact/ask”表单，本章开头创建的。这能
+通过创建文件“models/plugin_wiki_contact”实现，该文件包含：
 
 ``
 class PluginWikiWidgets(PluginWikiWidgets):
@@ -1129,7 +1159,7 @@ class PluginWikiWidgets(PluginWikiWidgets):
 ``:code
 
 -------
-plugin_wiki widgets are not rendered by a view unless the ``response.render(...)`` function is called explicitly by the widget.
+plugin_wiki widget不被视图呈现，除非 ``response.render(...)`` 函数被该widget显式调用。
 -------
 
 
