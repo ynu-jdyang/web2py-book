@@ -1,20 +1,23 @@
 
-## jQuery and Ajax
+## jQuery 和 Ajax
 ``Ajax``:inxx
 
-While web2py is mainly for server-side development, the **welcome** scaffolding app comes with the base jQuery library``jquery``:cite, jQuery calendars (date picker, datetime picker and clock), the "superfish.js" menu, and some additional JavaScript functions based on jQuery.
+虽然web2py主要为服务器端开发，但 **welcome** 基本构建应用一道提供了基
+本``jquery``:cite库, jQuery日历（日期拾取、日期时间拾取和时钟），
+“superfish.js”菜单和一些附加的基于jQuery的JavaScript函数。
 
-Nothing in web2py prevents you from using other
-Ajax libraries such as Prototype, ExtJS, or YUI, but we decided to package jQuery because we find it to be easier to use and more powerful than other equivalent libraries. We also find that it captures the web2py spirit of being functional and concise.
+web2py根本不阻碍你使用其它Ajax [78]库，比如Prototype、ExtJS或YUI，
+我们决定打包jQuery因为我们发现它更易于使用而且比其它相当的库更强大。
+我们也发现它抓住了web2py有效而简洁的精髓。
 
 ### web2py_ajax.html
 
-The scaffolding web2py application "welcome" includes a file called
+web2py基本构建应用“welcome”包含文件，叫做
 ``
 views/web2py_ajax.html
 ``:code
 
-which looks like this:
+它看起来象下面这样：
 
 ``
 {{
@@ -36,29 +39,30 @@ response.include_files()
         type="text/javascript"></script>
 ``:code
 
-This file is included in the HEAD of the default "layout.html" and it provides the following services:
-- Includes "static/jquery.js".
-- Includes "static/calendar.js" and "static/calendar.css", which are used for the popup calendar.
-- Includes all ``response.meta`` headers
-- Includes all ``response.files`` (requires CSS and JS, as declared in the code)
-- Sets form variables and includes "static/js/web2y.js"
+这个文件包含在默认“layout.html”的HEAD，它提供下列服务：
+- 包含“static/jquery.js”。
+- 包含“static/calendar.js” 和“static/calendar.css”，用做弹出日历。
+- 包含r``response.meta`` 头。
+- 包含所有 ``response.files`` （要求CSS和 JS，在代码中描述的）
+- 设置表单变量并包含“static/js/web2y.js”
 
-"web2py.js" does the following:
-- Defines an ``ajax`` function (based on jQuery $.ajax).
-- Makes any DIV of class "error" or any tag object of class "flash" slide down.
-- Prevents typing invalid integers in INPUT fields of class "integer".
-- Prevents typing invalid floats in INPUT fields of class "double".
-- Connects INPUT fields of type "date" with a popup date picker.
-- Connects INPUT fields of type "datetime" with a popup datetime picker.
-- Connects INPUT fields of type "time" with a popup time picker.
-- Defines ``web2py_ajax_component``, a very important tool that will be described in Chapter 12.
-- Defines ``web2py_comet``, a function that can be used for HTML5 websockets (not described in this book but read the examples in the source of "gluon/contrib/comet_messaging.py"). ``websockets``:inxx
+“web2y.js”实现下面：
+- 定义``ajax``函数（基于jQuery $.ajax）。
+- 使任何“error” 类DIV或任何“flash”类标签对象向下滑动。
+- 防止在“integer”类INPUT区域输入无效整型。
+- 防止“double”类INPUT区域输入无效浮点型。
+- 用弹出日期拾取连接“date”类INPUT区域。
+- 用弹出日期时间拾取连接“datetime”类INPUT区域。
+- 用弹出时间拾取连接“time”类INPUT区域。
+- 定义``web2py_ajax_component``, 一个非常重要的工具将在第12章描述。
+- 定义 ``web2py_comet``,一个能用在HTML5 websockets的函数（不在本书描述
+但可以阅读“gluon/contrib/comet_messaging.py”里的代码例子）。 ``websockets``:inxx
 
-It also includes ``popup``, ``collapse``, and ``fade`` functions for backward compatibility.
+为后向兼容，它也包含``popup``, ``collapse``, 和``fade`` 函数。
 
-Here is an an example of how the other effects play well together.
+下面是例子展示了其它效果如何在一起更好发挥更好。
 
-Consider a **test** app with the following model:
+考虑有下面模型的**test** 应用：
 ``
 db = DAL("sqlite://db.db")
 db.define_table('child',
@@ -73,7 +77,7 @@ db.child.birth_date.requires=IS_DATE()
 db.child.time_of_birth.requires=IS_TIME()
 ``:code
 
-with this "default.py" controller:
+有“default.py”这个控制器：
 ``
 def index():
     form = SQLFORM(db.child)
@@ -82,52 +86,55 @@ def index():
     return dict(form=form)
 ``:code
 
-and the following "default/index.html" view:
+以及下面“default/index.html”这个视图：
 ``
 {{extend 'layout.html}}
 {{=form}}
 ``:code
 
-The "index" action generates the following form:
+“index”动作生成下面的表单：
 
 [[image @///image/en7000.png center 480px]]
 
-If an invalid form is submitted, the server returns the page with a modified form containing error messages. The error messages are DIVs of class "error", and because of the above web2py.js code, the errors appears with a slide-down effect:
-
+如果无效表单提交，服务器返回修改包含错误消息的页面。错误消息是“error”
+类的DIV，因为上述的web2y.js代码，错误呈现向下华东的效果：
 [[image @///image/en7100.png center 480px]]
 
-The color of the errors is given in the CSS code in "layout.html".
+错误消息的颜色在“layout.html”CSS代码给定。
+web2y.js代码防止你在输入区域输入非法值。这在之前完成而且，不是一个替代，
+服务器端验证。
 
-The web2py.js code prevents you from typing an invalid value in the input field. This is done before and in addition to, not as a substitute for, the server-side validation.
-
-The web2py.js code displays a date picker when you enter an INPUT field of class "date", and it displays a datetime picker when you enter an INPUT field of class "datetime". Here is an example:
+当你在“date”类INPUT字段输入，web2y.js代码显示日期拾取，当你在
+“datetime”类INPUT字段输入，它显示日期时间拾取。
+下面是例子：
 
 [[image @///image/en7200.png center 480px]]
 
-The web2py.js code also displays the following time picker when you try to edit an INPUT field of class "time":
+当你编辑“time”类INPUT字段输入，web2y.js代码也显示下面的时间拾取。
 
 [[image @///image/en7300.png center 480px]]
 
-Upon submission, the controller action sets the response flash to the message "record inserted". The default layout renders this message in a DIV with id="flash". The web2py.js code is responsible for making this DIV appear and making it disappear when you click on it:
+就提交，控制器动作设置相应flash到消息“record inserted”。默认布局以DIV切
+id=“flash”呈现该消息。web2y.js代码负责使该DIV出现并且当你点击它使它消失。
 
 [[image @///image/en7400.png center 480px]]
 
-These and other effects are accessible programmatically in the views and via helpers in controllers.
+这些以及其它效果在视图中编程访问，通过控制器帮助对象。
 
-### jQuery effects
+### jQuery 效果
 ``effects``:inxx
 
-The basic effects described here do not require any additional files; everything you need is already included in web2py_ajax.html.
-
-HTML/XHTML objects can be identified by their type (for example a DIV), their classes, or their id. For example:
+这里描述的基本效果无需额外的文件，所有你需要的已经包含在
+web2py_ajax.html文件。
+HTML/XHTML对象能用它们的类型（例如DIV对象）、它们的类或它们的
+id标识。例如：
 ``
 <div class="one" id="a">Hello</div>
 <div class="two" id="b">World</div>
 ``:code
 
-They belong to class "one" and "two" respectively. They have ids equal to "a" and "b" respectively.
-
-In jQuery you can refer to the former with the following a CSS-like equivalent notations
+它们分别属于类“one”和“two”。它们有分别等于“a”和“b”的id。
+jQuery里你能用下列类似CSS等同的注释应用前面的
 ``
 jQuery('.one')    // address object by class "one"
 jQuery('#a')      // address object by id "a"
@@ -135,7 +142,7 @@ jQuery('DIV.one') // address by object of type "DIV" with class "one"
 jQuery('DIV #a')  // address by object of type "DIV" with id "a"
 ``:code
 
-and to the latter with
+对于后者用
 ``
 jQuery('.two')
 jQuery('#b')
@@ -143,25 +150,27 @@ jQuery('DIV.two')
 jQuery('DIV #b')
 ``:code
 
-or you can refer to both with
+或你能引用它们两个
 ``
 jQuery('DIV')
 ``:code
 
-Tag objects are associated to events, such as "onclick". jQuery allows linking these events to effects, for example "slideToggle":
+标签对象关联到事件，比如“onclick”。jQuery允许链接这些事件到效果，例如
+“slideToggle”：
 ``
 <div class="one" id="a" onclick="jQuery('.two').slideToggle()">Hello</div>
 <div class="two" id="b">World</div>
 ``:code
 
-Now if you click on "Hello", "World" disappears. If you click again, "World" reappears. You can make a tag hidden by default by giving it a hidden class:
+现在如果你点击“"Hello”，“World”消失。如果你再次点击，“World”重新出现。
+你能使标签隐藏默认通过给它隐藏类：
 
 ``
 <div class="one" id="a" onclick="jQuery('.two').slideToggle()">Hello</div>
 <div class="two hidden" id="b">World</div>
 ``:code
 
-You can also link actions to events outside the tag itself. The previous code can be rewritten as follows:
+你也能链接动作到事件，在标签本身外。前面的代码可重写为下面：
 ``
 <div class="one" id="a">Hello</div>
 <div class="two" id="b">World</div>
@@ -170,11 +179,12 @@ jQuery('.one').click(function(){jQuery('.two').slideToggle()});
 </script>
 ``:code
 
-Effects return the calling object, so they can be chained.
+效果返回调用对象，因此它们可以链接。
 
-When the ``click`` sets the callback function to be called on click. Similarly for ``change``, ``keyup``, ``keydown``, ``mouseover``, etc.
+当``click`` 设置回调函数点击时调用。同样的 ``change``, ``keyup``, ``keydown``, ``mouseover``, 等。
 
-A common situation is the need to execute some JavaScript code only after the entire document has been loaded. This is usually done by the ``onload`` attribute of BODY but jQuery provides an alternative way that does not require editing the layout:
+在整个文档载入之后，通常的情况需要执行一些jQuery代码。经常通过BODY
+``onload``属性实现，但是jQuery提供另外的方法无需编辑布局：
 ``
 <div class="one" id="a">Hello</div>
 <div class="two" id="b">World</div>
@@ -185,70 +195,74 @@ jQuery(document).ready(function(){
 </script>
 ``:code
 
-The body of the unnamed function is executed only when the document is ready, after it has been fully loaded.
+未命名函数部分只有当文档准备好，它已经被载入后才执行。
+下面是一些有用事件的名字列表：
 
-Here is a list of useful event names:
+##### 表单事件
+- onchange:   当元素改变时脚本运行
+- onsubmit:   当表单提交时脚本运行
+- onreset:    当表单重置时脚本运行
+- onselect:   当元素被选中时表单运行
+- onblur:     当元素失去焦点时脚本运行
+- onfocus:    当元素得到焦点时脚本运行
 
-##### Form events
-- onchange:   Script to be run when the element changes
-- onsubmit:   Script to be run when the form is submitted
-- onreset:    Script to be run when the form is reset
-- onselect:   Script to be run when the element is selected
-- onblur:     Script to be run when the element loses focus
-- onfocus:    Script to be run when the element gets focus
+##### 键盘事件
+- onkeydown:  当键按下时脚本运行
+- onkeypress: 当键按下并释放时脚本运行
+- onkeyup:    当键释放时脚本运行
 
-##### Keyboard events
-- onkeydown:  Script to be run when key is pressed
-- onkeypress: Script to be run when key is pressed and released
-- onkeyup:    Script to be run when key is released
+##### 鼠标事件
+- onclick:     当鼠标单击时脚本运行
+- ondblclick:  当鼠标双击时脚本运行
+- onmousedown: 当按下鼠标按键时脚本运行
+- onmousemove: 当鼠标指针移动时脚本运行
+- onmouseout:  当鼠标指针移出元素时脚本运行
+- onmouseover: 当鼠标指针移到元素时脚本运行
+- onmouseup:   当鼠标按键释放时脚本运行
 
-##### Mouse events
-- onclick:     Script to be run on a mouse click
-- ondblclick:  Script to be run on a mouse double-click
-- onmousedown: Script to be run when mouse button is pressed
-- onmousemove: Script to be run when mouse pointer moves
-- onmouseout:  Script to be run when mouse pointer moves out of an element
-- onmouseover: Script to be run when mouse pointer moves over an element
-- onmouseup:   Script to be run when mouse button is released
+下面是jQuery定义的有用效果的列表：
 
-Here is a list of useful effects defined by jQuery:
+##### Effects 效果
+- jQuery(...).attr(name): 返回属性值的名字
+- jQuery(...).attr(name, value): 设置属性名为值
+- jQuery(...).show(): 使对象可见
+- jQuery(...).hide(): 使对象隐藏
+- jQuery(...).slideToggle(speed, callback): 使对象滑上或滑下
+- jQuery(...).slideUp(speed, callback): 使对象滑上
+- jQuery(...).slideDown(speed, callback): 使对象滑下
+- jQuery(...).fadeIn(speed, callback): 使对象渐入
+- jQuery(...).fadeOut(speed, callback): 使对象淡出
 
-##### Effects
-- jQuery(...).prop(name): Returns the name of the attribute value
-- jQuery(...).prop(name, value): Sets the attribute name to value
-- jQuery(...).show(): Makes the object visible
-- jQuery(...).hide(): Makes the object hidden
-- jQuery(...).slideToggle(speed, callback): Makes the object slide up or down
-- jQuery(...).slideUp(speed, callback): Makes the object slide up
-- jQuery(...).slideDown(speed, callback): Makes the object slide down
-- jQuery(...).fadeIn(speed, callback): Makes the object fade in
-- jQuery(...).fadeOut(speed, callback): Makes the object fade out
+speed参数通常是“slow”、“fast”或忽略（默认）。callback回调函数是可
+选函数，当效果完成时调用。jQuery效果可以容易地嵌入到帮助对象，例如，在
+视图：
 
-The speed argument is usually "slow", "fast" or omitted (the default). The callback is an optional function that is called when the effect is completed.
-
-jQuery effects can also easily be embedded in helpers, for example,
-in a view:
 ``
 {{=DIV('click me!', _onclick="jQuery(this).fadeOut()")}}
 ``:code
 
-jQuery is a very compact and concise Ajax library; therefore web2py does not need an additional abstraction layer on top of jQuery (except for the ``ajax`` function discussed below). The jQuery APIs are accessible and readily available in their native form when needed.
+jQuery是非常紧凑和简介的Ajax库；因此web2py无需jQuery之上额外的抽象层
+（除了下面讨论的``ajax``函数）。当需要时，jQuery API能够以本来的表单形式访
+问和准备好访问。 
 
-Consult the documentation for more information about these effects and other jQuery APIs.
+咨询文档以获得更多有关这些效果和其它jQuery API的信息。
 
-The jQuery library can also be extended using plugins and User Interface Widgets. This topic is not covered here; see ref.``jquery-ui``:cite for details.
+jQuery库也能用插件和用户接口Widget（User Interface Widget）扩展。这个主题
+不在本书讨论；参看``jquery-ui``:cite 了解更多。
 
-#### Conditional fields in forms
+#### 表单的条件域
 
-A typical application of jQuery effects is a form that changes its appearance based on the value of its fields.
+jQuery效果典型应用是表单基于它区域的值改变它的形式。
 
-This is easy in web2py because the SQLFORM helper generates forms that are "CSS friendly". The form contains a table with rows. Each row contains a label, an input field, and an optional third column. The items have ids derived strictly from the name of the table and names of the fields.
+在web2py中容易实现因为SQLFORM帮助对象生成“CSS friendly”表单。表单包
+含行的表。每行含标签、输入区域和可选第三列。项目有从表名和字段名严格继
+承的id。
 
-The convention is that every INPUT field has an id ``tablename_fieldname`` and is contained in a row with id ``tablename_fieldname__row``.
+规定是每个INPUT字段有id ``tablename_fieldname`` ，用id``tablename_fieldname__row``包含在row（行）中。
 
-As an example, create an input form that asks for a taxpayer's name and for the name of the taxpayer's spouse, but only if he/she is married.
-
-Create a test application with the following model:
+作为例子，创建输入表单要求纳税人的名字和纳税人配偶的名字，只有当
+他/她结婚。
+创建有下列模型的test应用：
 ``
 db = DAL('sqlite://db.db')
 db.define_table('taxpayer',
@@ -257,7 +271,7 @@ db.define_table('taxpayer',
     Field('spouse_name'))
 ``:code
 
-the following "default.py" controller:
+下述“default.py”控制器：
 ``
 def index():
     form = SQLFORM(db.taxpayer)
@@ -266,7 +280,7 @@ def index():
     return dict(form=form)
 ``:code
 
-and the following "default/index.html" view:
+下列的“default/index.html”视图：
 ``
 {{extend 'layout.html'}}
 {{=form}}
@@ -274,29 +288,32 @@ and the following "default/index.html" view:
 jQuery(document).ready(function(){
    jQuery('#taxpayer_spouse_name__row').hide();
    jQuery('#taxpayer_married').change(function(){
-        if(jQuery('#taxpayer_married').prop('checked'))
+        if(jQuery('#taxpayer_married').attr('checked'))
             jQuery('#taxpayer_spouse_name__row').show();
         else jQuery('#taxpayer_spouse_name__row').hide();});
 });
 </script>
 ``:code
 
-The script in the view has the effect of hiding the row containing the spouse's name:
+视图中的脚本有隐藏行配偶名字的效果：
 
 [[image @///image/en7500.png center 480px]]
 
-When the taxpayer checks the "married" checkbox, the spouse's name field reappears:
+当纳税人检查“married”复选框，配偶的名字字段重新显示：
 
 [[image @///image/en7600.png center 480px]]
 
-Here "taxpayer_married" is the checkbox associated to the "boolean" field "married" of table "taxpayer". "taxpayer_spouse_name__row" is the row containing the input field for "spouse_name" of table "taxpayer".
+此处“taxpayer_married”是复选框，关联到表“taxpayer”的字段
+“married”其类型“boolean”。“taxpayer_spouse_name__row”是给表
+“taxpayer”的“spouse_name”输入字段的行。
 
-#### Confirmation on delete
+#### 删除确认
 ``confirmation``:inxx
 
-Another useful application is requiring confirmation when checking a "delete" checkbox such as the delete checkbox that appears in edit forms.
+另外一个有用的应用是，当勾选“delete”复选框比如出现在编辑表单的删
+除复选框时，要求确认。
 
-Consider the above example and add the following controller action:
+考虑上面的例子并添加下面的控制器动作：
 ``
 def edit():
     row = db.taxpayer[request.args(0)]
@@ -306,41 +323,45 @@ def edit():
     return dict(form=form)
 ``:code
 
-and the corresponding view "default/edit.html"
+相应的视图“default/edit.html”
 ``
 {{extend 'layout.html'}}
 {{=form}}
 ``:code
 
 ``deletable``:inxx
-The ``deletable=True`` argument in the SQLFORM constructor instructs web2py to display a "delete" checkbox in the edit form. It is ``False`` by default.
+在SQLFORM构造函数参数``deletable=True`` 指示web2py在编辑表单显示“delete”
+复选框。默认它是 ``False`` 。web2py的“web2py.js”包含下列代码：
 
-web2py's "web2py.js" includes the following code:
 ``
 jQuery(document).ready(function(){
-   jQuery('input.delete').prop('onclick',
+   jQuery('input.delete').attr('onclick',
      'if(this.checked) if(!confirm(
         "{{=T('Sure you want to delete this object?')}}"))
       this.checked=false;');
 });
 ``:code
 
-By convention this checkbox has a class equal to "delete". The jQuery code above connects the onclick event of this checkbox with a confirmation dialog (standard in JavaScript) and unchecks the checkbox if the taxpayer does not confirm:
+按照规定，该复选框有等于“delete”的类。上面的jQuery 代码带确认对话框
+（JavaScript标准的）链接该复选框的onclick事件，如果纳税人不勾选就不
+检查复选框。
 
 [[image @///image/en7700.png center 480px]]
 
-### The ``ajax`` function
+### ``ajax`` 函数
 
-In web2py.js, web2py defines a function called ``ajax`` which is based on, but should not be confused with, the jQuery function ``$.ajax``. The latter is much more powerful than the former, and for its usage, we refer you to ref.``jquery``:cite and ref.``jquery-b``:cite. However, the former function is sufficient for many complex tasks, and is easier to use.
+在web2py.js里，web2py定义叫 ``ajax`` 的函数，基于jQuery函数``$.ajax``。 但不要与它混淆。后者比前者更强大，使用方法，我们推荐你看参考文献``jquery``:cite 和``jquery-b``:cite。 但是，前一个函数对许多复杂任务足够并且更容易使用。
 
-The ``ajax`` function is a JavaScript function that has the following syntax:
+``ajax`` 函数是JavaScript函数，有下面的语法：
 ``
 ajax(url, [name1, name2, ...], target)
 ``:code
 
-It asynchronously calls the url (first argument), passes the values of the field inputs withthe name equal to one of the names in the list (second argument), then stores the response in the innerHTML of the tag with the id equal to target (the third argument).
+它异步调用url（第一个参数），传递名字与列表中名字（第二个参数）
+相等的输入字段值，然后存储id等于目标（第三个参数）的标签的内HTML的响
+应。
 
-Here is an example of a ``default`` controller:
+下面是``default`` 控制器的例子：
 ``
 def one():
     return dict()
@@ -349,7 +370,7 @@ def echo():
     return request.vars.name
 ``:code
 
-and the associated "default/one.html" view:
+关联的“default/one.html”视图：
 ``
 {{extend 'layout.html'}}
 <form>
@@ -358,13 +379,15 @@ and the associated "default/one.html" view:
 <div id="target"></div>
 ``:code
 
-When you type something in the INPUT field, as soon as you release a key (onkeyup), the ``ajax`` function is called, and the value of the ``name="name"`` field is passed to the action "echo", which sends the text back to the view. The ``ajax`` function receives the response and displays the echo response in the "target" DIV.
+当你在INPUT字段输入内容时，只要你释放按键（onkeyup）, ``ajax`` 函数被
+调用， ``name="name"`` 字段的值传递给动作“echo”，它送回文本给视图。 ``ajax`` 函数收到响应并在“target”DIV显示回声响应。
 
 #### Eval target
 
-The third argument of the ``ajax`` function can be the string ":eval". This means that the string returned by server will not be embedded in the document but it will be evaluated instead.
+ ``ajax`` 函数的第三个参数是字符串“:eval”。这意味着被服务器返回的字符
+串不会嵌在文档中而是被评估。
 
-Here is an example of a ``default`` controller:
+下面是一个``default``控制器例子：
 ``
 def one():
     return dict()
@@ -373,7 +396,7 @@ def echo():
     return "jQuery('#target').html(%s);" % repr(request.vars.name)
 ``:code
 
-and the associated "default/one.html" view:
+关联的“default/one.html”视图：
 ``
 {{extend 'layout.html'}}
 <form>
@@ -382,15 +405,18 @@ and the associated "default/one.html" view:
 <div id="target"></div>
 ``:code
 
-This allows for more complex responses that can update multiple targets.
+这允许更多复杂的响应来更新多目标。
 
-#### Auto-completion
+#### 自动完成Auto-completion
 
-Web2py contains a built-in autocomplete widget, described in the Forms chapter. Here we will build a simpler one from scratch.
+web2py包含内建自动完成小工具（widget），在Forms章描述过。这里我
+们将从零开始创建一个简单点的。
 
-Another application of the above ``ajax`` function is auto-completion. Here we wish to create an input field that expects a month name and, when the visitor types an incomplete name, performs auto-completion via an Ajax request. In response, an auto-completion drop-box appears below the input field.
+上面的 ``ajax`` 函数的另外一个应用是自动完成。这里我们希望创建输入字段
+期望月名，当访问者敲入不完整的名字，通过Ajax请求执行自动完成。响应时，
+自动完成的下拉框出现在输入字段下方
 
-This can be achieved via the following ``default`` controller:
+这能够通过下面的 ``default`` 控制器实现：
 ``
 def month_input():
     return dict()
@@ -409,7 +435,7 @@ def month_selector():
                      ) for k in selected])
 ``:code
 
-and the corresponding "default/month_input.html" view:
+相应的“default/month_input.html”视图：
 ``
 {{extend 'layout.html'}}
 <style>
@@ -429,7 +455,12 @@ jQuery("#month").keyup(function(){
 </script>
 ``:code
 
-The jQuery script in the view triggers the Ajax request each time the visitor types something in the "month" input field. The value of the input field is submitted with the Ajax request to the "month_selector" action. This action finds a list of month names that start with the submitted text (selected), builds a list of DIVs (each one containing a suggested month name), and returns a string with the serialized DIVs. The view displays the response HTML in the "suggestions" DIV. The "month_selector" action generates both the suggestions and the JavaScript code embedded in the DIVs that must be executed when the visitor clicks on each suggestion. For example when the visitor types "M" the callback action returns:
+每次访问者在“month”输入框敲入内容，视图中的 jQuery脚本出发Ajax请
+求。输入框的值用Ajax请求提交给“month_selector”动作。该动作找到以提交
+文本开头（选到的）月份名的列表，创建DIV列表（每个包含推荐的月份名），
+并返回带序列化DIV的字符串。视图在“suggestions”DIV显示响应
+HTML。“month_selector”动作生成建议和嵌在DIV的JavaScript代码，当访问
+者点击每个建议时必须执行。例如，当访问者敲入”M”回调动作返回：
 ``
 <div>
      <div onclick="jQuery('#month').val('March')"
@@ -441,16 +472,16 @@ The jQuery script in the view triggers the Ajax request each time the visitor ty
 </div>
 ``:code
 
-Here is the final effect:
+下图是最后效果：
 
 [[image @///image/en7800.png center 480px]]
 
-If the months are stored in a database table such as:
+如果月份存储在数据库表中，比如：
 ``
 db.define_table('month', Field('name'))
 ``:code
 
-then simply replace the ``month_selector`` action with:
+那么只要用下面的替换 ``month_selector`` 动作：
 ``
 def month_input():
     return dict()
@@ -467,25 +498,29 @@ def month_selector():
                  ).xml() for k in selected])
 ``:code
 
-jQuery provides an optional Auto-complete Plugin with additional functionalities, but that is not discussed here.
+jQuery提供可选自动完成插件具有更多的功能，但这里不讨论。
 
-#### Ajax form submission
+#### Ajax表单提交
 ``asynchronous``:inxx
 
-Here we consider a page that allows the visitor to submit messages using Ajax without reloading the entire page. Using the LOAD helper, web2py provides a better mechanism for doing it than described here, which will be described in Chapter 12. Here we want to show you how to do it simply using jQuery.
+这里我们考虑页面允许访问者用Ajax提交消息又不重载整个页面。使用
+LOAD帮助对象，web2py提供比这里描述的更好的机制来实现，会在第12章描
+述。此处，我们想展示给你如何简单用地jQuery实现。
 
-It contains a form "myform" and a "target" DIV. When the form is submitted, the server may accept it (and perform a database insert) or reject it (because it did not pass validation). The corresponding notification is returned with the Ajax response and displayed in the "target" DIV.
+它包含表单“myform”和“target”DIV。当表单提交时，服务器可能接受
+它（并执行数据库插入）或拒绝它（因为它没有通过验证）。相应的通知用
+Ajax响应返回并显示在“target”DIV。
 
-Build a ``test`` application with the following model:
+创建 ``test`` 应用有下面的模型：
 ``
 db = DAL('sqlite://db.db')
 db.define_table('post', Field('your_message', 'text'))
 db.post.your_message.requires = IS_NOT_EMPTY()
 ``:code
 
-Notice that each post has a single field "your_message" that is required to be not-empty.
+注意每个post有单个字段“your_message”要求为非空。
 
-Edit the ``default.py`` controller and  write two actions:
+编辑``default.py`` 控制器并写两个动作：
 ``
 def index():
     return dict()
@@ -498,11 +533,12 @@ def new_post():
         return TABLE(*[TR(k, v) for k, v in form.errors.items()])
 ``:code
 
-The first action does nothing other than return a view.
+第一个动作仅返回一个视图。
 
-The second action is the Ajax callback. It expects the form variables in ``request.vars``, processes them and returns ``DIV("Message posted")`` upon success or a ``TABLE`` of error messages upon failure.
+第二个动作是Ajax回调。它期望 ``request.vars``里的表单变量处理它们，成功则
+返回``DIV("Message posted")`` 或失败返回错误消息``TABLE``。 
 
-Now edit the "default/index.html" view:
+现在编辑“default/index.html”视图：
 ``
 {{extend 'layout.html'}}
 
@@ -522,15 +558,19 @@ jQuery('#myform').submit(function() {
 </script>
 ``:code
 
-Notice how in this example the form is created manually using HTML, but it is processed by the SQLFORM in a different action than the one that displays the form. The SQLFORM object is never serialized in HTML. ``SQLFORM.accepts`` in this case does not take a session and sets ``formname=None``, because we chose not to set the form name and a form key in the manual HTML form.
+注意在这个例子中表单是如何用HTML手动创建，但它被SQLFORM不同于显式
+表单的动作处理。SQLFORM对象从不序列化为HTML。这个情况的 ``SQLFORM.accepts`` 不用回话并设置 ``formname=None``，因为我们选择不设置表单名字而且表单键是手工HTML形式。
 
-The script at the bottom of the view connects the "myform" submit button to an inline function which submits the INPUT with ``id="your_message"`` using the web2py ``ajax`` function, and displays the answer inside the DIV with ``id="target"``.
+视图底部的脚本连接“myform”提交按钮到内联函数，该函数用web2py ``ajax`` 函数提交``id="your_message"`` 的INPUT，在 ``id="target"``的DIV内显示回答。
 
-#### Voting and rating
+#### 投票和打分Voting and rating
 
-Another Ajax application is voting or rating items in a page. Here we consider an application that allows visitors to vote on posted images. The application consists of a single page that displays the images sorted according to their vote. We will allow visitors to vote multiple times, although it is easy to change this behavior if visitors are authenticated, by keeping track of the individual votes in the database and associating them with the ``request.env.remote_addr`` of the voter.
+另一个Ajax应用是页面内的投票和打分项。这里我们考虑允许访问者对粘贴的
+图像投票的应用。应用由单个页面组成，根据他们的票排列显示图像。我们将允
+许访问者多次投票，但是如果用户认证很容易修改这个举动，通过跟踪个人投
+票数据库，并且用投票者的 ``request.env.remote_addr`` 关联它们。
 
-Here is a sample model:
+下面是例子模型：
 ``
 db = DAL('sqlite://images.db')
 db.define_table('item',
@@ -538,7 +578,7 @@ db.define_table('item',
     Field('votes', 'integer', default=0))
 ``:code
 
-Here is the ``default`` controller:
+下面是``default`` 控制器：
 ``
 def list_items():
     items = db().select(db.item.ALL, orderby=db.item.votes)
@@ -554,9 +594,10 @@ def vote():
     return str(new_votes)
 ``:code
 
-The download action is necessary to allow the list_items view to download images stored in the "uploads" folder. The votes action is used for the Ajax callback.
+下载动作需要允许list_items视图下载存储在“uploads”文件夹的图像。投票
+当做用来Ajax回调。
 
-Here is the "default/list_items.html" view:
+下面是“default/list_items.html”视图：
 ``
 {{extend 'layout.html'}}
 
@@ -573,10 +614,14 @@ Votes=<span id="item{{=item.id}}">{{=item.votes}}</span>
 {{pass}}
 ``:code
 
-When the visitor clicks on "[vote up]" the JavaScript code stores the item.id in the hidden "id" INPUT field and submits this value to the server via an Ajax request. The server increases the votes counter for the corresponding record and returns the new vote count as a string. This value is then inserted in the target ``item{{=item.id}}`` SPAN.
+当访问者点击“[vote up]” JavaScript代码存储item.id在隐藏
+“id”INPUT字段并且通过Ajax请求提交该值给服务器。服务器给相应记录增加
+投票计数并以字符串返回新的票数。这个值于是被插入到目标``item{{=item.id}}`` SPAN。
 
 -------
-Ajax callbacks can be used to perform computations in the background, but we recommend using **cron** or a background process instead (discussed in chapter 4), since the web server enforces a timeout on threads. If the computation takes too long, the web server kills it. Refer to your web server parameters to set the timeout value.
+Ajax回调能用在后台执行计算，但我们推荐使用 **cron** 或后台进程（第4章
+讨论过），因为web服务器执行线程超时措施。如果计算耗时太长，web服务器
+终止它。参考你的web服务器参数来设置超时值。
 -------
 
 
