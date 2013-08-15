@@ -1005,7 +1005,3 @@ cPickle也可以序列化到文件和从文件反序列化;
 >>> cPickle.dump(a, open('myfile.pickle', 'wb'))
 >>> c = cPickle.load(open('myfile.pickle', 'rb'))
 ``:code
-
-
-
-
