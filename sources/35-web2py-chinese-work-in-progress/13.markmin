@@ -1,105 +1,127 @@
-## Deployment recipes
+## 部署方法
 
-There are multiple ways to deploy web2py in a production environment. The details depend on the configuration and the services provided by the host.
+有多种方法在生产环境中部署web2py，其详细情况依赖于配置和主机提供的服务。
 
-In this chapter we consider the following issues:
-- Production deployment (Apache, Lighttpd, Cherokee)
-- Security
-- Scalability
-- Deployment on the Google App Engine platform(GAE``gae``:cite )
+在本章，我们将考虑以下几个问题：
+- 生产部署(Apache, Lighttpd, Cherokee)
+- 安全性
+- 可扩展性
+- Google App Engine平台上部署(GAE``gae``:cite )
 
 ``Apache``:inxx ``CGI``:inxx ``mod_python``:inxx ``mod_wsgi``:inxx ``mod_proxy``:inxx
 ``WSGI``:inxx
 
-web2py comes with an SSL``ssl``:cite  enabled web server, the Rocket wsgiserver``rocket``:cite . While this is a fast web server, it has limited configuration capabilities. For this reason it is best to deploy web2py behind Apache``apache``:cite , Lighttpd``lighttpd``:cite  or Cherokee``cherokee``:cite . These are free and open-source web servers that are customizable and have been proven to be reliable in high traffic production environments. They can be configured to serve static files directly, deal with HTTPS, and pass control to web2py for dynamic content.
+web2py附带了一个``ssl``:cite  能启用 web服务器， the Rocket wsgiserver``rocket``:cite 。尽管这是一
+个快速的Web服务器，但它的配置能力有限，因此最好部署web2py在``apache``:cite , Lighttpd``lighttpd``:cite  或者 Cherokee``cherokee``:cite 上。这些是免费的和开源的Web服务器，其是可定制的并且在高流量的
+生产环境中，已被证明是可靠的。它们可以被配置直接地服务静态文件，处理HTTPS，为动态内容传递控制给web2py。
 
-Until a few years ago, the standard interface for communication between web servers and web applications was the Common Gateway Interface (CGI)``cgi``:cite . The main problem with CGI is that it creates a new process for each HTTP request. If the web application is written in an interpreted language, each HTTP request served by the CGI scripts starts a new instance of the interpreter. This is slow, and it should be avoided in a production environment. Moreover, CGI can only handle simple responses. It cannot handle, for example, file streaming.
+直到几年前， Web 服务器和Web 应用程序之间的通信标准接口是通用网关接口 (CGI)``cgi``:cite 。CGI的主要问题是：它为每个HTTP请求创建一个新的进程，如果Web应用程
+序用一种解释性的语言编写，那么CGI脚本服务的每一个HTTP请求都将启动这个解释器
+的一个新实例。在生产环境中，这很慢且应当避免。而且，CGI只能处理简单的响应，它不能处理，例如文件流，web2py提供了一个文件``cgihandler.py``接口到CGI。
 
-web2py provides a file ``cgihandler.py`` to interface to CGI.
 
-One solution to this problem is to use the mod_python module for Apache. We discuss it here because its use is still very common, though the mod_python project has officially been abandoned by the Apache Software Foundation. mod_python starts one instance of the Python interpreter when Apache starts, and serves each HTTP request in its own thread without having to restart Python each time. This is a better solution than CGI, but it is not an optimal solution, since mod_python uses its own interface for communication between the web server and the web application. In mod_python, all hosted applications run under the same user-id/group-id, which presents security issues.
+解决这个问题的一种方案是，使用mod_python模块于Apache上。我们在此讨论它是
+因为尽管mod_python项目已经被Apache软件基金会正式地放弃了，然而它的使用仍然很
+广泛。当Apache启动时，mod_python启动Python解释器一个实例，并在其自己的线程中
+服务每个HTTP请求，而无需每次重启Python。这是一个比CGI更好的解决方案，然而它
+却不是一个最优解决方案，因为mod_python使用其专属接口，让Web服务器和Web应用
+程序之间通信。
 
-web2py provides a file ``modpythonhandler.py`` to interface to mod_python.
+mod_python中，所有托管的应用程序在相同的user-id/group-id 中运行，这就引起了
+一个安全问题，issues.web2py提供了一个文件``modpythonhandler.py`` 接口到mod_python。
 
-In the last few years, the Python community has come together behind a new standard interface for communication between web servers and web applications written in Python. It is called Web Server Gateway Interface (WSGI)``wsgi-w``:cite ``wsgi-o``:cite . web2py was built on WSGI, and it provides handlers for using other interfaces when WSGI is not available.
+在过去的几年里，用Python编写的一个能在Web服务器和Web应用程序之间通信的
+新标准接口出现后，Python社区社员们走到一起。它被称为Web服务器网关接口（WSGI）``wsgi-w``:cite ``wsgi-o``:cite 。 web2py被构建在WSGI上，当WSGI不可用时，它提供了使用其他接口的处理程序。
 
-Apache supports WSGI via the module mod_wsgi``modwsgi``:cite  developed by Graham Dumpleton.
+通过格雷厄姆邓普尔顿（Graham Dumpleton）开发的``modwsgi``:cite  d模块，Apache支持
+WSGI。 web2py提供了一个文件``wsgihandler.py``接口到WSGI。
 
-web2py provides a file ``wsgihandler.py`` to interface to WSGI.
+一些web主机服务并不支持mod_wsgi模块，在这种情况下，我们必须把Apache作为
+代理使用，将所有传入的请求传到web2py 内置的Web 服务器（例如运行在localhost：
+8000）。
 
-Some web hosting services do not support mod_wsgi. In this case, we must use Apache as a proxy and forward all incoming requests to the web2py built-in web server (running for example on localhost:8000).
+在这两种情况下，使用mod_wsgi和/或mod_proxy模块，Apache都能被配置服务静态
+文件，直接处理SSL加密，大大减少web2py的负担。
 
-In both cases, with mod_wsgi and/or mod_proxy, Apache can be configured to serve static files and deal with SSL encryption directly, taking the burden off web2py.
+当前，lighttpd Web服务器不支持WSGI接口，但它支持被改进过后的CGI接口—— FastCGI``fastcgi``:cite  接口。FastCGI接口的主要目的是减少开销，其有关Web服务器和CGI程序接口
+间的开销，并允许一个服务器立刻处理更多的HTTP请求。
 
-The Lighttpd web server does not currently support the WSGI interface, but it does support the FastCGI``fastcgi``:cite  interface, which is an improvement over CGI. FastCGI's main aim is to reduce the overhead associated with interfacing the web server and CGI programs, allowing a server to handle more HTTP requests at once.
+依据lighttpd，“lighttpd模式的几种流行的Web 2.0网站，如YouTube和Wikipedia，
+它的这种高速IO基础设施，允许他们在使用相同的硬件时比用可替换的Web服务器，能
+更好地扩展几倍。实际上，使用FastCGI的Lighttpd比使用mod_wsgi的Apache更快，
 
-According to the Lighttpd web site, "Lighttpd powers several popular Web 2.0 sites such as YouTube and Wikipedia. Its high speed IO-infrastructure allows them to scale several times better with the same hardware than with alternative web-servers". Lighttpd with FastCGI is, in fact, faster than Apache with mod_wsgi.
+web2py中提供
+了一个文件 ``fcgihandler.py`` 接口到FastCGI，web2py 也包含了``gaehandler.py``去连接Google
+App Engine（GAE）。在GAE上，Web应用程序运行"in the cloud"（在云中），这意味着，该框架完全抽象
+了任何硬件细节。 Web应用程序会根据需要自动复制多次，并响应所有并发请求。
 
-web2py provides a file ``fcgihandler.py`` to interface to FastCGI.
+在这种情况下，复制意味着更多，比在单个服务器上多线程更多，同时也意味着在不
+同的服务器上的多个进程。GAE通过阻断写访问进文件系统，实现这一水平的可扩展性，并且所有的持久性信息必须存储在谷歌的BigTable数据库中或在memcache中。
+   在非GAE平台，可扩展性是一个需要加以解决的问题，并在web2py中的应用程序，
+它可能需要一些调整。实现可扩展性的最常用的方法是使用多台Web服务器后台支撑的负
+载平衡器（一个简单的循环，或一些更复杂的循环，接收来自服务器的心跳反馈）。
 
-web2py also includes a ``gaehandler.py`` to interface with the
-Google App Engine (GAE). On GAE, web applications run "in the cloud". This means that the framework completely abstracts any hardware details. The web application is automatically replicated as many times as necessary to serve all concurrent requests. Replication in this case means more than multiple threads on a single server; it also means multiple processes on different servers. GAE achieves this level of scalability by blocking write access to the file system, and all persistent information must be stored in the Google BigTable datastore or in memcache.
-
-On non-GAE platforms, scalability is an issue that needs to be addressed, and it may require some tweaks in the web2py applications. The most common way to achieve scalability is by using multiple web servers behind a load-balancer (a simple round robin, or something more sophisticated, receiving heartbeat feedback from the servers).
-
-Even if there are multiple web servers, there must be one, and only one, database server. By default, web2py uses the file system for storing sessions, error tickets, uploaded files, and the cache. This means that in the default configuration, the corresponding folders have to be shared folders:
+即使有多个Web服务器，然而必须有一个，且只有一个数据库服务器。默认情况下，
+web2py会使用文件系统存储会话、错误票据、已上传文件以及缓存。这意味着，在默认配置情况下，相应的文件夹必须是共享文件夹：
 
 [[image @///image/en9100.png center 300px]]
 
-In the rest of the chapter, we consider various recipes that may provide an improvement over this naive approach, including:
-- Store sessions in the database, in cache or do not store sessions at all.
-- Store tickets on local filesystems and move them into the database in batches.
-- Use memcache instead of cache.ram and cache.disk.
-- Store uploaded files in the database instead of the shared filesystem.
+在本章的余下部分，我们将要考虑多种方法，提供对该稚嫩方法的改进，包括：
+- 存储会话于数据库中、高速缓存中或者根本不存储会话。
+- 存储票据于本地文件系统上，并分批移动到数据库中。
+- 使用mencache而不用cache.ram和cache.disk。
+- 将上传文件存放在数据库中而不存放于共享文件系统中。
 
-While we recommend following the first three recipes, the fourth recipe may provide an advantage mainly in the case of small files, but may be counterproductive for large files.
+尽管我们推荐前三种方法，但第四种方法可能在小文件处理情况下有很多优势，对于
+大文件可能就适得其反。
 
-#### ``anyserver.py``
+#### 文件``anyserver.py``
 
 ``anyserver``:inxx ``bjoern``:inxx ``cgi``:inxx ``cherrypy``:inxx ``diesel``:inxx ``eventlet``:inxx ``fapws``:inxx ``flup``:inxx ``gevent``:inxx ``gunicorn``:inxx ``mongrel2``:inxx ``paste``:inxx `` ``tornado``:inxx ``twisted``:inxx ``wsgiref
 
-Web2py comes with a file called ``anyserver.py`` that implements WSGI interfaces to the following popular servers: bjoern, cgi, cherrypy, diesel, eventlet,
-fapws, flup, gevent, gunicorn, mongrel2, paste,
-rocket, tornado,  twisted, wsgiref
+web2py附带了一个称为``anyserver.py`` 的文件，实施WSGI接口到以下各种流行服务器：
+bjoern, cgi, cherrypy, diesel, eventlet, fapws, flup, gevent, gnuicorn, mongrel2, paste, rocket,
+tornado, twisted和wsgiref。
 
-You can use any of these servers, for example Tornado, simply by doing:
+你可以使用这些服务器中的任意一个，例如Tornado，只需如下做：
 
 ``
 python anyserver.py -s tornado -i 127.0.0.1 -p 8000 -l -P
 ``
 
-(``-l`` for logging and ``-P`` for profiler.
-For information on all the command line options use "-h":
+``-l`` 表示logging（记录日志）， ``-P`` 表示profiler（分析器）
+所有命令行上的信息选项用“-h”：
 
 ``
 python anyserver.py -h
 ``:code
 
-### Linux and Unix
+### Linux和Unix
 
-#### One step production deployment
+#### 生产部署一步到位
 
-Here are some steps to install apache+python+mod_wsgi+web2py+postgresql from scratch.
-
-On Ubuntu:
+下面是从零开始安装apache+python+mod_wsgi+web2py+postgresql的几个步骤。
+在Ubuntu系统：
 ``
 wget http://web2py.googlecode.com/hg/scripts/setup-web2py-ubuntu.sh
 chmod +x setup-web2py-ubuntu.sh
 sudo ./setup-web2py-ubuntu.sh
 ``
-On Fedora:
+在Fedora系统：
 ``
 wget http://web2py.googlecode.com/hg/scripts/setup-web2py-fedora.sh
 chmod +x setup-web2py-fedora.sh
 sudo ./setup-web2py-fedora.sh
 ``
-Both of these scripts should run out of the box, but every Linux installation is a bit different, so make sure you check the source code of these scripts before you run them. In the case of Ubuntu, most of what they do is explained below. They do not implement the scalability optimizations discussed below.
+这两组脚本直接可以运行，但是每一个Linux的安装是有点区别的，因此在运行它们
+之前，一定要确保已经检查了源代码。在Ubuntu的情况下，它们所做的解释如下，即它们不实施下面讨论的可扩展性优化。
 
-#### Apache setup
+#### Apache的设置
 
-In this section, we use Ubuntu 8.04 Server Edition as the reference platform. The configuration commands are very similar on other Debian-based Linux distribution, but they may differ for Fedora-based systems (which uses ``yum`` instead of ``apt-get``).
+在这一部分，我们使用Ubuntu 8.04服务编辑器作为参考平台。该配置命令与在其他基
+于Debian的Linux发行版极其相似，但他们也可能会有所不同于基于Fedora的系统（使用 ``yum`` 而不是``apt-get``）。
 
-First, make sure all the necessary Python and Apache packages are installed by typing the following shell commands:
+首先，确保所有必要的Python和Apache的安装包都被安装，通过键入以下shell命令：
 ``
 sudo apt-get update
 sudo apt-get -y upgrade
@@ -111,7 +133,7 @@ sudo apt-get -y install libapache2-mod-wsgi
 sudo apt-get -y install libapache2-mod-proxy-html
 ``:code
 
-Then, enable the SSL module, the proxy module, and the WSGI module in Apache:
+然后，启用Apache中的SSL模块、代理模块和WSGI模块：
 ``
 sudo ln -s /etc/apache2/mods-available/proxy_http.load \
            /etc/apache2/mods-enabled/proxy_http.load
@@ -121,33 +143,35 @@ sudo a2enmod proxy_http
 sudo a2enmod wsgi
 ``:code
 
-Create the SSL folder, and put the SSL certificates inside it:
+创建SSL文件夹，并把SSL证书放进Apache中：
 ``
 sudo mkdir /etc/apache2/ssl
 ``:code
 
-You should obtain your SSL certificates from a trusted Certificate Authority such as verisign.com, but, for testing purposes, you can generate your own self-signed certificates following the instructions in ref.``openssl``:cite
+你应该从受信任的证书颁发机构得到你的SSL证书，如verisign.com，但出于测试的
+目的，你也可以按照参考文献``openssl``:cite 中的说明生成你自己的自签名的证书。
 
-Then restart the web server:
+然后重启web服务器：
 ``
 sudo /etc/init.d/apache2 restart
 ``:code
 
-The Apache configuration file is:
+Apache配置文档：
 ``
 /etc/apache2/sites-available/default
 ``:code
 
-The Apache logs are in:
+Apache日志在：
 ``
 /var/log/apache2/
 ``:code
 
-#### mod_wsgi
+#### mod_wsgi模块
 
-Download and unzip web2py source on the machine where you installed the web server above.
+在安装了上述Web服务器的机器上，下载并解压缩web2py源代码。
 
-Install web2py under ``/users/www-data/``, for example, and give ownership to user www-data and group www-data. These steps can be performed with the following shell commands:
+在``/users/www-data/``下安装web2py，例如，给用户www-data和组www-data所有权，
+这些步骤可按照下面的shell命令完成：
 ``
 cd /users/www-data/
 sudo wget http://web2py.com/examples/static/web2py_src.zip
@@ -155,12 +179,12 @@ sudo unzip web2py_src.zip
 sudo chown -R www-data:www-data /user/www-data/web2py
 ``:code
 
-To set up web2py with mod_wsgi, create a new Apache configuration file:
+为了建立具有mod_wsgi模块的web2py，创建一个新的Apache配置文档：
 ``
 /etc/apache2/sites-available/web2py
 ``:code
 
-and include the following code:
+并包括以下代码:
 ``
 <VirtualHost *:80>
   ServerName web2py.example.com
@@ -198,55 +222,49 @@ and include the following code:
 </VirtualHost>
 ``:code
 
-When you restart Apache, it should pass all the requests to web2py without going through the Rocket wsgiserver.
-
-Here are some explanations:
+当你重启Apache，它应该传递所有的请求给web2py，而不用通过Rocket wsgiserver。
+下面是一些解释：
 ``
 WSGIDaemonProcess web2py user=www-data group=www-data
                          display-name=%{GROUP}
 ``:code
 
-defines a daemon process group in context of "web2py.example.com". By
-defining this inside of the virtual host, only this virtual host can access this using WSGIProcessGroup, including any virtual host with the same server name but on a different
-port. The "user" and "group"
-options should be set to the user who has write access to the
-directory where web2py was setup. You do not need to set "user" and
-"group" if you made the web2py installation directory writable by
-the default user that Apache runs as. The "display-name" option
-makes the process name appears in ``ps`` output as "(wsgi-web2py)"
-instead of as name of Apache web server executable. As no "processes"
-or "threads" options are specified, the daemon process group will have a
-single process with 15 threads running within that process. This is
-usually more than adequate for most sites and should be left as is.
-If overriding it, do not use "processes=1" as doing so will disable
-any in-browser WSGI debugging tools that check the "wsgi.multiprocess"
-flag. This is because any use of the "processes" option will cause
-that flag to be set to true, even a single process, and such tools
-expect that it be set to false. Note: if your application code
-or third party extension module is not
-thread safe, use options "processes=5 threads=1" instead. This will
-create five processes in the daemon process group where each process
-is single threaded. You might consider using "maximum-requests=1000"
-if your application leaks Python objects because it is unable to garbage collect properly.
+   在"web2py.example.com"网站中，定义一个守护进程组。通过在虚拟主机内定义它，只
+有该虚拟主机能够访问正在使用中的WSGIProcessGroup，包括那些具有相同服务器名的任何虚拟主机但在不同端口。
+  "user" 和"group"选项应该设置给用户，这些用户具有能够写访问安装了web2py的目
+录， 如果你让web2py安装目录能够被像Apache一样默认用户可写，那么就不必设置用
+户和组。
+     “display-name”选项，使进程名称出现在``ps``的输出“（WSGI的web2py）”，而不是作为Apache Web服务器的可执行文件名称。
+    由于"processes"或"threads"选项没有被指定，守护进程组将有一个单一进程，在这一进程中运行着15个线程。
+    通常情况下，对于大多数站点是绰绰有余，并应保留原样。如果重载它，请不使用
+“processes = 1”，因为这样做将禁用任何在浏览器中的WSGI 调试工具，那些选中
+“wsgi.multiprocess”标志的WSGI调试工具。
+
+   这是因为，任何使用了“processes”选项的都将导致该标志被设置为true，即使是单一
+进程，这样的工具也期望它被设置为false。
+    注意：如果您的应用程序代码或第三方扩展模块都不是线程安全的，请使用选项
+“processes=5 threads=1”代替。这将在守护进程组中创建5个进程，在那儿每个进程都是单
+线程的。
+
+    如果您的应用程序泄漏了Python对象，可以考虑使用“maximum-requests=1000”，因
+为它无法正确地收集垃圾。
 ``
 WSGIProcessGroup web2py
 ``:code
 
-delegates running of all WSGI applications to the daemon process group
-that was configured using the WSGIDaemonProcess directive.
+委托所有WSGI应用程序的运行给守护进程组，其被WSGIDaemonProcess指令配置。
 ``
 WSGIScriptAlias / /users/www-data/web2py/wsgihandler.py
 ``:code
 
-mounts the web2py application. In this case it is mounted at the root
-of the web site.
+安装web2py应用程序，在这种情况下，它将被安装在网站的根上。
 ``
 <Directory /users/www-data/web2py>
   ...
 </Directory>
 ``:code
 
-gives Apache permission to access the WSGI script file.
+授权Apache访问WSGI脚本文件：
 ``
 <Directory /users/www-data/web2py/applications/*/static/>
   Order Allow,Deny
@@ -254,49 +272,47 @@ gives Apache permission to access the WSGI script file.
 </Directory>
 ``:code
 
-Instructs Apache to bypass web2py when searching static files.
+当搜索静态文件时，指示Apache绕过web2py：
 ``
 <Location /admin>
   Deny from all
 </Location>
 ``:code
 
-and
+和：
 ``
 <LocationMatch ^/([^/]+)/appadmin>
   Deny from all
 </LocationMatch>
 ``:code
 
-blocks public access to **admin** and **appadmin**
+   阻止公共访问**admin** 和 **appadmin**
 
-Normally we would just allow permission to the whole directory where the WSGI
-script file is located, but web2py places
-the WSGI script file in a directory which contains other source code,
-including the admin interface password. Opening up
-the whole directory would cause security issues, because technically
-Apache would be given permission to serve all the files up to any user
-who traversed to that directory via a mapped URL.
-To avoid security problems, explicitly deny access to the contents of
-the directory, except for the WSGI script file, and prohibit a user
-from doing any overrides from a .htaccess file to be extra safe.
+   通常情况下，我们会只允许WSGI脚本文件所在的整个目录，但web2py的WSGI脚
+本文件却放置在一个包含其他源代码、管理界面密码的目录下。
 
-You can find a completed, commented, Apache wsgi configuration file in:
+   开放整个目录会引起安全问题的出现，因为从技术层面讲，Apache将获准服务所有
+文件的权利，任何用户都可通过映射URL访问那个目录。
+
+   了避免安全问题，明确拒绝访问该目录中的内容，除了WSGI脚本文件，并禁止用
+户从a.htaccess文件做任何覆盖，以便获取额外的安全性。
+
+   你可以找到一个完整的、有注释的，Apache的WSGI配置文件：
 ``
 scripts/web2py-wsgi.conf
 ``:code
 
-This section was created with help from Graham Dumpleton, developer of mod_wsgi.
+这部分能被创建有赖于mod_wsgi模块开发者Graham Dumpleton的帮助。
 
-#### mod_wsgi and SSL
+#### mod_wsgi模块和SSL（安全套接层）
 
-To force some applications (for example **admin** and **appadmin**) to go over HTTPS, store the SSL certificate and key files:
+为了强制一些应用程序（例如 **admin** 和**appadmin**）检验HTTPS协议、存储SSL证书和密钥文件：
 ``
 /etc/apache2/ssl/server.crt
 /etc/apache2/ssl/server.key
 ``:code
 
-and edit the Apache configuration file ``web2py.conf`` and append:
+以及编辑Apache配置文件``web2py.conf``并附加： 
 ``
 <VirtualHost *:443>
   ServerName web2py.example.com
@@ -331,7 +347,7 @@ and edit the Apache configuration file ``web2py.conf`` and append:
 </VirtualHost>
 ``:code
 
-Restart Apache and you should be able to access:
+重启Apache，就能够进入：
 
 ``
 https://www.example.com/admin
@@ -339,18 +355,19 @@ https://www.example.com/examples/appadmin
 http://www.example.com/examples
 ``:code
 
-but not:
+而不是：
 
 ``
 http://www.example.com/admin
 http://www.example.com/examples/appadmin
 ``:code
 
-#### mod_proxy
+#### mod_proxy模块（代理模块）
 
-Some Unix/Linux distributions can run Apache, but do not support mod_wsgi. In this case, the simplest solution is to run Apache as a proxy and have Apache deal with static files only.
+  一些Unix/ Linux发行版可以运行Apache，但不支持mod_wsgi模块。在这种情况下，
+最简单的解决方案是作为代理运行Apache，让 Apache只处理静态文件。
 
-Here is a minimalist Apache configuration:
+  下面是一个最低限度的Apache配置：
 ``
 NameVirtualHost *:80
 #### deal with requests on port 80
@@ -375,20 +392,22 @@ NameVirtualHost *:80
 </VirtualHost>
 ``:code
 
-The above script exposes only the "welcome" application. To expose other applications, you need to add the corresponding <Location>...</Location> with the same syntax as done for the "welcome" app.
+  上面的脚本仅公开了“welcome”这个应用程序。为了公开其他应用程序，需要使用像
+为“welcome”应用程序所做同样的语法添加相应的<Location>... </Location>。
 
-The script assumes there is a web2py server running on port 8000. Before restarting Apache, make sure this is the case:
+  这个脚本假定存在一个web2py服务器在端口8000上运行，重启Apache之前，务必
+是在这种情况：
 ``
 nohup python web2py.py -a '<recycle>' -i 127.0.0.1 -p 8000 &
 ``:code
 
-You can specify a password with the ``-a`` option or use the "<recycle>" parameter instead of a password. In the latter case, the previously stored password is reused and the password is not stored in the shell history.
+   可以使用``-a``a选项指定一个密码，或使用“<recycle>”参数替代一个密码；后一种情况，先前存储的密码会被再次使用且密码也没有存储在shell历史记录中。
+   
+   还可以使用参数“<ask>”，会提示输入密码。
 
-You can also use the parameter "<ask>", to be prompted for a password.
+   当关闭此shell脚本时，``nohup``命令能确保服务器不死掉，``nohup``的所有记录都输出到的 ``nohup.out``。
 
-The ``nohup`` commands makes sure the server does not die when you close the shell. ``nohup`` logs all output into ``nohup.out``.
-
-To force admin and appadmin over HTTPS use the following Apache configuration file instead:
+   为了迫使基于HTTPS协议的admin和appadmin使用下面的Apache配置文件替代：
 ``
 NameVirtualHost *:80
 NameVirtualHost *:443
@@ -434,54 +453,62 @@ NameVirtualHost *:443
 ``:code
 
 -------
-The administrative interface must be disabled when web2py runs on a shared host with mod_proxy, or it will be exposed to other users.
+  当web2py通过mod_proxy模块运行在共享主机上时，管理界面必须被禁用，否则，
+它将被暴露给其他用户。
 -------
 
-#### Start as Linux daemon
+#### 开启Linux守护进程
 
-Unless you are using mod_wsgi, you should setup the web2py server so that it can be started/stopped/restarted as any other Linux daemon, and so it can start automatically at the computer boot stage.
+  只要正在使用mod_wsgi模块，就应该设置web2py的服务器，以便它可以启动/停止/
+重启任何其他Linux守护进程，因此它可以在电脑启动阶段自动启动。
 
-The process to set this up is specific to various Linux/Unix distributions.
+  这个进程的这种设置是特定于各种Linux/ Unix的发行版。
 
-In the web2py folder, there are two scripts which can be used for this purpose:
+  在web2py中的文件夹中，有两种可以用于此目的的脚本：
+
+
 ``
 scripts/web2py.ubuntu.sh
 scripts/web2py.fedora.sh
 ``:code
 
-On Ubuntu, or other Debian-based Linux distribution, edit "web2py.ubuntu.sh" and replace the "/usr/lib/web2py" path with the path of your web2py installation, then type the following shell commands to move the file into the proper folder, register it as a startup service, and start it:
+在Ubuntu上，或其他基于Debian的Linux发行版上，编辑“web2py.ubuntu.sh”，
+用你的web2py的安装路径取代“/usr/lib/web2py”路径，然后键入下面的shell命令，以便将文件移动到合适的文件夹，并将其注册为启动服务，再启动web2py：
 ``
 sudo cp scripts/web2py.ubuntu.sh /etc/init.d/web2py
 sudo update-rc.d web2py defaults
 sudo /etc/init.d/web2py start
 ``:code
 
-On Fedora, or any other distributions based on Fedora, edit "web2py.fedora.sh" and replace the "/usr/lib/web2py" path with the path of your web2py installation, then type the following shell commands to move the file into the proper folder, register it as a startup service and start it:
+在Fedora 系统或基于Fedora 的其他发行版，编辑“web2py.fedora.sh”，用你的
+web2py安装路径取代“/usr/lib/web2py”路径，然后键入以下shell命令以便将文件移动到合适的文件夹，并注册它为启动服务，再启动web2py：
 ``
 sudo cp scripts/web2py.fedora.sh /etc/rc.d/init.d/web2pyd
 sudo chkconfig --add web2pyd
 sudo service web2py start
 ``:code
 
-#### Lighttpd
+#### Lighttpd 开源服务器
 ``Lighttpd``:inxx ``FastCGI``:inxx ``fcgihandler``:inxx
 
-You can install Lighttpd on a Ubuntu or other Debian-based Linux distribution with the following shell command:
+  用下面的shell 命令，你可以在Ubuntu 或者其他基于Debian 的Linux 发行版上安装
+Lighttpd服务器：
 ``
 apt-get -y install lighttpd
 ``:code
 
-Once installed, edit ``/etc/rc.local`` and create a fcgi web2py background process
+一旦安装完成， edit （ 编辑） ``/etc/rc.local`` 创建一个快速通用网关接口
+（FCGI）web2py后台进程。
 ``
 cd /var/www/web2py && sudo -u www-data nohup python fcgihandler.py &
 ``:code
 
-Then, you need to edit the Lighttpd configuration file
+然后你需要编辑Lighttpd服务器配置文件
 ``
 /etc/lighttpd/lighttpd.conf
 ``:code
 
-so that it can find the socket created by the above process. In the config file, write something like:
+以便它能找到上面进程创建的套接字，在配置文件中，写入像这样代码：
 ``
 server.modules              = (
         "mod_access",
@@ -519,40 +546,48 @@ $HTTP["host"] = "(^|\.)example\.com$" {
 }
 ``:code
 
-Now check for syntax errors:
+现在检查语法错误：
 ``
 lighttpd -t -f /etc/lighttpd/lighttpd.conf
 ``:code
 
-and (re)start the web server with:
+并启动（重启）web服务器：
 ``
 /etc/init.d/lighttpd restart
 ``:code
 
-Notice that FastCGI binds the web2py server to a Unix socket,
-not to an IP socket:
+注意：FastCGI绑定在web2py服务器的Unix套接字，而不是IP套接字上。
 ``
 /tmp/fcgi.sock
 ``:code
 
-This is where Lighttpd forwards the HTTP requests to and receives responses from. Unix sockets are lighter than Internet sockets, and this is one of the reasons Lighttpd+FastCGI+web2py is fast.
-As in the case of Apache, it is possible to setup Lighttpd to deal with static files directly, and to force some applications over HTTPS. Refer to the Lighttpd documentation for details.
+lighttpd 转发HTTP 请求和接收响应， Unix 套接字较互联网套接字更轻，这是
+lighttpd+ FastCGI+ web2py速度快的原因之一。
 
-Examples in this section were taken from John Heenan's post in web2pyslices.
+
+至于在Apache 情况下，设置Lighttpd 直接去处理静态文件以及迫使一些应用使用
+HTTPS协议是可能的，有关详细信息，参考Lighttpd文档。
+
+
+本节中的例子取自于John Heenan 编写web2py 程序片段。
 
 -------
-The administrative interface must be disabled when web2py runs on a shared host with FastCGI, or it will be exposed to the other users.
+（当web2py通过mod_proxy模块在共享主机上运行时，管理界面必须被禁用，否则，
+它将被暴露给其他用户。）
 -------
 
-#### Shared hosting with mod_python
+#### 具有mod_python模块的共享式主机
 
-There are times, specifically on shared hosts, when one does not have the permission to configure the Apache config files directly. At the time of writing most of these hosts still run mod_python even if it is not maintained any more in favor of mod_wsgi.
+有时，尤其在共享式主机，当某一个没有直接配置Apache配置文件的权限，在这次
+写的过程当中，即使在Apache不再维持赞同mod_wsgi模块，大部分这种主机仍然可以运
+行mod_python模块。
 
-You can still run web2py. Here we show an example of how to set it up.
+你仍然可以运行web2py，下面的例子将告诉你如何设置它。
 
-Place contents of web2py into the "htdocs" folder.
+将web2py中的内容移到“htdocs”文件夹中。
 
-In the web2py folder, create a file "web2py_modpython.py" file with the following contents:
+
+在web2py文件夹中，创建一个“web2py_modpython.py”文件，其包含下面内容：
 
 ``
 from mod_python import apache
@@ -563,7 +598,7 @@ def handler(req):
     return modpythonhandler.handler(req)
 ``:code
 
-Create/update the file ".htaccess" with the following contents:
+用下面的内容Create/update（创建或更新）文件“.htaccess”：
 
 ``
 SetHandler python-program
@@ -571,18 +606,21 @@ PythonHandler web2py_modpython
 #PythonDebug On
 ``:code
 
-This example was provided by Niktar.
+这个例子由Niktar提供。
 
 
-#### Cherokee with FastCGI
+#### 具有FastCGI的cherokee服务器
 ``Cherokee``:inxx ``FastCGI``:inxx
-Cherokee is a very fast web server and, like web2py, it provides an AJAX-enabled web-based interface for its configuration. Its web interface is written in Python. In addition, there is no restart required for most of the changes.
+Cherokee是一款非常快速的web服务器，并且像web2py一样，它为自身配置提供了
+能启用基于web界面的AJAX，它的Web界面是用Python编写的。此外，也不必重启所需
+的大多数变化。
 
-Here are the steps required to setup web2py with Cherokee:
 
-Download Cherokee``cherokee``:cite
+这里是在Cherokee上设置web2py需要的步骤：
 
-Untar, build, and install:
+下载 Cherokee``cherokee``:cite
+
+解压、编译和安装:
 
 ``
 tar -xzf cherokee-0.9.4.tar.gz
@@ -591,9 +629,10 @@ cd cherokee-0.9.4
 make install
 ``:code
 
-Start web2py normally at least once to make sure it creates the "applications" folder.
+至少正常启动web2py一次，以确保它创建了“application”文件夹。
 
-Write a shell script named "startweb2py.sh" with the following code:
+
+使用下面的代码编写shell脚本并命名为“startweb2py.sh”：
 
 ``
 #!/bin/bash
@@ -601,29 +640,32 @@ cd /var/web2py
 python /var/web2py/fcgihandler.py &
 ``:code
 
-and give the script execute privileges and run it.  This will start web2py under FastCGI handler.
+并给这些脚本执行特权和运行它，这将启动在FastCGI 处理器下（句柄下）的
+web2py。
 
-Start Cherokee and cherokee-admin:
+
+启动Cherokee和Cherokee管理员：
 
 ``
 sudo nohup cherokee &
 sudo nohup cherokee-admin &
 ``:code
 
-By default, cherokee-admin only listens at local interface on port 9090. This is not a problem if you have full, physical access on that machine. If this is not the case, you can force it to bind to an IP address and port by using the following options:
+默认情况下，Cherokee管理员只侦听端口9090上的本地接口，在那台机器上如果你
+有充足的物理访问接口，这不是一个问题。如果不是这种情况，你可以使用下面选项，强制它绑定到一个IP地址和端口。
 ``
 -b,  --bind[=IP]
 -p,  --port=NUM
 ``:code
 
-or do an SSH port-forward (more secure, recommended):
+或做一个SSH端口转发（更安全，推荐）：
 ``
 ssh -L 9090:localhost:9090 remotehost
 ``:code
 
-Open "http://localhost:9090" in your browser.  If everything is ok, you will get cherokee-admin.
+在你的浏览器上打开"http://localhost:9090" ，如果一切顺利，你将到达cheroke-admin界面。
 
-In cherokee-admin web interface, click "info sources".  Choose "Local Interpreter". Write in the following code, then click "Add New".
+在cherokee-admin 的web 界面中，单击"info sources"按钮，选择"Local Interpreter"选项，写入下面的代码，然后单击“Add New”按钮。
 
 ``
 Nick: web2py
@@ -631,32 +673,40 @@ Connection: /tmp/fcgi.sock
 Interpreter: /var/web2py/startweb2py.sh
 ``:code
 
-Finally, perform the following remaining steps:
-- Click "Virtual Servers", then click "Default".
-- Click "Behavior", then, under that, click "default".
-- Choose "FastCGI" instead of "List and Send" from the list box.
-- At the bottom, select "web2py" as "Application Server"
-- Put a check in all the checkboxes (you can leave Allow-x-sendfile). If there is a warning displayed, disable and enable one of the checkboxes. (It will automatically re-submit the application server parameter. Sometimes it doesn't, which is a bug).
-- Point your browser to "http://yoursite", and "Welcome to web2py" will appear.
+最后，请执行以下剩余步骤：
+- 单击“Virtual Servers”，然后单击“Default”。
+- 单击“Behavior”，然后，在此，请单击“Default”。
+- 选中“FastCGI”，而不是来自列表框中的“List and Send”。
+- 在底部，选择“web2py中”作为“Application Server”
+- 在所有的复选框（你可以留下Allow-X-sendfile）勾选一个复选框。如果有警告
+显示、禁用和启用一个复选框。 （它会自动重新提交应用程序服务器参数。有时
+没有，这是一个漏洞）。
+- 将你的浏览器置为“http://yoursite”，那么“Welcome to web2py”将出现。
 
-#### Postgresql
+#### Postgresql数据库
 
-PostgreSQL is a free and open source database which is used in demanding production environments, for example, to store the .org domain name database, and has been proven to scale well into hundreds of terabytes of data. It has very fast and solid transaction support, and provides an auto-vacuum feature that frees the administrator from most database maintenance tasks.
+PostgreSQL是一个免费的开源数据库，它在要求严格的生产环境中使用，例如，存储
+the.org？域名数据库，并已被证明能很好地扩展到数百TB的数据。
+它有非常快速和坚实的事务支持，并提供了自动清理功能，使管理员从大部分的数据
+库维护任务中解放出来。
 
-On an Ubuntu or other Debian-based Linux distribution, it is easy to install PostgreSQL and its Python API with:
+在Ubuntu 或其他基于Debian 的Linux 发行版中，它很容易安装PostgreSQL 和它的
+Python应用编程接口（API）：
 ``
 sudo apt-get -y install postgresql
 sudo apt-get -y install python-psycopg2
 ``:code
 
-It is wise to run the web server(s) and the database server on different machines. In this case, the machines running the web servers should be connected with a secure internal (physical) network, or should establish SSL tunnels to securely connect with the database server.
+明智的做法是在不同的机器上运行Web服务器和数据库服务器，在这种情况下，运
+行web服务器的机器应该连接一个安全的内部（物理）网络，或者应该建立SSL隧道去安
+全地连接数据库服务器。
 
-Edit the PostgreSQL configuration file
+编辑PostgreSQL配置文件
 ``
 sudo nano /etc/postgresql/8.4/main/postgresql.conf
 ``:code
 
-and make sure it contains these two lines
+并确保它包含这两行：
 ``
 ...
 track_counts = on
@@ -665,19 +715,20 @@ autovacuum = on   # Enable autovacuum subprocess?  'on'
 ...
 ``:code
 
-Start the database server with:
+启动数据库服务器：
 ``
 sudo /etc/init.d/postgresql restart
 ``:code
 
-When restarting the PostgreSQL server, it should notify which port it is running on. Unless you have multiple database servers, it should be 5432.
-
-The PostgreSQL logs are in:
+当重启PostgreSQL服务器时，它应该知道哪一个端口在运行。除非你有多个数据库服
+务器，那它就应该是5432。
+PostgreSQL的日志在：
 ``
 /var/log/postgresql/
 ``:code
 
-Once the database server is up and running, create a user and a database so that web2py applications can use it:
+一旦数据库服务器已启动并运行着，创建一个用户和一个数据库，以便web2py中应
+用程序可以使用它：
 ``
 sudo -u postgres createuser -PE -s myuser
 postgresql> createdb -O myself -E UTF8 mydb
@@ -686,73 +737,78 @@ postgresql> psql -l
 postgresql> psql mydb
 ``:code
 
-The first of the commands will grant superuser-access to the new user, called ``myuser``. It will prompt you for a password.
+第一个命令将授予超级用户访问权限给这个叫``myuser``的新用户，它会提示你输入密
+码。
 
-Any web2py application can connect to this database with the command:
+使用这个命令，任何web2py应用程序都能够连接到这个数据库：
 ``
 db = DAL("postgres://myuser:mypassword@localhost:5432/mydb")
 ``:code
 
-where ``mypassword`` is the password you entered when prompted, and 5432 is the port where the database server is running.
+当提示你在``mypassword`` 输入密码时，数据库服务器正在5432端口处运行。
 
-Normally you use one database for each application, and multiple instances of the same application connect to the same database. It is also possible for different applications to share the same database.
+通常情况下，你的每个应用程序使用一个数据库，同一应用程序的多个实例连接到同
+一个数据库。另外，不同的应用程序来共享同一数据库也是可能的。
 
-For database backup details, read the PostgreSQL documentation; specifically the commands ``pg_dump`` and ``pg_restore``.
+对于数据库备份的详细信息，请参阅PostgreSQL 文档，具体的命令即``pg_dump`` 和 ``pg_restore``。
 
-### Windows
+### Windows系统
 
-#### Apache and mod_wsgi
+#### Apache 和mod_wsgi
 
-Installing Apache, and mod_wsgi under Windows requires a different procedure.
-Here are assuming Python 2.5 is installed, you are running from source and web2py is located at ``c:/web2py``.
+在Windows下安装Apache和mod_wsgi需要不同的程序，这里假设Python 2.5被安装，
+您正在运行来自源和位于 ``c:/web2py``。
 
-First download the requires packages:
-- Apache ``apache_2.2.11-win32-x86-openssl-0.9.8i.msi`` from  ``apache1``:cite
-- mod_wsgi from ``modwsgi1``:cite
+首先下载所需要的包：
+- 从参考文献``apache1``:cite``下载apache_2.2.11-win32-x86-openssl-0.9.8i.msi``
+- 从参考文献 ``modwsgi1``:cite 下载mod_wsgi
 
-Second, run ``apache...msi`` and follow the wizard screens. On the server information screen
+第二，运行``apache...msi`` ，然后按照向导屏幕上的提示进行操作。
+在服务器信息屏幕上：
 
 [[image @///image/en9200.png center 300px]]
 
-enter all requested values:
-- **Network Domain**: enter the DNS domain in which your server is or will be registered in.  For example, if your server's full DNS name is server.mydomain.net, you would type mydomain.net here
-- **ServerName**: Your server's full DNS name. From the example above, you would type server.mydomain.net here. Enter a fully qualified domain name or IP address from the web2py install, not a shortcut, for more information see ``apache2``:cite.
-- **Administrator's Email Address**. Enter the server administrator's or webmaster's email address here. This address will be displayed along with error messages to the client by default.
+输入所有请求的值：
+- **Network Domain**: 进入DNS域名，你的服务器或许是你的服务器注册在它里面。
+例如，如果你的服务器的DNS全名是server.mydomain.net，你可以键入mydomain.net。
+- **ServerName**: ：你的服务器是完整的DNS域名。
+从上面的例子中，你会在这里键入server.mydomain.net，从安装的web2py而不是快捷方式的，进入一个完全合格的域名或IP地址，更多详细信息，请参阅``apache2``:cite。
+- **Administrator's Email Address** 管理员的电子邮件地址。
+进入服务器管理员或网站管理员的电子邮件地址，默认情况下，该地址以及错误消息一同显示给客户。
 
-Continue with a typical install to the end unless otherwise required
+继续典型安装直到结束，除非有其他要求。
 
-The wizard, by default, installed Apache in the folder:
+默认情况下,安装了Apache的向导在这个文件夹中：
 ``
 C:/Program Files/Apache Software Foundation/Apache2.2/
 ``:code
 
-From now on we refer to this folder simply as ``Apache2.2``.
+从现在起，我们把这个文件夹简单称为 ``Apache2.2``。
 
-Third, copy the downloaded mod_wsgi.so to
-``Apache2.2/modules``
+第三，拷贝下载的、并由Chris Travers编写的，于2007年12月在微软开源软件实验室
+发表的mod_wsgi.so到``Apache2.2/modules``文件夹中。
 
-written by Chris Travers, published by the Open Source Software Lab at Microsoft, December 2007.
 
-Fourth, create ``server.crt`` and ``server.key`` certificates (as discussed in the previous section) and place them in the folder  ``Apache2.2/conf``. Notice the cnf file is in ``Apache2.2/conf/openssl.cnf``.
 
-Fifth, edit ``Apache2.2/conf/httpd.conf``,
-remove the comment mark (the # character) from the line
+第四，创建``server.crt`` 和``server.key`` 证书（如前节讨论的那样），并把它们放到
+Apache2.2/conf文件夹中。注意把cnf文件放在 ``Apache2.2/conf``文件夹中。 注意把cnf文件放在Apache2.2/conf/openssl.cnf文件夹中。
+
+第五，编辑 ``Apache2.2/conf/httpd.conf``，从行中删除注释标记（＃字符）
 ``
 LoadModule ssl_module modules/mod_ssl.so
 ``:code
 
-add the following line after all the other LoadModule lines
+添加下面的这行代码于所有其他LoadModule行之后
 ``
 LoadModule wsgi_module modules/mod_wsgi.so
 ``:code
 
-look for "Listen 80" and add this line after it
+寻找“listen80”，加入下面代码于这一行后面
 ``
 Listen 443
 ``:code
 
-append the following lines at the end changing  drive letter, port number,
-ServerName according to your values
+最后根据你的数值数据添加以下几行改变驱动器号、端口号、服务器名称
 ``
 NameVirtualHost *:443
 <VirtualHost *:443>
@@ -785,29 +841,32 @@ NameVirtualHost *:443
 </VirtualHost>
 ``:code
 
-Save and check the config using: [Start > Program > Apache HTTP Server 2.2 > Configure Apache Server > Test Configuration]
+使用下面步骤保存和检查这些配置：“开始”>“程序”>“Apache HTTP服务器2.2>配
+置Apache服务器>测试配置]
 
-If there are no problems you will see a command screen open and close.
-Now you can start Apache:
+如果没有问题，你会看到一个命令窗口的打开和关闭。现在可以启动Apache：
 
-[Start > Program > Apache HTTP Server 2.2 > Control Apache Server > Start]
+[Start > Program > Apache HTTP Server 2.2 > Control Apache Server > Start] or better yet
+start the taskbar monitor
 
-or better yet start the taskbar monitor
+[“开始”>“程序”> Apache HTTP服务器2.2>控制Apache服务器>启动]或更好的便是
+启动任务栏上的显示器
 
 ``[Start > Program > Apache HTTP Server 2.2 > Control Apache Server]``
 
-Now you can right-click on the red feather-like taskbar icon to "Open Apache Monitor" and then start, stop and restart Apache as required.
+现在你可以用鼠标右键单击红色羽毛般的任务栏图标“打开Apache监视器”，然后
+按照要求启动，停止和重启Apache。
 
-This section was created by Jonathan Lundell.
+本节是由Jonathan Lundell编写。
 
-#### Start as Windows service
+#### 开始为Windows服务
 ``Windows service``:inxx
 
-What Linux calls a daemon, Windows calls a service.
-The web2py server can easily be installed/started/stopped as a Windows service.
+Linux称之为守护进程，Windows叫做服务。作为Windows服务，web2py服务器能容
+易地被installed/started/stopped（安装/启动/停止）。
 
-In order to use web2py as a Windows service, you must create a file "options.py"
-with startup parameters:
+为了把web2py作为一个Windows服务使用，你必须创建文件“options.py”，其包含
+启动参数：
 ``
 import socket, os
 ip = socket.gethostname()
@@ -825,60 +884,69 @@ shutdown_timeout = 5
 folder = os.getcwd()
 ``:code
 
-You don't need to create "options.py" from scratch since there is already an "options_std.py" in the web2py folder that you can use as a model.
+不需要从头开始创建"options.py"，因为在web2py的文件夹中已经有“options_std.py”
+文件，可以把它作为一个模型来使用。
 
-After creating "options.py" in the web2py installation folder, you can install web2py as a service with:
+
+在web2py安装文件夹中创建“options.py”文件后，可以把web2py作为一个服务安装：
 ``
 python web2py.py -W install
 ``:code
 
-and start/stop the service with:
+并启动/停止这个服务：
 ``
 python web2py.py -W start
 python web2py.py -W stop
 ``:code
 
-### Securing sessions and **admin**
+### 安全会话和 **admin**(管理)
 ``security``:inxx ``admin``:inxx
 
-It is very dangerous to publicly expose the **admin** application and the **appadmin** controllers unless they run over HTTPS. Moreover, your password and credentials should never be transmitted unencrypted. This is true for web2py and any other web application.
+除非**admin** 应用程序和 **appadmin** 控制器通过 HTTPS协议运行，否则公开暴露它们会是非常危险的，而且你的密码和证书绝不能不加密就传输，这对于web2py和其他Web应用程序都是对的。
 
-In your applications, if they require authentication, you should make the session cookies secure with:
+在你的应用程序中，如果它们需要身份验证，你应该使会话cookie安全，用：
 ``
 session.secure()
 ``:code
 
-An easy way to setup a secure production environment on a server is to first stop web2py and then remove all the ``parameters_*.py`` files from the web2py installation folder.  Then start web2py without a password. This will completely disable admin and appadmin.
+在一个服务器上设置安全生产环境的一种容易方式就是先停止运行web2py然后删除
+来自web2py 安装文件夹中的所有 ``parameters_*.py`` 文件，最后以一种无密码方式启动web2py，这样就会完全禁止admin和appadmin运行。
 ``
 nohup python web2py --nogui -p 8001 -i 127.0.0.1 -a '' &
 ``:code
 
-Next, start a second web2py instance accessible only from localhost:
+接下来，启动只能从localhost访问的又一个web2py实例：
 ``
 nohup python web2py --nogui -p 8002 -i 127.0.0.1 -a '<ask>' &
 ``:code
 
-and create an SSH tunnel from the local machine (the one from which you wish to access the administrative interface) to the server (the one where web2py is running, example.com), using:
+并从本地主机（你想访问的管理界面）到服务器（web2py 正在其上运行，如
+example.com）建立一个SSH隧道，使用：
 ``
 ssh -L 8002:127.0.0.1:8002 username@example.com
 ``:code
 
-Now you can access the administrative interface locally via the web browser at ``localhost:8002``.
+现在，通过在 ``localhost:8002``上的Web浏览器，可以局部访问管理界面。
 
-This configuration is secure because **admin** is not reachable when the tunnel is closed (the user is logged out).
+因为当隧道被关闭（用户退出登录）时，**admin** 不可访问，故此配置是安全的。
 
 -------
-This solution is secure on shared hosts if and only if other users do not have read access to the folder that contains web2py; otherwise users may be able to steal session cookies directly from the server.
+当且仅当其他用户不具有读取访问包含web2py文件夹的权限时，在共享主机上该解
+决方案才是安全的，否则用户可能直接从服务器上窃取会话cookie。
 -------
 
-### Efficiency and scalability
+### 高效性和扩展性
 ``scalability``:inxx
 
-web2py is designed to be easy to deploy and to setup. This does not mean that it compromises on efficiency or scalability, but it means you may need to tweak it to make it scalable.
+web2py被设计得易于部署和设置，这并不意味着它折中了效率或可扩展性，但它意
+味着可能需要调整它，以便其具有可扩展性。
 
-In this section we assume multiple web2py installations behind a NAT server that provides local load-balancing.
 
-In this case, web2py works out-of-the-box if some conditions are met. In particular, all instances of each web2py application must access the same database servers and must see the same files. This latter condition can be implemented by making the following folders shared:
+在本节，我们假设多个web2py安装在提供本地负载均衡的NAT服务器后。
+
+
+在这种情况下，如果某些条件得到满足，web2py可以立即运行工作，尤其是，每个
+基于web2py的应用程序的所有实例必须能访问同样数据库的服务器，且必须看到相同的文件，这后一种情况可以根据下面的文件夹共享实现：
 ``
 applications/myapp/sessions
 applications/myapp/errors
@@ -886,46 +954,59 @@ applications/myapp/uploads
 applications/myapp/cache
 ``:code
 
-The shared folders must support file locking. Possible solutions are ZFS
-(ZFS was developed by Sun Microsystems and is the preferred choice.), NFS
-(With NFS you may need to run the``nlockmgr`` daemon to allow file locking.), or Samba (SMB).
+共享文件夹必须支持文件锁定。可能的解决方案是ZFS（ZFS是Sun Microsystems开
+发的，也是最佳的选择。）、NFS（使用NFS时，你可能需要运行``nlockmgr``守护进程去允许文件锁定。）或Samba（SMB）。
 
-It is possible to share the entire web2py folder or the entire applications folder, but this is not a good idea because this would cause a needless increase of network bandwidth usage.
+共享整个web2py文件夹或者整个应用文件夹是可能的，但却不是一个好主意，因为
+这样就会引起网络带宽使用的无限增长。
 
-We believe the configuration discussed above to be very scalable because it reduces the database load by moving to the shared filesystems those resources that need to be shared but do not need transactional safety (only one client at a time is supposed to access a session file, cache always needs a global lock, uploads and errors are write once/read many files).
+我们认为上面讨论的配置是具有良好扩展性的，因为它通过移动共享文件系统减少数
+据库的负载，这些资源需要能被共享却不需要安全的事务处理（一次只有一个客户端访问会话文件、缓存，且缓存总是需要一个全局锁，上传和错误一次性写入/读出多个文件）。
 
-Ideally, both the database and the shared storage should have RAID capability. Do not make the mistake of storing the database on the same storage as the shared folders, or you will create a new bottleneck there.
+理想情况是，数据库和共享存储器应该具有RAID功能，不要把存储在同一存储器上
+的数据库错误当着共享文件夹，否则你会创建一个新的瓶颈。
 
-On a case-by-case basis, you may need to perform additional optimizations and we will discuss them below. In particular, we will discuss how to get rid of these shared folders one-by-one, and how to store the associated data in the database instead. While this is possible, it is not necessarily a good solution. Nevertheless, there may be reasons to do so. One such reason is that sometimes we do not have the freedom to set up shared folders.
-
-#### Efficiency tricks
-
-web2py application code is executed on every request, so you want to minimize this amount of code. Here is what you can do:
-
-- Run once with ``migrate=True`` then set all your tables to ``migrate=False``.
-- Bytecode compile your app using **admin**.
-- Use ``cache.ram`` as much as you can but make sure to use a finite set of keys, or else the amount of cache used will grow arbitrarily.
-- Minimize the code in models: do not define functions there, define functions in the controllers that need them or - even better - define functions in modules, import them and use those functions as needed.
-- Do not put many functions in the same controller but use many controllers with few functions.
-- Call ``session.forget(response)`` in all controllers and/or functions that do not change the session.
-- Try to avoid web2py cron, and use a background process instead. web2py cron can start too many Python instances and cause excessive memory usage.
+在逐案基础下，可能需要执行额外的优化，我们将在下面讨论它们。特别是，我们将
+讨论如何摆脱这些一个接一个的共享文件夹，以及如何在数据库中存储相关数据。
 
 
-#### Sessions in database
+尽管这是可能的，然而它却不是一个好的解决方法，但是无论如何，仍然有理由让我
+们这样做。一个理由就是有时我们并不能随意的设置这些共享文件夹。
 
-It is possible to instruct web2py to store sessions in a database instead of in the sessions folder. This has to be done for each individual web2py application, although they may all use the same database to store sessions.
+#### 高效策略
 
-Given a database connection
+web2py应用程序代码是在每一个请求上执行，因此你要最大限度地减少这种代码量。
+这里是你能做的：
+
+- 运行一次 ``migrate=True`` ，然后设置所有的表 ``migrate=False``。
+- 字节码使用 **admin**编译你的应用程序。
+- 你可以尽量多的使用``cache.ram`` ，但确保使用一组有限的键设置，否则缓存量的使用将任意的增加。
+- 最小化模型中的代码：不要在那里定义函数，在控制器中定义，控制器需要他们 --
+甚至更好的情况 - -定义模块中的函数，引进他们并按需使用这些函数。
+- 不要把许多函数放在同一控制器中，而是使用许多含有少许函数的控制器。
+- 调用在所有控制器中的 ``session.forget(response)``）
+和/或不会改变会话的函数。
+- 尽量避免使用web2py的cron，而是使用一个后台进程， web2py的cron会启动太多
+的Python实例，并引起过多的内存使用。
+
+
+#### 数据库中的会话
+
+指示web2py存储会话于数据库中，而不存储于会话文件夹中，这是可能实现的。尽管
+它们都可能使用同一个数据库来存储会话，但是为每个单独的web2py应用程序这样做是必须的。
+
+考虑一个数据库连接
 ``
 db = DAL(...)
 ``:code
 
-you can store the sessions in this database (db) by simply stating the following, in the same model file that establishes the connection:
+可以通过简单的下面表述来存储这些会话于这个数据库（db）中，在同一个模型文件
+中建立这个连接：
 ``
 session.connect(request, response, db)
 ``:code
 
-If it does not exist already, web2py creates, under the hood, a table in the database called ``web2py_session_``''appname'' containing the following fields:
+如果它已经不存在， 在后台， web2py 在数据库中创建一个名为 ``web2py_session_``''appname'' 的表格，包含有以下字段：
 ``
 Field('locked', 'boolean', default=False),
 Field('client_ip'),
@@ -935,37 +1016,41 @@ Field('unique_key'),
 Field('session_data', 'text')
 ``:code
 
-"unique_key" is a uuid key used to identify the session in the cookie.
-"session_data" is the cPickled session data.
+“unique_key”是一个uuid 键，用于标识cookie 中的会话， “session_data”是
+cPickled会话数据。
 
-To minimize database access, you should avoid storing sessions when they are not needed with:
+为了减少数据库访问，当会话不需要时，尽量避免存储它们，用：
 ``
 session.forget()
 ``:code
 
-With this tweak the "sessions" folder does not need to be a shared folder because it will no longer be accessed.
+有了这样的调整， “sessions”文件夹并不需要设置为共享文件夹，因为它将不再被
+访问。
 
 -------
-Notice that, if sessions are disabled, you must not pass the ``session`` to ``form.accepts`` and you cannot use ``session.flash`` nor CRUD.
+注意：如果会话被禁用，不准传递``session``到``form.accepts``，也不能使用`` ``session.flash``和 CRUD。
 -------
 
-#### HAProxy a high availability load balancer
+#### HAProxy一种高可用性、负载均衡器
 ``HAProxy``:inxx
 
-If you need multiple web2py processes running on multiple machines, instead of storing sessions in the database or in cache, you have the option to use a load balancer with sticky sessions.
+如果你需要多个web2py进程在多台机器上运行，而不是存储会话于数据库或者缓存
+中，可以选择使用粘性会话的负载均衡器。
 
-Pound``pound``:cite  and HAProxy``haproxy``:cite  are two HTTP load balancers and Reverse proxies that provides sticky sessions. Here we discuss the latter because it seems to be more common on commercial VPS hosting.
+Pound``pound``:cite  和 HAProxy``haproxy``:cite  a是两个使用HTTP的负载均衡和反向代理，其提供粘性会话。
+这里，我们讨论后者，因为在商业VPS主机中，它似乎使用更普遍。
 
-By sticky sessions, we mean that once a session cookie has been issued, the load balancer will always route requests from the client associated to the session, to the same server. This allows you to store the session in the local filesystem without need for a shared filesystem.
+我们的意思是，通过粘性会话，一旦一个会话cookie已经发出，负载平衡器总是路由
+那些来自与该会话关联的客户端请求到同一台服务器，这可以让你存储会话于本地文件系统，而不必存于共享文件系统中
 
-To use HAProxy:
+要使用HAProxy：
 
-First, install it, on out Ubuntu test machine:
+首先，安装它，就出来了Ubuntu的试验机：
 ``
 sudo apt-get -y install haproxy
 ``:code
 
-Second edit the configuration file "/etc/haproxy.cfg" to something like this:
+其次，向下面表述的一样编辑配置文件"/etc/haproxy.cfg"：
 ``
 ## this config needs haproxy-1.1.28 or haproxy-1.2.1
 
@@ -995,54 +1080,58 @@ listen 0.0.0.0:80
       appsession WEB2PYSTICKY len 52 timeout 1h
 ``:code
 
-The ``listen`` directive tells HAProxy, which port to wait for connection from.
-The ``server`` directive tells HAProxy where to find the proxyed servers.
-The ``appsession`` directory makes a sticky session and uses the a cookie called ``WEB2PYSTICKY`` for this purpose.
+ ``listen`` 指令告诉HAProxy，哪个端口在等待连接。
+ ``server`` 指令告诉HAProxy到哪去寻找代理服务器。
+  为了实现这个目标，应用会话目录使用粘性会话和使用名为``WEB2PYSTICKY``
+  的cookie。
 
-Third, enable this config file and start HAProxy:
+第三，启用此配置文件和启动的HAProxy：
 ``
 /etc/init.d/haproxy restart
 ``:code
 
-You can find similar instructions to setup Pound at the URL
+你可以找到类似的指示去安装Pound在URL上：
 
 ``
 http://web2pyslices.com/main/slices/take_slice/33
 ``:code
 
-#### Cleaning up sessions
+#### 清除会话
 
-You should be aware that on a production environment, sessions pile up fast. web2py provides a script called:
+你应该注意到，在生产环境中，会话快速堆积。 web2py提供了一个脚本调用：
 ``
 scripts/sessions2trash.py
 ``:code
 
-that when run in the background, periodically deletes all sessions that have not been accessed for a certain amount of time. Web2py provides a script to cleanup these sessions (it works for both file-based sessions and database sessions).
+在后台运行时，定期删除在一定时间内没有被访问的所有会话， web2py提供了一个
+脚本来清除这些会话（它适用于基于文件的会话和数据库会话）。
 
-Here are some typical use cases:
 
-- Delete expired sessions every 5 minutes:
+这里是一些典型的应用情况：
+
+- 每五分钟删除过期会话
 ``
 nohup python web2py.py -S app -M -R scripts/sessions2trash.py &
 ``:code
 
-- Delete sessions older than 60 minutes regardless of expiration, with verbose output, then exit:
+- 无论到期，删除超过60分钟的会话，详细输出，然后退出：
 ``
 python web2py.py -S app -M -R scripts/sessions2trash.py -A -o -x 3600 -f -v
 ``:code
 
-- Delete all sessions regardless of expiry and exit:
+- 删除所有的会话，而不管到期与否并退出：
 ``
 python web2py.py -S app -M -R scripts/sessions2trash.py -A -o -x 0
 ``:code
 
-Here ``app`` is the name of your application.
+这里``app`` （应用程序）是你的应用程序的名称。
 
 #### Uploading files in database
 
-By default, all uploaded files handled by SQLFORMs are safely renamed and stored in the filesystem under the "uploads" folder. It is possible to instruct web2py to store uploaded files in the database instead.
+默认情况下，所有上传被SQLFORM处理的文件被安全地重命名和存储在“uploads”文
+件夹下的文件系统中。指示web2py存储上传的文件于数据库中是可能的。
 
-Now, consider the following table:
+现在，考虑下面的表：
 
 ``
 db.define_table('dog',
@@ -1050,7 +1139,7 @@ db.define_table('dog',
     Field('image', 'upload'))
 ``:code
 
-where ``dog.image`` is of type upload. To make the uploaded image go in the same record as the name of the dog, you must modify the table definition by adding a blob field and link it to the upload field:
+在那儿``dog.image``的类型是上传，要使上传作为狗的名字的图片在同一个记录中，必须增加一个blob字段来修改表定义，并将其链接到这个上传字段：
 ``
 db.define_table('dog',
     Field('name')
@@ -1058,28 +1147,37 @@ db.define_table('dog',
     Field('image_data', 'blob'))
 ``:code
 
-Here "image_data" is just an arbitrary name for the new blob field.
+这里的“image_data”只是一个新的blob字段中的任意名称。
 
-Line 3 instructs web2py to safely rename uploaded images as usual, store the new name in the image field, and store the data in the uploadfield called "image_data" instead of storing the data on the filesystem. All of this is be done automatically by SQLFORMs and no other code needs to be changed.
+第3行指示web2py像往常一样，去安全地重命名上传的图片，在图像领域中存储为
+新名称，并在名为“image_data”的uploadfield中存储这些数据，而不是存储在文件系
+统中。通过SQLFORM所有这一切都被自动完成，并且没有其他代码需要改变。
 
-With this tweak, the "uploads" folder is no longer needed.
+通过这个调整，“uploads”文件夹不再需要。
 
-On Google App Engine, files are stored by default in the database without the need to define an uploadfield, since one is created by default.
+在Google App Engine中，文件被默认存储在数据库中，而不需要定义uploadfield，
+因为它默认被创建。
 
-#### Collecting tickets
+#### 收集票据
 
-By default, web2py stores tickets (errors) on the local file system. It would not make sense to store tickets directly in the database, because the most common origin of error in a production environment is database failure.
+默认情况下，web2py在本地文件系统中存储票据（错误）。直接在数据库中存储票据
+是毫无意义的，因为在生产环境，最常见的错误来源是数据库失败。
 
-Storing tickets is never a bottleneck, because this is ordinarily a rare event. Hence, in a production environment with multiple concurrent servers, it is more than adequate to store them in a shared folder. Nevertheless, since only the administrator needs to retrieve tickets, it is also OK to store tickets in a non-shared local "errors" folder and periodically collect them and/or clear them.
+存储tickets绝不是一个瓶颈，因为这通常是一个罕见的事件。因此，在生产环境中有
+多个并发的服务器，将它们存储在一个共享文件夹，它是绰绰有余。
+不过，因为只有管理员才需取得票据，在当地一个非共享的“错误”文件夹中保存票
+据也是可行的，并定期收集和/或清除它们。
 
-One possibility is to periodically move all local tickets to the database.
+一种可能性就是周期的移动所有本地票据到数据库。
 
-For this purpose, web2py provides the following script:
+为了这个目地，web2py提供了下面脚本：
 ``
 scripts/tickets2db.py
 ``:code
 
-By default the script gets the db uri from a file saved into the private folder, **ticket_storage.txt**. This file should contain a string that is passed directly to a **DAL** instance, like:
+默认情况下，脚本从保存在私有文件夹的文件(**ticket_storage.txt**)
+中得到db uri。
+这个文件应该包含一个字符串，它被直接传递到一个**DAL** 实例，像：
 
 ``
 mysql://username:password@localhost/test
@@ -1087,28 +1185,29 @@ postgres://username:password@localhost/test
 ...
 ``:code
 
-This allows to leave the script as it is: if you have multiple applications, it will dynamically choose the right connection for every application. If you want to hardcode the uri in it, edit the second reference to db_string, right after the ''except'' line.
-You can run the script with the command:
+这允许脚本保持不变：如果你有多个应用程序，它会为每一个应用程序动态地选择正
+确的连接。
+如果你想在它里面硬编码uri，编辑第二个参考给db_string，恰好在除线之后。您可以使用这个命令运行该脚本：
 ``
 nohup python web2py.py -S myapp -M -R scripts/tickets2db.py &
 ``:code
 
-where myapp is the name of your application.
+在那儿，myapp(我的应用)就是你的应用名。
+这个脚本在后台运行，并且每5分钟将所有票据移动到一个表和删除本地的票据。
+稍后，你可以使用管理应用程序查看错误，点击顶部的按钮"switch to: db" (“切换到：
+db”)，有相同确切功能，好像它们被存储在文件系统上。
+通过这调整，“errors”文件夹不必也不再是共享文件夹，因为错误将被存在数据库中。
 
-This script runs in the background and moves all tickets every 5 minutes to a table and removes the local tickets.
-You can later view the errors using the admin app, clicking on the "switch to: db" button at the top, with the same exact functionality as if they were stored on the file system.
-
-With this tweak, the "errors" folder does not need to be a shared folder any more, since errors will be stored into the database.
-
-#### Memcache
+#### Memcache缓存
 ``memcache``:inxx
 
-We have shown that web2py provides two types of cache: ``cache.ram`` and ``cache.disk``.
-They both work on a distributed environment with multiple concurrent servers, but they do not work as expected. In particular, ``cache.ram`` will only cache at the server level; thus it becomes useless. ``cache.disk`` will also cache at the server level unless the "cache" folder is a shared folder that supports locking; thus, instead of speeding things up, it becomes a major bottleneck.
+我们已经表明，web2py提供两种类型的的缓存： ``cache.ram`` 和``cache.disk``。
+它们都工作在具有多个并发的服务器的分布式环境中，但他们并不如预期般工作。 特别是， ``cache.ram`` 将只缓存在服务器级别，因此它变成无用的了。``cache.disk`` 也将缓
+存在服务器级别，除非“cache”文件夹是共享并支持锁的文件夹，那么，而不是加速的东西，它变成了一个主要的瓶颈。
 
-The solution is not to use them, but to use memcache instead. web2py comes with a memcache API.
+这种解决方案不是使用它们，而是使用缓存代替。Web2py附带了一个缓存API。
 
-To use memcache, create a new model file, for example ``0_memcache.py``, and in this file write (or append) the following code:
+为了使用缓存，创建一个新的模型文件，例如``0_memcache.py``，并在这个文件中写入（或附加）下面的代码：
 ``
 from gluon.contrib.memcache import MemcacheClient
 memcache_servers = ['127.0.0.1:11211']
@@ -1116,68 +1215,69 @@ cache.memcache = MemcacheClient(request, memcache_servers)
 cache.ram = cache.disk = cache.memcache
 ``:code
 
-The first line imports memcache. The second line has to be a list of memcache sockets (server:port).  The third line defines ``cache.memcache``.  The fourth line redefines ``cache.ram`` and ``cache.disk`` in terms of memcache.
+第一行导入memcache，第二行是一个memcache套接字的列表（服务器：端口）。第
+三行定义``cache.memcache``memcache。就memcache而言，第四行重新定义 ``cache.ram`` 和 ``cache.disk`` 。
 
-You could choose to redefine only one of them to define a totally new cache object pointing to the Memcache object.
+你可以选择重新定义其中一个，用它去定义了 一个全新的高速缓存对象指向的
+Memcache对象。
 
-With this tweak the "cache" folder does not need to be a shared folder any more, since it will no longer be accessed.
+有了这个调整的“cache”文件夹也就不再需要共享文件夹了，因为它将不再被访问。
+这个代码需要有memcache服务器在本地网络运行，关于如何设置这些服务器的信息，
+您应该咨询memcache文档。
 
-This code requires having memcache servers running on the local network. You should consult the memcache documentation for information on how to setup those servers.
+#### memcache会话
 
-#### Sessions in memcache
-
-If you do need sessions and you do not want to use a load balancer with sticky sessions, you have the option to store sessions in memcache:
+如果你确实需要会话并且你又不想用粘性会话的负载平衡器，可以选择在memcache
+中存储会话：
 ``
 from gluon.contrib.memdb import MEMDB
 session.connect(request,response,db=MEMDB(cache.memcache))
 ``:code
 
-#### Caching with Redis
+#### Redis的高速缓存
 ``redis``:cite
-An alternative to Memcache is use Redis. ``Redis``:inxx
+ ``Redis``:inxx 存储到Memcache的另一种方法是使用Redis。
 
-Assuming we have Redis installed and running on localhost at port 6379, we can connect to it using the following code (in a model):
+假设我们已经安装Redist 和运行在本地主机端口6379，我们可以使用下面的代码
+（模型）连接到它：
 
 ``
 from gluon.contrib.redis import RedisCache
 cache.redis = RedisCache('localhost:6379',db=None, debug=True)
 ``
 
-where 'localhost:6379' is the connection string and ``db`` is not a DAL object but a Redis database name.
+在那儿，'localhost：6379'是连接字符串并且``db`` 不是一个DAL对象而是一个Redis的数据库名。
 
-We can now use ``cache.redis`` in place of (or along with) ``cache.ram`` and ``cache.disk``.
+现在我们可以使用``cache.redis`` 取代（或者一起共存） ``cache.ram``和 ``cache.disk``。
 
-We can also obtain Redis statistcs by calling:
+我们也可以通过调用获取Redis的统计信息：
 
 ``
 cache.redis.stats()
 ``:code
 
-#### Removing applications
+#### 删除应用
 ``removing application``:inxx
 
-In a production setting, it may be better not to install the default applications: **admin**, **examples** and **welcome**. Although these applications are quite small, they are not necessary.
+在产品设置中，不安装默认的应用程序，它可能会更好: **admin**, **examples** 和 **welcome**。 虽然这些应用程序是相当小的，但它们不是必要的。
 
-Removing these applications is as easy as deleting the corresponding folders under the applications folder.
+删除这些应用和删除在应用文件夹中的相应文件夹一样容易。
 
-#### Using replicated databases
+#### 使用复制数据库
 
-In a high performance environment you may have a master-slave database
-architecture with many replicated slaves and perhaps a couple of
-replicated servers. The DAL can handle this situation and conditionally
-connect to different servers depending on the request parameters. The
-API to do this was described in Chapter 6. Here is an example:
+在高性能环境中，你可能有一个主从数据库架构，附带许多复制从站和也许一对复制
+服务器。
+DAL可以处理这种情况，并根据请求参数有条件地连接到不同的服务器，在第6章
+中描述的API能做到这一点。下面是一个例子：
 
 ``
 from random import sample
 db = DAL(sample(['mysql://...1','mysql://...2','mysql://...3'], 3))
 ``:code
 
-In this case, different HTTP requests will be served by different
-databases at random, and each DB will be hit more or less with the
-same probability.
-
-We can also implement a simple Round-Robin
+这种情况下，不同HTTP请求将被不同的数据库随意服务，并且每一DB将以相同的
+概率或多或少受到冲击。
+我们可以执行一个简单的Round-Robin
 
 ``
 def fail_safe_round_robin(*uris):
@@ -1188,10 +1288,11 @@ def fail_safe_round_robin(*uris):
 db = DAL(fail_safe_round_robin('mysql://...1','mysql://...2','mysql://...3'))
 ``:code
 
-This is fail-safe in the sense that if the database server assigned to
-the request fails to connect, DAL will try the next one in the order.
-
-It is also possible to connect to different databases depending on the requested action or controller. In a master-slave database configuration, some action performs only a read and some person both read/write. The former can safely connect to a slave db server, while the latter should connect to a master. So you can do:
+在这个意义上讲，这是故障安全，即如果数据库服务器指派的请求连接失败，DAL
+将按顺序尝试下一个。
+依赖于请求行为或者控制器来连接不同的数据库是可能的，在主从数据库配置中，一
+些行为表现为仅只读而一些人可读写。
+前者可以安全地连接到从db服务器，而后者应该连接主服务器。因此你可以做：
 
 ``
 if request.function in read_only_actions:
@@ -1202,56 +1303,56 @@ else:
    db = DAL(sample(['mysql://...3','mysql://...4','mysql://...5'], 3))
 ``:code
 
-where 1,2,3 are slaves and 3,4,5 are masters.
+在此处，1、2、3是从数据库服务器，3、4、5是主数据库服务器。
 
-### Deploying on Google App Engine
+### 部署在Google App Engine
 ``Google App Engine``:inxx
 
-It is possible to run web2py code on Google App Engine (GAE)``gae``:cite , including DAL code.
+在Google App Engine（GAE）``gae``:cite 上运行web2py代码是可能的，包括DAL代码。
 
-GAE supports two versions of Python: 2.5 (default) and 2.7 (beta). web2y supports both but uses 2.5 by default (this may change in the future). Look into the "app.yaml" file described below for configration details.
+GAE 还支持谷歌SQL 数据库（ 兼容MySQL ） 和谷歌NoSQL （参照“Datastore”），web2py两者都支持，如果你想使用谷歌SQL数据库请参照第6章的说明。
+本节指导您使用谷歌数据存储。
 
-GAE also supports a Google SQL database (compatible with MySQL) and a Google NoSQL (referred to as "Datastore").
+GAE平台提供了正常的托管解决方案的几个优势：
 
-web2py supports both. If you wish to use Google SQL database follow the instructions on Chapter 6. This section assues you will be using the Google Datastore.
+- 易于部署，谷歌完全抽象化基础架构。
+- 可扩展性。谷歌将多次复制你的应用程序，因为它需要服务所有并发请求。
+- 可以在SQL和NoSQL数据库间选一个（或两个都选）。但也有一些不便：
 
-The GAE platform provides several advantages over normal hosting solutions:
+但也有一些缺点：
+- 不能读或写访问文件系统
+- 没有HTTPS，除非你有Google证书就可使用``appspot.com``域
+ 
 
-- Ease of deployment. Google completely abstracts the underlying architecture.
-- Scalability. Google will replicate your app as many times as it takes to serve all concurrent requests.
-- One can choose between a SQL and a NoSQL database (or both together).
+和一些数据存储特定缺点：
 
-But also some disadvantages:
-- No read or write access to the file system.
-- No HTTPS unless you use the ``appspot.com`` domain with a Google certificate.
-
-and some Datastore specific disadvantages:
-
-- No typical transactions.
-- No complex datastore queries. In particular there are no ``JOIN``, ``LIKE``, and ``DATE/DATETIME`` operators.
-- No multiple ``OR`` sub-queries unless they involve one and the same field.
+- 无典型事务处理。
+- 无复杂的数据查询。特别是有没有 ``JOIN``, ``LIKE``, 和``DATE/DATETIME`` 运算符。
+- 无多个 ``OR``子查询，除非它们涉及一个和相同字段。
 
 
-Because of the readonly filesystem, web2py cannot store sessions, error tickets, cache files and uploaded files in the filesystem; they must be stored in the datastore and not in the filesystem.
-
-Here we provide a quick overview of GAE and we focus on web2py specific issues, we refer you to the official GAE documentation online for details.
+因为这个只读文件系统，在文件系统中web2py不能存储会话、错误票据、缓存文件以
+及上传文件，他们必须存储在数据存储中，而不是在文件系统中。
+这里，我们提供了一个GAE的快速概述并且我们关注在web2py中的具体问题，我们
+建议你参考官方GAE的在线文档以求详细信息。
 
 -----
-Attention: At the time of writing, GAE supports only Python 2.5. Any other version will cause problems. You also must run the web2py source distribution, not a binary distribution.
+注意：在写的时候，GAE只支持Python 2.5。任何其他版本会出现问题，您还必须运行
+web2py源码发布，而不是一个二进制发布。
 -----
 
-#### Configuration
+#### 配置
 
-There are three configuration files to be aware of:
+有三个配置文件需要注意：
 ``
 web2py/app.yaml
 web2py/queue.yaml
 web2py/index.yaml
 ``:code
 
-``app.yaml`` and ``queue.yaml`` are most easily created by using the template files ``app.example.yaml`` and ``queue.example.yaml`` as starting points. ``index.yaml`` is created automatically by the Google deployment software.
+``app.yaml``和 ``queue.yaml`` 作为出发点， 通过使用模板文件， ``app.example.yaml`` 和 ``queue.example.yaml`` 是最容易创建的。``index.yaml`` 被谷歌部署软件自动创建。
 
-``app.yaml`` has the following structure (it has been shortened using ...):
+``app.yaml`` 具有以下结构（它已经被使用... 缩短）：
 
 ``
 application: web2py
@@ -1273,27 +1374,31 @@ skip_files:
 ...
 ``:code
 
-``app.example.yaml`` (when copied to ``app.yaml``) is configured to deploy the web2py ``welcome`` application, but not the ``admin`` or ``example`` applications. You must replace ``web2py`` with the application id that you used when registering with Google App Engine.
+``app.example.yaml`` (当被复制到 ``app.yaml``) 被配置以便部署web2py的``welcome`` 应用程序，但不是``admin`` 或 ``example`` 应用程序。当注册在Google App Engine时，你必须更换``web2py``中你使用的应用程序id。
 
-``url: /(.+?)/static/(.+)`` instructs GAE to serve your app static files directly, without calling web2py logic, for speed.
+``url: /(.+?)/static/(.+)`` 指示GAE直接服务于你的应用程序的静态文件，而无
+需调用web2py的逻辑，为了速度。
 
 
-``url:.*`` instructs web2py to use the ``gaehandler.py`` for every other request.
+``url:.*`` 为每个其他要求指示web2py使用``gaehandler.py`` 。
 
-The ``skip_files:`` session is list of regular expressions for files that do not need to deployed on GAE. In particular the lines:
+``skip_files:``会话是正则表达式的文件列表，其并不需要部署到GAE上。
+特别的行：
 
 ``
  (applications/(admin|examples)/.*)|
  ((admin|examples|welcome)\.(w2p|tar))|
 ``:code
 
-tell GAE not to deploy the default applications, except for the unpacked welcome scaffolding application. You can add more applications to be ignored here.
+告知GAE不要部署默认应用程序，除了这解压后的welcome基本构建应用。你可以添
+加更多的在这里被忽略的应用程序。
 
-Except for the application id and version, you probably do not need to edit ``app.yaml``, though you may wish to exclude the ``welcome`` application.
+除了应用程序的id和版本，你可能不必编辑 ``app.yaml``，虽然你也许想排除这个``welcome``应用程序。
 
-The file ``queue.yaml`` is used to configure GAE task queues.
+文件 ``queue.yaml`` 用于配置GAE 任务队列。
 
-The file ``index.yaml`` is automatically generated when you run your application locally using the GAE appserver (the web server that comes with the Google SDK). It contains something like this:
+当你运行你的本地使用的GAE appserver（Web服务器自带的Google SDK）的应用程
+序时，文件 ``index.yaml`` i自动地生成。它包含了这样的内容：
 
 ``
 indexes:
@@ -1303,28 +1408,33 @@ indexes:
     direction: desc
 ``:code
 
-In this example it tells GAE to create an index for table "person" that will be used to sort by "name" in reversed alphabetical order. You will not be able to search and sort records in your app without corresponding indexes.
+在这个例子中，它告诉GAE创建一个索引，用于“person”表，其将被用于以“name”逆字母顺序排序的。没有相应的索引在应用程序中，你将无法搜索和排序记录。
 
-It is important to always run your apps locally with the appserver and try every functionality of your app, before deployment. This will be important for testing purposes, but also to automatically generate the "index.yaml" file.
-Occasionally you may want to edit this file and perform cleanup, such as removing duplicate entries.
+重要的是始终运行您的在本地附带appserver的应用程序，并在部署之前，尝试检验
+你的应用程序每个功能。
 
-#### Running and deployment
+对于测试目的来讲，这将是很重要，而且还自动生成“index.yaml”文件。有时候，你
+可能想编辑这个文件，并进行清理，如删除重复项。
+
+#### 运行和部署
 
 ##### Linux
 
-Here we assume you have installed the GAE SDK.  At the time of writing, GAE runs on Python 2.5.2.  You can run your app from inside the "web2py" folder by using the appserver command:
+在这里，我们假设你已经安装了GAE的SDK。在写本书时，GAE运行在Python2.5.2。
+你可以使用appserver（应用程序服务器）命令，运行来自 “web2py”文件夹里面的你的应用程序：
 
 ``
 python2.5 dev_appserver.py ../web2py
 ``:code
 
-This will start the appserver and you can run your application at the URL:
+这将启动appserver以及你可以在URL上运行你的应用程序：
 
 ``
 http://127.0.0.1:8080/
 ``:code
 
-In order to upload your app on GAE, make sure you have edited the "app.yaml" file as explained before and set the proper application id, then run:
+在GAE 上，为了上传你的应用程序，确保你已按照如之前解释那样编辑了
+“app.yaml”文件，并设置适当的应用程序id，然后运行：
 
 ``
 python2.5 appcfg.py update ../web2py
@@ -1332,21 +1442,23 @@ python2.5 appcfg.py update ../web2py
 
 ##### Mac, Windows
 
-On Mac and Windows, you can also use the Google App Engine Launcher.
-You can download the software from ref.``gae``:cite .
+在Mac和Windows上，你也可以使用Google App Engine Launcher，你可以从参考文
+献``gae``:cite 中下载这个软件。
 
-Choose [File][Add Existing Application], set the path to the path of the top-level web2py folder, and press the [Run] button in the toolbar. After you have tested that it works locally, you can deploy it on GAE by simply clicking on the [Deploy] button on the toolbar (assuming you have an account).
+选择[File] [Add Existing Application] （[增加现有的应用程序]），设置路径到顶层的
+web2py文件夹路径，然后按在工具栏上的[Run]按钮。已测试后，它在本地上运行工作，你只需点击在工具栏上的[Deploy]按钮即可（假设你有一个帐户），就可以将其部署在GAE上。
 
 [[image @///image/en9300.png center 300px]]
 
-On GAE, the web2py tickets/errors are also logged into the GAE administration console where logs can be accessed and searched online.
+在GAE上，web2py票据/错误也会被记录到GAE管理控制台上，在那儿，日志能被
+在线访问和搜索。
 
 [[image @///image/en9400.png center 300px]]
 
 
-#### Configuring the handler
+#### 配置处理器
 
-The file ``gaehandler.py`` is responsible for serving files on GAE and it has a few options. Here are their default values:
+文件``gaehandler.py`` 负责在GAE上服务文件并且它有很少的选项。这儿是他们的默认值：
 
 ``
 LOG_STATS = False
@@ -1354,23 +1466,23 @@ APPSTATS = True
 DEBUG = False
 ``:code
 
-``LOG_STATS`` will log the time to serve pages in the GAE logs.
+``LOG_STATS`` 将在GAE日志中记录网页服务的时间。
 
-``APPSTATS`` will enable GAE appstats which provides profiling statistics. They will be made available at the URL:
+``APPSTATS``将启用GAE appstats，其提供分析统计。它们将在URL上可用：
 
 ``
 http://localhost:8080/_ah/stats
 ``:code
 
-``DEBUG`` sets debug mode. It make no difference in practice unless checked explicitly in your code via ``gluon.settings.web2py_runtime``.
+``DEBUG`` 设置调试模式。它实际上没有什么区别， 除非通过 ``gluon.settings.web2py_runtime``在你的代码中明确检查。
 
-#### Avoid the filesystem
+#### 避免文件系统
 
-On GAE you have no access to the filesystem. You cannot open any file for writing.
+在GAE上，你没有权限访问文件系统，你不能为了写而打开任何文件。
+为了这个目的，在GAE上，web2py自动地将所有上传文件存储于数据存储中，无论
+是否“upload”字段都会有一个``uploadfield`` 属性。
+你也应该将会话和票据存储在数据库中，并且你必须明确：
 
-For this purpose, on GAE, web2py automatically stores all uploaded files in the datastore, whether or not "upload" Field(s) have a ``uploadfield`` attribute.
-
-You also should store sessions and tickets in the database and you have to be explicit:
 
 ``
 if request.env.web2py_runtime_gae
@@ -1380,11 +1492,13 @@ else:
     db = DAL('sqlite://storage.sqlite')
 ``:code
 
-The above code checks whether you are running on GAE, connects to BigTable, and instructs web2py to store sessions and tickets in there. It connects to a sqlite database otherwise. This code is already in the scaffolding app in the file "db.py".
+上面的代码是检测你是否在GAE上运行，是否连接到BigTable，并且指示web2py将
+会话和票据存储在这儿。另外它连接了一个嵌入式数据库，
+这个代码已经在文件“db.py”中的脚手架应用程序中。
 
-#### Memcache
+#### Memcache 缓存
 
-If you prefer, you can store sessions in memcache:
+如果你愿意，你可以将会话存储在memcache中：
 
 ``
 from gluon.contrib.gae_memcache import MemcacheClient
@@ -1396,15 +1510,19 @@ db = DAL('gae')
 session.connect(request,response,MEMDB(cache.memcache))
 ``:code
 
-Notice that on GAE cache.ram and cache.disk should not be used, so we make them point to cache.memcache.
+注意：在GAE 上，cache.ram 和cache.disk 不能被使用，所以我们让他们指向
+cache.memcache。
 
-#### Datastore issues
+#### 数据存储问题
 
-The absence of multi-entity transactions and typical functionalities of relational databases are what sets GAE apart from other hosting environment. This is the price to pay for high scalability. GAE is an excellent platform if these limitations are tolerable; if not, then a regular hosting platform with a relational database should be considered instead.
+多实体事务处理和关系数据库典型功能的缺乏就使得GAE与其他主机环境相区别。这
+是支付高扩展性的价格。
+如果这些限制可忍受，GAE是一个卓越的平台；如果不能，那应该考虑一个关系型
+数据库的普通主机平台。
+如果一个web2py应用程序不在GAE上运行，那是因为上面讨论的某个限制。通过删
+除来自web2py队列的JOIN和去正常化数据库，许多问题可以解决。
 
-If a web2py application does not run on GAE, it is because of one of the limitations discussed above. Most issues can be resolved by removing JOINs from web2py queries and de-normalizing the database.
-
-Google App Engine supports some special field types, such as ``ListProperty`` and ``StringListProperty``. You can use these types with web2py using the following old syntax:
+Google App Engine 支持一些特定类型的字段，例如 ``ListProperty`` 和``StringListProperty``。 使用如下旧语法，可以使用这些类型的web2py：
 
 ``
 from gluon.dal import gae
@@ -1413,7 +1531,7 @@ db.define_table('product',
     Field('tags', type=gae.StringListProperty())
 ``:code
 
-or the equivalent new syntax:
+或者等效的新的语法：
 
 ``
 db.define_table('product',
@@ -1421,50 +1539,52 @@ db.define_table('product',
     Field('tags', 'list:string')
 ``:code
 
-In both cases the "tags" field is a ``StringListProperty`` therefore its values must be lists of strings, compatibly with the GAE documentation. The second notation is to be preferred because web2py will treat the field in a smarter way in the context of forms and because it will work with relational databases too.
+两种情况下，“tags”字段是一个``StringListProperty`` ，因此它的值一定是字符串列表，兼容GAE文档。第二个表示法首选，因为web2py会在上下文的形式中以一种聪明的方法对待这个字段，而且因为它也将和关系型数据库一起工作。
 
-Similarly, web2py supports ``list:integer`` and ``list:reference`` which map into a ``ListProperty(int)``.
+相似的是， web2py 支持 ``list:integer`` 和 ``list:reference`` ，它们映射为一个``ListProperty(int)``。
 
-``list`` types are discussed in more detail in Chapter 6.
+``list`` 类型是在第6章中有更详细讨论。
 
-#### GAE and https
+#### GGAE和 https
 
-If you application has id "myapp" your GAE domain is
+如果你的应用程序有id“myapp”，你的GAE域名是：
 
 ``
 http://myapp.appspot.com/
 ``:code
 
-and it can also be accessed via HTTPS
+并且它也能通过HTTPS访问
 
 ``
 https://myapp.appspot.com/
 ``:code
 
-In this case it will use an "appspot.com" certificate provided by Google.
+这种情况下，他将使用一个Google提供的“appspot.com”证书。
 
-You can register a DNS entry and use any other domain name you own for your app but you will not be able to use HTTPS on it. At the time of writing, this is a GAE limitation.
+为了你的应用程序，你可以注册一个DNS条目，并使用你拥有的任何其他域名，但
+在它上面你将无法使用HTTPS。在写本书时，这是一个GAE限制。
 
 ### Jython
 ``Jython``:inxx
 
-web2py normally runs on CPython (the Python interpreter coded in C), but it can also run on Jython (the Python interpreter coded in Java). This allows web2py to run in a Java infrastructure.
-
-Even though web2py runs with Jython out of the box, there is some trickery involved in setting up Jython and in setting up zxJDBC (the Jython database adaptor). Here are the instructions:
-- Download the file "jython_installer-2.5.0.jar" (or 2.5.x) from ``Jython.org``
-- Install it:
+Web2py 通常在Cpython 上（用C 语言编写Python 解释器）运行，但它也可以在
+Jython中（用Java编写的Python解释器）运行，这允许web2py在Java基础设施中去运行。
+即便web2py 在Jython，开箱即用的运行，但仍有一些技巧涉及设置Jython 和
+zxJDBC（Jython的数据库适配器）中。下面是这个指导：
+- ``Jython.org``下载文件"jython_installer-2.5.0.jar"（或2.5.x）
+- 安装它：
 ``
 java -jar jython_installer-2.5.0.jar
 ``:code
-- Download and install "zxJDBC.jar" from ``jdbcsource``:cite
-- Download and install the file "sqlitejdbc-v056.jar" from ``jdbcjar``:cite
-- Add zxJDBC and sqlitejdbc to the java CLASSPATH
-- Start web2py with Jython
+- 从``jdbcsource``:cite 下载安装"zxJDBC.jar"
+- 从` ``jdbcjar``:cite 中下载安装文件"sqlitejdbc-v056.jar"
+- 添加zxJDBC和sqlitejdbc到Java CLASSPATH
+- 用Jython启动web2py
 
 ``
 /path/to/jython web2py.py
 ``:code
 
-At the time of writing we only support ``sqlite`` and ``postgres`` on Jython.
+在写本书时，我们只支持在Jython上的``sqlite``和``postgres``。
 
 
