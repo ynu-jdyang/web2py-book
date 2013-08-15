@@ -1,15 +1,25 @@
-## The database abstraction layer
+## 数据库抽象层
 ``DAL``:inxx
 
-### Dependencies
+### 依赖性dependencies
 
-web2py comes with a Database Abstraction Layer (DAL), an API that maps Python objects into database objects such as queries, tables, and records. The DAL dynamically generates the SQL in real time using the specified dialect for the database back end, so that you do not have to write SQL code or learn different SQL dialects (the term SQL is used generically), and the application will be portable among different types of databases. At the time of this writing, the supported databases are SQLite (which comes with Python and thus web2py), PostgreSQL, MySQL, Oracle, MSSQL, FireBird, DB2, Informix, and Ingres and (partially) the Google App Engine (SQL and NoSQL). Experimentally we support more databases. Please check on the web2py web site and mailing list for more recent adapters. Google NoSQL is treated as a particular case in Chapter 13.
+web2py提供作为数据库抽象层（DAL）的API（应用程序编程接口），把
+Python对象映射成为数据库对象，比如：查询、表和记录对象等。DAL使用指定
+语言实时动态地为数据库后端生成SQL语句，以便你不必写SQL代码或者学习
+不同的SQL语言（SQL是通用的术语），并且应用程序可以在不同类型的数据
+库之间移植。在撰写本书的时候，支持的数据库是SQLite（Python支持，web2py
+也一样）、PostgreSQL、MySQL、 Oracle、MSSQL、FireBird、DB2、
+Informix、Ingres 和 Google App Engine (SQL 和 NoSQL)(部分支持)。事实上我们
+能支持更多的数据库。请查阅web2py网站和邮件列表获得更多最新的改进。
+Google NoSQL将作为一个特别的案例在第13章中加以讨论。
 
-The Windows binary distribution works out of the box with SQLite and MySQL. The Mac binary distribution works out of the box with SQLite.
-To use any other database back-end, run from the source distribution and install the appropriate driver for the required back end.
+web2py的Windows二进制发行版直接用于SQLite和MySQL。其Mac二进制发
+行版直接用于SQLite。要使用其他任意一个数据库后端，从源码发行版开始运行
+并为所需要的后端安装合适的驱动。
 ``database drivers``:inxx
 
-Once the proper driver is installed, start web2py from source, and it will find the driver. Here is a list of drivers:
+一旦合适的驱动安装以后，从源文件启动web2py，它会找到驱动。以下是
+驱动列表：
 
 ----------
 database | driver (source)
@@ -24,9 +34,8 @@ Informix | informixdb ``informixdb``:cite
 Ingres | ingresdbi ``ingresdbi``:cite
 ---------
 
-(``pymysql`` ships with web2py)
-
-web2py defines the following classes that make up the DAL:
+（``pymysql`` 随着web2py）web2py 定义了以下的类来构成DAL：
+DAL代表一个数据库连接。例如：
 
 **DAL** represents a database connection. For example:
 ``sqlite``:inxx
@@ -35,12 +44,12 @@ db = DAL('sqlite://storage.db')
 ``:code
 
 ``define_table``:inxx
-**Table** represents a database table.  You do not directly instantiate Table; instead, ``DAL.define_table`` instantiates it.
+**Table** 代表了数据库的表。你不能直接实例化表对象，而是用``DAL.define_table`` 实例化它。
 ``
 db.define_table('mytable', Field('myfield'))
 ``:code
 
-The most important methods of a Table are:
+Table对象最重要的一些方法是：
 ``insert``:inxx
 ``truncate``:inxx
 ``drop``:inxx
@@ -49,29 +58,31 @@ The most important methods of a Table are:
 ``.insert``, ``.truncate``, ``.drop``, and ``.import_from_csv_file``.
 
 ``Field``:inxx
-**Field** represents a database field. It can be instantiated and passed as an argument to ``DAL.define_table``.
+**Field** 是数据库的一个字段。
+它能被实例化并做为参数传递给``DAL.define_table``。
 
 ``Rows``:inxx
-**DAL Rows** ``Row``:inxx  is the object returned by a database select. It can be thought of as a list of ``Row`` rows:
+**DAL Rows** 是一个数据库select（查询）方法返回的对象。
+它可以被认为是``Row``:inxx  对象若干行的列表：
 ``
 rows = db(db.mytable.myfield!=None).select()
 ``:code
 
 ``Row``:inxx
-**Row** contains field values.
+**Row** 对象包含字段数值。
 ``
 for row in rows:
     print row.myfield
 ``:code
 
 ``Query``:inxx
-**Query** is an object that represents a SQL "where" clause:
+**Query**是代表SQL“ where”条件的一个对象。
 ``
 myquery = (db.mytable.myfield != None) | (db.mytable.myfield > 'A')
 ``:code
 
 ``Set``:inxx
-**Set** is an object that represents a set of records. Its most important methods are ``count``, ``select``, ``update``, and ``delete``. For example:
+**Set** 是表示记录集合的对象。它最重要的方法有： ``count``, ``select``, ``update`` 和 ``delete``。 例如：
 ``
 myset = db(myquery)
 rows = myset.select()
@@ -80,20 +91,25 @@ myset.delete()
 ``:code
 
 ``Expression``:inxx
-**Expression** is something like an ``orderby`` or ``groupby`` expression. The Field class is derived from the Expression. Here is an example.
+**Expression** 是有点象``orderby`` 或 ``groupby`` 的表达式。Field类从Expression继承。
+这里有一个例子。
 ``
 myorder = db.mytable.myfield.upper() | db.mytable.id
 db().select(db.table.ALL, orderby=myorder)
 ``:code
 
-### Connection strings
+### 连接字符串
 ``connection strings``:inxx
 
-A connection with the database is established by creating an instance of the DAL object:
+与数据库的连接是通过创建一个DAL对象实例来建立的。
 ``
 >>> db = DAL('sqlite://storage.db', pool_size=0)
 ``:code
-``db`` is not a keyword; it is a local variable that stores the connection object ``DAL``. You are free to give it a different name. The constructor of ``DAL`` requires a single argument, the connection string. The connection string is the only web2py code that depends on a specific back-end database. Here are examples of connection strings for specific types of supported back-end databases (in all cases, we assume the database is running from localhost on its default port and is named "test"):
+``db`` 不是一个关键词；它是一个存储连接对象 ``DAL``的局部变量。你也可以给
+它取个另外不同的名字。``DAL`` 构造函数需要单个连接字符串的参数。连接字符串
+是仅有的依赖特定后端数据库的web2py代码。下表中是支持一些特定类型后端
+数据库连接字符串的例子（所有情况下，我们假定数据库在本地主机上运行采
+用默认端口并命名为test）：
 
 -------------
 **SQLite**     | ``sqlite://storage.db``
@@ -109,69 +125,88 @@ A connection with the database is established by creating an instance of the DAL
 **Google App Engine/NoSQL** | ``google:datastore``
 -------------
 
-Notice that in SQLite the database consists of a single file. If it does not exist, it is created. This file is locked every time it is accessed. In the case of MySQL, PostgreSQL, MSSQL, FireBird, Oracle, DB2, Ingres and Informix the database "test" must be created outside web2py. Once the connection is established, web2py will create, alter, and drop tables appropriately.
+注意SQLite数据库只由一个文件构成。如果不存在，它会被创建。每次被访
+问的时候该文件会被锁定。就MySQL, PostgreSQL, MSSQL, FireBird, Oracle,
+DB2, Ingres 和 Informix情况，数据库“test”需在web2py外创建。一旦连接建立，
+web2py会适当地创建、修改和删除表。
 
-It is also possible to set the connection string to ``None``. In this case DAL will not connect to any back-end database, but the API can still be accessed for testing. Examples of this will be discussed in Chapter 7.
+也可以把连接字符串设置为``None``。这种情况DAL将不连接到任何一个后端
+数据库，但是API能被测试所访问。这类例子将在第七章中讨论。
 
-#### Connection pooling
+#### 连接池
 ``connection pooling``:inxx
 
-The second argument of the DAL constructor is the ``pool_size``; it defaults to 0.
+DAL构造函数的第二个参数是``pool_size``；它的默认值是0。
 
-As it is rather slow to establish a new database connection for each request, web2py implements a mechanism for connection pooling. Once a connection is established and the page has been served and the transaction completed, the connection is not closed but goes into a pool. When the next http request arrives, web2py tries to obtain a connection from the pool and use that for the new transaction. If there are no available connections in the pool, a new connection is established.
+因为，为每个请求建立一个新的数据库连接是会相当慢的，因此web2py对
+连接池采用了一种机制。一旦一个连接建立了，页面被服务了并且事务处理完
+成，连接不被关闭而是转到连接池里。当下一个http请求到达，web2py尝试从
+连接池里获得连接并为新的事务处理所用。如果在连接池中没有可用连接，新
+的连接会被建立。
 
-The ``pool_size`` parameter is ignored by SQLite and Google App Engine.
+ ``pool_size`` 参数在SQLite 和 Google App Engine中忽略。
 
-Connections in the pools are shared sequentially among threads, in the sense that they may be used by two different but not simultaneous threads. There is only one pool for each web2py process.
+池中的连接在线程中依次共享，在这个意义上，可以被两个不同但不是并
+发的线程使用。每个web2py进程仅有一个连接池。
 
-When web2py starts, the pool is always empty. The pool grows up to the minimum between the value of ``pool_size`` and the max number of concurrent requests. This means that if ``pool_size=10`` but our server never receives more than 5 concurrent requests, then the actual pool size will only grow to 5. If ``pool_size=0`` then connection pooling is not used.
+当web2py启动，连接池总是空的。连接池可增长至``pool_size`` 的值与当前最
+大并发请求数间的最小值。这就意味着如果 ``pool_size=10`` 而我们的服务器接收的
+并发请求数从未超过5次，那么实际的连接池大小就不会超过5。如果 ``pool_size=0`` 那么连接池没有使用。
 
-Connection pooling is ignored for SQLite, since it would not yield any benefit.
+连接池机制在SQLite中忽略，因为它不能产生任何效益。
 
 #### Connection failures
 
-If web2py fails to connect to the database it waits 1 seconds and tries again up to 5 times before declaring a failure. In case of connection pooling it is possible that a pooled connection that stays open but unused for some time is closed by the database end. Thanks to the retry feature web2py tries to re-establish these dropped connections.
+如果web2py连接数据库失败，它等待1秒后最多尝试5次后宣布失败。在
+连接池情形下，可能存在池中连接保持打开但一段时间不用而被数据库终端关
+闭的情况。得益于重试功能，web2py可以再建立这些丢弃的连接。
 
-When using connection pooling a connection is used, put back in the pool and then recycled. It is possible that while the connection is idle in pool the connection is closed by the database server. This can be because of a malfunction or a timeout. When this happens web2py detects it and re-establish the connection.
+当使用连接池一个连接使用以后，重新放回池中然后再循环。可能存在当池
+中连接空闲但连接被数据库服务器关闭。这可能是由于故障或超时造成。这种情
+况出现时，web2py进行检测并重新建立连接。
 
-#### Replicated databases
+#### 复制的数据库replicated database
 
-The first argument of ``DAL(...)`` can be a list of URIs. In this case web2py tries to connect to each of them. The main purpose for this is to deal with multiple database servers and distribute the workload among them). Here is a typical use case:
+ ``DAL(...)`` 第一个参数可以是URI（统一资源标识）的列表。这种情况下，
+web2py尝试连接它们中每一个。这样做的主要意图是应对多数据库服务器和在
+多服务器之间的负荷分担。下面是一个典型应用示例：
 
 ``
 db = DAL(['mysql://...1','mysql://...2','mysql://...3'])
 ``:code
 
-In this case the DAL tries to connect to the first and, on failure, it
-will try the second and the third. This can also be used to distribute load
-in a database master-slave configuration. We will talk more about this
-in Chapter 13 in the context of scalability.
+这个例子中DAL尝试连接第一个数据库，如果失败了，它会连接第二个、第三个。这同样可以应用于数据库负荷分担的主从配置。我们会在第13章就扩展性进行更多的讨论。
 
-### Reserved keywords
+### 保留关键词
 ``reserved Keywords``:inxx
 
-There is also another argument that can be passed to the DAL constructor to check table names and column names against reserved SQL keywords in target back-end databases.
+还有另外一个参数可以传递给DAL的构造函数用来检查表名和字段名是否
+违反目标后端数据库的SQL保留关键字。
 
-This argument is ``check_reserved`` and it defaults to None.
+这个参数是``check_reserved``，它的默认值是None。
 
-This is a list of strings that contain the database back-end adapter names.
+这是一个包含数据库后端适配器名字的字符串列表。
 
-The adapter name is the same as used in the DAL connection string. So if you want to check against PostgreSQL and MSSQL then your connection string would look as follows:
+适配器名字与在DAL中使用的连接字符串一样。因此如果你想检查是否与
+PostgreSQL和MSSQL冲突，那么你的连接字符串可以采用下面形式：
 ``
 db = DAL('sqlite://storage.db',
          check_reserved=['postgres', 'mssql'])
 ``:code
 
-The DAL will scan the keywords in the same order as of the list.
+DAL会采用与列表同样的顺序检查关键字。
 
-There are two extra options "all" and "common". If you specify all, it will check against all known SQL keywords. If you specify common, it will only check against common SQL keywords such as ``SELECT``, ``INSERT``, ``UPDATE``, etc.
+T会有两个额外的选项“all”（全部）和“common”（通常）。如果你指定
+all，它会检查是否与所有知道的SQL关键字冲突。如果你指定common，它仅
+仅检查通常的SQL关键字，比如 ``SELECT``, ``INSERT``, ``UPDATE``等等。
 
-For supported back-ends you may also specify if you would like to check against the non-reserved SQL keywords as well. In this case you would append ``_nonreserved`` to the name. For example:
+为支持后台数据库，你也可指定你是否检查与非保留字冲突。这种情形你
+可以追加``_nonreserved``在名字后。例如：
 ``
 check_reserved=['postgres', 'postgres_nonreserved']
 ``:code
 
-The following database backends support reserved words checking.
+下面列出的数据库后端支持保留字检查。
 
 -----
 **PostgreSQL** | ``postgres(_nonreserved)``
@@ -183,77 +218,87 @@ The following database backends support reserved words checking.
 
 ### ``DAL``, ``Table``, ``Field``
 
-The best way to understand the DAL API is to try each function yourself. This can be done interactively via the web2py shell, although ultimately, DAL code goes in the models and controllers.
-
-Start by creating a connection. For the sake of example, you can use SQLite. Nothing in this discussion changes when you change the back-end engine.
+要理解掌握DAL API最好的方法是你亲自尝试每一个函数。
+这可以通过web2py shell交互来完成，但是最终DAL代码要写入模块和控
+制器。
+以创建一个连接开始。为了更好的效果，你可以用SQLite数据库。
+当你更换后台引擎，所讨论的并不会有任何的改变。
 
 ``DAL``:inxx ``SQLite``:inxx ``MySQL``:inxx ``PostgresSQL``:inxx ``Oracle``:inxx ``MSSQL``:inxx ``FireBird``:inxx ``DB2``:inxx ``Informix``:inxx
 ``
 >>> db = DAL('sqlite://storage.db')
 ``:code
 
-The database is now connected and the connection is stored in the global variable ``db``.
+现在数据库连接上了，并且连接存在全局变量 ``db``中。
 
-At any time you can retrieve the connection string.
+任何时候你都可以得到连接字符串。
 ``_uri``:inxx
 ``
 >>> print db._uri
 sqlite://storage.db
 ``:code
 
-and the database name
+还有数据库的名字
 ``_dbname``:inxx
 ``
 >>> print db._dbname
 sqlite
 ``:code
 
-The connection string is called a ``_uri`` because it is an instance of a Uniform Resource Identifier.
+连接字符串被称之为 ``_uri`` 因为它是Uniform Resource Identifier的缩写。
 
-The DAL allows multiple connections with the same database or with different databases, even databases of different types. For now, we will assume the presence of a single database since this is the most common situation.
+DAL允许与同一个数据库的多个连接或者与不同数据库连接，甚至是不同
+类型的多个数据库。目前，我们假定是单个数据库，这情形是最常见的。
 
 ``define_table``:inxx ``Field``:inxx
 ``type``:inxx ``length``:inxx ``default``:inxx ``requires``:inxx ``required``:inxx ``unique``:inxx
 ``notnull``:inxx ``ondelete``:inxx ``uploadfield``:inxx ``uploadseparate``:inxx ``migrate``:inxx ``sql.log``:inxx
 
-The most important method of a DAL is ``define_table``:
+DAL最重要的方法 ``define_table``:
 ``
 >>> db.define_table('person', Field('name'))
 ``:code
 
-It defines, stores and returns a ``Table`` object called "person" containing a field (column) "name". This object can also be accessed via ``db.person``, so you do not need to catch the return value.
+它定义、存储并返回一个叫“person”的``Table`` 对象包含字段（列）“name”。
+这个对象也可以通过``db.person``访问，因此你无需抓住返回值。
 
-Do not declare a field called "id", because one is created by web2py anyway. Every table has a field called "id" by default. It is an auto-increment integer field (starting at 1) used for cross-reference and for making every record unique, so "id" is a primary key. (Note: the id's starting at 1 is back-end specific. For example, this does not apply to the Google App Engine NoSQL.)
+不要声明字段名“id”，因为这个已被web2py创建了。
+默认情况每个表格都有一个“id”字段。它是一个自增整数字段（从1开始），用来交叉引用并使每个记录独一无二，因此id是主键（primary key）。
+（说明：id从1开始是后端指定的。例如，这在Google App Engine NoSQL就不
+适用。）
 
 ``named id field``:inxx
-Optionally you can define a field of ``type='id'`` and web2py will use this field as auto-increment id field. This is not recommended except when accessing legacy database tables. With some limitation, you can also use different primary keys and this is discussed in the section on "Legacy databases and keyed tables".
+你可以选择定义一个字段类型``type='id'`` ，web2py会用这个字段作为自增id
+字段。不推荐这样使用除非访问传统数据库表。你也可以使用不同的主键但会有
+一些限制，这些会在传统数据库和键表章节讨论。
 
 
-### Record representation
+### 记录表示
 
-It is optional but recommended to specify a format representation for records:
+指定记录表示格式虽是可选但我们推荐。
 ``
 >>> db.define_table('person', Field('name'), format='%(name)s')
 ``:code
 
-or
+或
 ``
 >>> db.define_table('person', Field('name'), format='%(name)s %(id)s')
 ``:code
 
-or even more complex ones using a function:
+或者更为复杂的可以采用函数
 ``
 >>> db.define_table('person', Field('name'),
        format=lambda r: r.name or 'anonymous')
 ``:code
 
-The format attribute will be used for two purposes:
-- To represent referenced records in select/option drop-downs.
-- To set the ``db.othertable.person.represent`` attribute for all fields referencing this table. This means that SQLTABLE will not show references by id but will use the format preferred representation instead.
+用格式属性有两个目的：
+- 为了在select /option中采用下拉框表示参考记录
+- 为引用到这张表的所有字段设置 ``db.othertable.person.represent`` 属性。这意味着SQLTABLE（SQL的表）不会以id显示引用，而是采用首选的表示格式。
+
 
 
 ``Field constructor``:inxx
-These are the default values of a Field constructor:
+以下是一个Field字段构造函数的默认值。
 ``
 Field(name, 'string', length=None, default=None,
       required=False, requires='<default>',
@@ -265,11 +310,23 @@ Field(name, 'string', length=None, default=None,
       uploadseparate=None)
 ``:code
 
-Not all of them are relevant for every field. "length" is relevant only for fields of type "string". "uploadfield" and "authorize" are relevant only for fields of type "upload". "ondelete" is relevant only for fields of type "reference" and "upload".
-- ``length`` sets the maximum length of a "string", "password" or "upload" field.  If ``length`` is not specified a default value is used but the default value is not guaranteed to be backward compatible. ''To avoid unwanted migrations on upgrades, we recommend that you always specify the length for string, password and upload fields.''
-- ``default`` sets the default value for the field. The default value is used when performing an insert if a value is not explicitly specified. It is also used to pre-populate forms built from the table using SQLFORM. Note, rather than being a fixed value, the default can instead be a function (including a lambda function) that returns a value of the appropriate type for the field. In that case, the function is called once for each record inserted, even when multiple records are inserted in a single transaction.
-- ``required`` tells the DAL that no insert should be allowed on this table if a value for this field is not explicitly specified.
-- ``requires`` is a validator or a list of validators. This is not used by the DAL, but it is used by SQLFORM. The default validators for the given types are shown in the following table:
+不是它们所有都与每个字段有关。“length”（长度）只与“string”（字符
+串）类型的字段有关。“uploadfield”和“authorize”只与“upload”类型的字段有
+关。“ondelete”只与“reference”和“upload”类型的字段有关。
+- ``length`` 指定了“string” 、 “password”或“upload”字段的最大长度。如果
+``length``不指定默认值使用了，但是默认值不能够保证后向兼容。为了避
+免不想要的升级迁移，我们推荐一定要指定string、 password或upload
+字段的长度。
+- ``default`` 给字段设定默认值。默认值可以在执行插入操作的时候如果没有
+一个明确指定的参数值时使用。它也可以用来预填充表单，这些表单从
+使用SQLFORM的表编译得到。注意，不单是固定的值，默认值可以是
+函数（包括lambda函数），能够为字段返回合适类型的值。那样的情
+形下，一旦每条记录插入就调用一次函数，即便是多条记录插入到单
+个事务也一样。
+- ``required`` 告知DAL，如果字段没有明确指定值那么插入这张表是不允
+许的。
+- ``requires`` 是一个验证器或是一个验证器列表。它不被DAL使用，但被
+SQLFORM使用。给定类型的默认验证器在下表中列出：
 
 ----------
 **field type** | **default field validators**
@@ -291,32 +348,62 @@ Not all of them are relevant for every field. "length" is relevant only for fiel
 ``list:reference <table>`` | ``IS_IN_DB(db,table.field,format,multiple=True)``
 ---------
 
-Decimal requires and returns values as ``Decimal`` objects, as defined in the Python ``decimal`` module. SQLite does not handle the ``decimal`` type so internally we treat it as a ``double``. The (n,m) are the number of digits in total and the number of digits after the decimal point respectively.
+十进制字段类型要求并返回``Decimal``（十进制）对象的值，在Python ``decimal``十进制模块中定义。SQLite不处理十进制类型，因此我们在内部把
+它处理为 ``double``类型。（n，m）分别是数字个数的总数和十进制小数点以
+后的数字的个数。
 
-The ``list:`` fields are special because they are designed to take advantage of certain denormalization features on NoSQL (in the case of Google App Engine NoSQL, the field types ``ListProperty`` and ``StringListProperty``) and back-port them all the other supported relational databases. On relational databases lists are stored as a ``text`` field. The items are separated by a ``|`` and each ``|`` in string item is escaped as a ``||``. They are discussed in their own section.
+ ``list:`` 特殊字段，这是设计来使用NoSQL 某些非规范功能的（Google
+App Engine NoSQL的情况，``ListProperty`` 和 ``StringListProperty``字段类
+型），back-port所有其它能够支持的相关的数据库。就关系数据库列表
+以一个文本字段形式存储。条目用符号``|``分开，每个字符串中的分隔符``|``
+转义为``||``。它们在各自的章节讨论。
 
 -------
-Notice that ``requires=...`` is enforced at the level of forms, ``required=True`` is enforced at the level of the DAL (insert), while ``notnull``, ``unique`` and ``ondelete`` are enforced at the level of the database. While they sometimes may seem redundant, it is important to maintain the distinction when programming with the DAL.
+注意， ``requires=...`` 在表单级是强制的， ``required=True`` 在DAL（插入）级是强制的，而 ``notnull``, ``unique`` 和``ondelete`` 在数据库级是强制的。虽然有时它们看起来冗余，但用DAL编程时保持它们的区别是很重要的。
 -------
 
 ``ondelete``:inxx
 
-- ``ondelete`` translates into the "ON DELETE" SQL statement. By default it is set to "CASCADE". This tells the database that when it deletes a record, it should also delete all records that refer to it. To disable this feature, set ``ondelete`` to "NO ACTION" or "SET NULL".
-- ``notnull=True`` translates into the "NOT NULL" SQL statement. It prevents the database from inserting null values for the field.
-- ``unique=True`` translates into the "UNIQUE" SQL statement and it makes sure that values of this field are unique within the table. It is enforced at the database level.
-- ``uploadfield`` applies only to fields of type "upload". A field of type "upload" stores the name of a file saved somewhere else, by default on the filesystem under the application "uploads/" folder. If ``uploadfield`` is set, then the file is stored in a blob field within the same table and the value of ``uploadfield`` is the name of the blob field. This will be discussed in more detail later in the context of SQLFORM.
-- ``uploadfolder`` defaults to the application's "uploads/" folder. If set to a different path, files will uploaded to a different folder. For example, uploadfolder=os.path.join(request.folder,'static/temp') will upload files to the web2py/applications/myapp/static/temp folder.
-- ``uploadseparate`` if set to True will upload files under different subfolders of the ''uploadfolder'' folder. This is optimized to avoid too many files under the same folder/subfolder. ATTENTION: You cannot change the value of ``uploadseparate`` from True to False without breaking the system. web2py either uses the separate subfolders or it does not. Changing the behavior after files have been uploaded will prevent web2py from being able to retrieve those files. If this happens it is possible to move files and fix the problem but this is not described here.
-- ``widget`` must be one of the available widget objects, including custom widgets, for example: ``SQLFORM.widgets.string.widget``. A list of available widgets will be discussed later. Each field type has a default widget.
-- ``label`` is a string (or something that can be serialized to a string) that contains the label to be used for this field in autogenerated forms.
-- ``comment``  is a string (or something that can be serialized to a string) that contains a comment associated with this field, and will be displayed to the right of the input field in the autogenerated forms.
-- ``writable`` if a field is writable, it can be edited in autogenerated create and update forms.
-- ``readable`` if a field is readable, it will be visible in readonly forms. If a field is neither readable nor writable, it will not be displayed in create and update forms.
-- ``update`` contains the default value for this field when the record is updated.
-- ``compute`` is an optional function. If a record is inserted or updated, the compute function will be executed and the field will be populated with the function result. The record is passed to the compute function as a ``dict``, and the dict will not include the current value of that, or any other compute field.
-- ``authorize`` can be used to require access control on the corresponding field, for "upload" fields only. It will be discussed more in detail in the context of Authentication and Authorization.
-- ``autodelete`` determines if the corresponding uploaded file should be deleted when the record referencing the file is deleted. For "upload" fields only.
-- ``represent`` can be None or can point to a function that takes a field value and returns an alternate representation for the field value. Examples:
+- ``ondelete`` 翻译为“ ON DELETE” SQL 语句。默认时它的值是
+“CASCADE”（层叠）。它告知数据库当删除一条记录时要删除引用到
+这条记录的所有记录。要关闭这项功能，把ondelete 设置为``ondelete`` to "NO ACTION" 或"SET NULL"。
+- ``notnull=True`` 翻译为“NOT NULL”SQL语句。它能防止数据库的字段插
+入空的值。
+- ``unique=True`` 翻译为 “UNIQUE” SQL语句，它确保这个字段的值在表
+内是独特的。在数据库级是强制的。
+- ``uploadfield`` 仅用在“upload”类型字段。一个“upload”类型字段存储了一
+个其他地方保存的文件的名字，默认在文件系统的应用程序
+“uploads/”文件夹下。如果 ``uploadfield`` i被设置，那么文件存在同名表所
+在的区域，``uploadfield`` 的值是该区域的名字。稍后这将在SQLFORM相
+关内中更加详细地讨论。
+- ``uploadfolder`` 默认指应用程序“uploads/”文件夹。如果设定为不同的路径，
+文件会上传至不同的文件夹。例如
+uploadfolder=os.path.join(request.folder，static/temp)文件将会被上传至
+web2py/applications/myapp/static/temp文件夹。
+- ``uploadseparate`` 如果设置为True上载文件到uploadfolder 文件夹的不同
+子文件夹。这样可以优化以避免太多的文件在同样的文件夹/子文件夹。
+警告：你不能在不中断系统的情况下把``uploadseparate``的值从True改为
+False。web2py或采用分离的子文件夹或不采用。在文件被上载后修改的
+动作会阻止web2py获得那些文件。如果这种情况发生，可以移动文件
+并修复问题但不在这里说明。 
+- ``widget`` 必须是可用的widget 对象之一，包括客户widget，例如： ``SQLFORM.widgets.string.widget``。一些可用的widget会在后面讨论。每
+个字段类型都有一个默认的widget。
+- ``label`` 是一个字符串（或者是能被序列化为字符串的内容），包含为这
+个字段在自动生成表单中所用的标识。
+- ``comment``  是一个字符串（或者是能被序列化为字符串的内容），包含
+一个与这个字段相关的评价，会显示在在自动生成的表单输入区域的右边。
+- ``writable`` 如果一个字段是可写属性，它在自动生成中创建和修改表单中
+进行能被编辑。
+- ``readable`` 如果一个字段是可读属性，它指在只读的表单中可见。如果一
+个字段几部可读也不可写，它不会在创建和修改表单的时候显示。
+- ``update`` 包含了当记录被修改时这个字段的默认值。
+- ``compute`` 是一个可选函数。如果一条记录被插入或者修改，compute函
+数将被执行并且这个字段会填充函数执行结果。记录作为一个``dict``传递
+给compute函数，dict不含当前值或任何其它compute字段。
+- ``autodelete`` 决定当记录所参考的文件被删除了，相应的上传文件是否被
+删除。只为“upload”字段。
+- ``represent`` 可以是None或是一个函数，这个函数得到字段值并返回字段
+值的替换表示，例如：
 ``
 db.mytable.name.represent = lambda name,row: name.capitalize()
 db.mytable.other_id.represent = lambda id,row: row.myfield
@@ -325,18 +412,22 @@ db.mytable.some_uploadfield.represent = lambda value,row: \
 ``:code
 
 ``blob``:inxx
-"blob" fields are also special. By default, binary data is encoded in base64 before being stored into the actual database field, and it is decoded when extracted. This has the negative effect of using 25% more storage space than necessary in blob fields, but has two advantages. On average it reduces the amount of data communicated between web2py and the database server, and it makes the communication independent of back-end-specific escaping conventions.
+Blob字段也是特殊的。默认情况，二进制数据在被存储到确切的数据库
+字段前是base64编码的，当取出的时候被解码。虽然这会产生比blob
+字段本身所需存储空间多占用25%的副作用，但它又两个优势。平均来
+说它减少了web2py和数据库服务器之间数据通信量，而且它使得通信
+独立于back-end-specific escaping conventions 传统。
 
-Most attributes of fields and tables can be modified after they are defined:
+大多数字段和表的属性可以在它们定以后进行修改。
 
 ``
 db.define_table('person',Field('name',default=''),format='%(name)s')
 db.person._format = '%(name)s/%(id)s'
 db.person.name.default = 'anonymous'
 ``
-(notice that attributes of tables are usually prefixed by an underscore to avoid conflict with possible field names).
+（注意表的属性通常用下划线做前缀以避免可能与字段名冲突。）
 
-You can list the tables that have been defined for a given database connection:
+你能列出给定的数据库连接定义的表：
 
 ``tables``:inxx
 ``
@@ -344,7 +435,7 @@ You can list the tables that have been defined for a given database connection:
 ['person']
 ``:code
 
-You can also list the fields that have been defined for a given table:
+你也能够列出给定表中已经定义的字段：
 
 ``fields``:inxx
 ``
@@ -353,7 +444,7 @@ You can also list the fields that have been defined for a given table:
 ``:code
 
 
-You can query for the type of a table:
+你可以查询表的类型：
 
 ``Table``:inxx
 ``
@@ -361,13 +452,13 @@ You can query for the type of a table:
 <class 'gluon.sql.Table'>
 ``:code
 
-and you can access a table from the DAL connection using:
+你可以通过DAL连接应用访问表：
 ``
 >>> print type(db['person'])
 <class 'gluon.sql.Table'>
 ``:code
 
-Similarly you can access fields from their name in multiple equivalent ways:
+类似地你可以使用多种等同的办法从名字访问字段：
 ``
 >>> print type(db.person.name)
 <class 'gluon.sql.Field'>
@@ -377,7 +468,7 @@ Similarly you can access fields from their name in multiple equivalent ways:
 <class 'gluon.sql.Field'>
 ``:code
 
-Given a field, you can access the attributes set in its definition:
+给定字段，你能访问定义时设置的属性：
 ``
 >>> print db.person.name.type
 string
@@ -389,7 +480,7 @@ False
 32
 ``:code
 
-including its parent table, tablename, and parent connection:
+包括它的父表、表名和父连接：
 ``
 >>> db.person.name._table == db.person
 True
@@ -399,70 +490,99 @@ True
 True
 ``:code
 
-A field also has methods. Some of them are used to build queries and we will seem them later.
-A special method of the field object is ``validate`` and it calls the validators for the field.
+字段也有方法。其中一些用于生成查询，我们将在后面看到。字段对象的一
+个特殊方法是``validate``，被称之为字段的验证器。
 
 ``
 print db.person.name.validate('John')
 ``
 
-which returns a tuple ``(value, error)``. ``error`` is ``None`` if the input passes validation.
+它返回一个元组``(value, error)``。如果输入通过验证器， ``error`` 的值是 ``None``。
 
-### Migrations
+### 迁移
 ``migrations``:inxx
 
-``define_table`` checks whether or not the corresponding table exists. If it does not, it generates the SQL to create it and executes the SQL. If the table does exist but differs from the one being defined, it generates the SQL to alter the table and executes it. If a field has changed type but not name, it will try to convert the data(If you do not want this, you need to redefine the table twice, the first time, letting web2py drop the field by removing it, and the second time adding the newly defined field so that web2py can create it.). If the table exists and matches the current definition, it will leave it alone. In all cases it will create the ``db.person`` object that represents the table.
+``define_table`` 函数检查是否有相应的表存在。如果表不存在，它生成SQL创
+建表并执行SQL。如果表存在但与已定义的不同，它生成SQL来重构表并执行。
+如果一个字段改变类型但没有更名，它会进行数据转换（如果你不想这样，你
+需要定义表两次，第一次，让web2py删除该字段并清除它，第二次，添加新
+定义的字段由web2py创建）。如果表存在并且与当前的定义匹配，就不做任
+何处理。所有的情况下，该函数创建``db.person``对象表示表。
 
-We refer to this behavior as a "migration". web2py logs all migrations and migration attempts in the file "databases/sql.log".
+我们定义这样的举动为“migration”（迁移）。 web2py对所有的迁移和迁
+移尝试做日志在“databases/sql.log”文件。
 
-The first argument of ``define_table`` is always the table name. The other unnamed arguments are the fields (Field). The function also takes an optional last argument called "migrate" which must be referred to explicitly by name as in:
+ ``define_table`` 的第一个参数总是表名。其它没有名字的参数是字段
+（Field）。该函数最后有一个可选的的名为“migrate”的参数，这个参数必须
+用名字显式引用：
 ``
 >>> db.define_table('person', Field('name'), migrate='person.table')
 ``:code
 
-The value of migrate is the filename (in the "databases" folder for the application) where web2py stores internal migration information for this table. These files are very important and should never be removed except when the entire database is dropped. In this case, the ".table" files have to be removed manually. By default, migrate is set to True. This causes web2py to generate the filename from a hash of the connection string. If migrate is set to False, the migration is not performed, and web2py assumes that the table exists in the datastore and it contains (at least) the fields listed in ``define_table``.
-The best practice is to give an explicit name to the migrate table.
+迁移的返回值是文件名（在“databases”应用程序文件夹），web2py为该
+表存储了内部迁移的信息。这些文件非常重要，绝不能移走除非整个数据库删
+除了。这种情形，“.table”文件需手动删除。默认的migrate的值是True。这让
+web2py通过连接字符串的散列产生文件名。如果migrate设置为False，迁移是
+不能执行的，web2py假定表以数据存储存在，它包含（至少）``define_table``列
+出的字段。最佳实践是给迁移表一个清晰的名字。 
 
-There may not be two tables in the same application with the same migrate filename.
+在同一个应用中两张表有相同的迁移名字的可能性不大。
 
-The DAL class also takes a "migrate" argument, which determines the default value of migrate for calls to ``define_table``. For example,
+DAL类也用“migrate”参数，它决定了迁移调用``define_table``的默认参数
+值。例如，
 ``
 >>> db = DAL('sqlite://storage.db', migrate=False)
 ``:code
 
-will set the default value of migrate to False whenever ``db.define_table`` is called without a migrate argument.
+设定迁移默认参数值为False，无论任何时候，调用``db.define_table``无迁移
+参数。 
 
-Migrations can be disabled for all tables at the moment of connection:
+对所有的表在连接的时候迁移可以禁用。
 
 ``
 db = DAL(...,migrate_enabled=False)
 ``
 
-This is the recommended behaviour when two apps share the same database. Only one of the two apps should perform migrations, the other should disabled them.
+当两个应用共享统一个数据库时，推荐使用这样的操作。两个应用中的一
+个执行迁移，另一个禁用迁移。
 
-### Fixing broken migrations
+### 修复损坏迁移
 ``fake_migrate``:inxx
 
-There are two common problems with migrations and there are ways to recover from them.
+迁移时存在两个常见的问题，有办法能够进行恢复。
 
-One problem is specific with SQLite. SQLite does not enforce column types and cannot drop columns. This means that if you have a column of type string and you remove it, it is not really removed. If you add the column again with a different type (for example datetime) you end up with a datetime column that contains strings (junk for practical purposes). web2py does not complain about this because it does not know what is in the database, until it tries to retrieve records and fails.
+一个是SQLite特有的。SQLite不强制列的类型也不能删除列。这意味着如果
+你有字符串类型的类删除了，但它并没有被真正地删除。如果你又添加了一个
+不同类型的列（比如日期型），你日期型的列却包含字符串结束（实际中是无
+用数据）。web2py不会报错，因为它不知道数据库里面的是什么，直到它检索
+记录失败才会。
 
-If web2py returns an error in the gluon.sql.parse function when selecting records, this is the problem: corrupted data in a column because of the above issue.
+当查询记录web2py在gluon.sql.parse函数中返回出错，这就是问题的症结：
+由于上述问题导致的列数据损坏。
 
-The solution consists in updating all records of the table and updating the values in the column in question with None.
+解决问题的方法是更新表的所有记录并且用None更新列中有问题的值。
 
-The other problem is more generic but typical with MySQL. MySQL does not allow more than one ALTER TABLE in a transaction. This means that web2py must break complex transactions into smaller ones (one ALTER TABLE at the time) and commit one piece at the time. It is therefore possible that part of a complex transaction gets committed and one part fails, leaving web2py in a corrupted state. Why would part of a transaction fail? Because, for example, it involves altering a table and converting a string column into a datetime column, web2py tries to convert the data, but the data cannot be converted. What happens to web2py? It gets confused about what exactly is the table structure actually stored in the database.
+另一个问题更常见也是MySQL的典型问题。MySQL在一个事务中不允许
+多于一张ALTER TABLE（重构表）。这意味着web2py必须把复杂的事务分解
+成比较小的（一张ALTER TABLE一次），一次提交一张。这使得复杂的事务能
+被提交处理，也造成了一个部分失败的话，让web2py陷入崩溃的状态。为什么
+一个事务的部分会失败？因为，举例来说，web2py试图转换数据，它牵扯到重
+构一张表，把字符串列转换为时期类型，但数据没能够转换。web2py会发生什
+么呢？它根本不清楚存在数据库中表的结构到底是什么样的。
 
-The solution consists of disabling migrations for all tables and enabling fake migrations:
+解决的办法在于禁止所有表的迁移并允许假迁移。
 ``
-db.define_table(....,migrate=True,fake_migrate=True)
+db.define_table(....,migrate=False,fake_migrate=True)
 ``:code
 
-This will rebuild web2py metadata about the table according to the table definition. Try multiple table definitions to see which one works (the one before the failed migration and the one after the failed migration). Once successful remove the ``fake_migrate=True`` attribute.
+这会根据表的定义重建关于表的web2py元数据。尝试多种表的定义看看哪
+一种符合（迁移失败之前的和迁移失败之后的）。一旦成功，删除
+``fake_migrate=True``属性。  
 
-Before attempting to fix migration problems it is prudent to make a copy of "applications/yourapp/databases/*.table" files.
+在尝试修复迁移问题之前，复制“applications/yourapp/databases/*.table”文
+件是谨慎的做法。
 
-Migration problems can also be fixed for all tables at once:
+但是如果失败了，这不会有助于缩小问题范围。
 
 ``
 db = DAL(...,fake_migrate_all=True)
@@ -470,9 +590,9 @@ db = DAL(...,fake_migrate_all=True)
 
 Although if this fails, it will not help in narrowing down the problem.
 
-### ``insert``
+### 插入方法``insert``
 
-Given a table, you can insert records
+给定一张表，你能像这样插入记录
 
 ``insert``:inxx
 ``
@@ -482,59 +602,64 @@ Given a table, you can insert records
 2
 ``:code
 
-Insert returns the unique "id" value of each record inserted.
-
-You can truncate the table, i.e., delete all records and reset the counter of the id.
+插入操作返回每个插入记录的唯一id。
+你能截断表格，例如，删除所有记录复位id计数。
 
 ``truncate``:inxx
 ``
 >>> db.person.truncate()
 ``:code
 
-Now, if you insert a record again, the counter starts again at 1 (this is back-end specific and does not apply to Google NoSQL):
+现在，如果你再次插入一条记录，计数器又从1开始（这是后台特定的但不适
+用于GoogleNoSQL）：
 ``
 >>> db.person.insert(name="Alex")
 1
 ``:code
 
 ``bulk_insert``:inxx
-web2py also provides a bulk_insert method
+web2py同时提供了bulk_insert块插入的方法。
 ``
 >>> db.person.bulk_insert([{'name':'Alex'}, {'name':'John'}, {'name':'Tim'}])
 [3,4,5]
 ``:code
 
-It takes a list of dictionaries of fields to be inserted and performs multiple inserts at once. It returns the IDs of the inserted records. On the supported relational databases there is no advantage in using this function as opposed to looping and performing individual inserts but on Google App Engine NoSQL, there is a major speed advantage.
+它需要列出要插入记录的字段并且一次完成多条记录的插入。它返回所插入记
+录的ID值。对于所支持的关系型数据库，使用这个函数与采用循环单条记录插
+入相比没有什么优势，但对于Google App Engine NoSQL，它会有较大的速度
+优势。
 
-### ``commit`` and ``rollback``
+### 提交和回滚``commit`` and ``rollback``
 
-No create, drop, insert, truncate, delete, or update operation is actually committed until you issue the commit command
+除非你执行了commit（提交）命令，否则 creat（创建）、drop（删除）、
+insert （插入）、truncate（截断）、delete（删除）和update（更新）操作都不真
+会被执行。
 
 ``commit``:inxx
 ``
 >>> db.commit()
 ``:code
 
-To check it let's insert a new record:
+为了检验，让我们插入一条新记录：
 ``
 >>> db.person.insert(name="Bob")
 2
 ``:code
 
-and roll back, i.e., ignore all operations since the last commit:
+执行回滚，例如，从上次提交后忽略所有的操作：
 
 ``rollback``:inxx
 ``
 >>> db.rollback()
 ``:code
 
-If you now insert again, the counter will again be set to 2, since the previous insert was rolled back.
+如果你现在再次插入，计数器再次被设置为2，因为上次的插入做了回滚操作。
 ``
 >>> db.person.insert(name="Bob")
 2
 ``:code
 
-Code in models, views and controllers is enclosed in web2py code that looks like this:
+模块中、视图和控制器的代码在web2py代码中看起来是像这样封装的：
 ``
 try:
      execute models, controller function and view
@@ -547,21 +672,23 @@ else:
      save cookies, sessions and return the page
 ``:code
 
-There is no need to ever call ``commit``  or ``rollback`` explicitly in web2py unless one needs more granular control.
+在web2py中无需显式调用``commit`` 和``rollback`` ，除非想要更粒度的控制。 
 
-### Raw sql
+### 原始的sql
 
-#### Timing queries
+#### 定时查询
 
-All queries are automatically timed by web2py. The variable ``db._timings`` is a list of tuples. Each tuple contains the raw SQL query as passed to the database driver and the time it took to execute in seconds. This variable can be displayed in views using the toolbar:
+所有的查询被web2py自动定时的。变量``db._timings``是一个元组列表。每个元
+组包含原始的SQL查询传递给数据库驱动还有以秒为单位执行所需的时间。这个
+参数能用工具条在视图中显式。  
 
 ``
 {{=response.toolbar()}}
 ``
 
-#### ``executesql``
+#### ``executesql``方法
 
-The DAL allows you to explicitly issue SQL statements.
+DAL允许你显式发布SQL语句。
 
 ``executesql``:inxx
 ``
@@ -569,25 +696,20 @@ The DAL allows you to explicitly issue SQL statements.
 [(1, u'Massimo'), (2, u'Massimo')]
 ``:code
 
-In this case, the return values are not parsed or transformed by the DAL, and the format depends on the specific database driver. This usage with selects is normally not needed, but it is more common with indexes.
-``executesql`` takes two optional arguments: ``placeholders`` and ``as_dict``
-``placeholders`` is an optional
-sequence of values to be substituted in
-or, if supported by the DB driver, a dictionary with keys
-matching named placeholders in your SQL.
+这种情况，DAL对返回值不做语法分析或者变换，格式取决于特定的数据库驱
+动程序。这种查询用法正常但不需要，在索引中更普遍。``executesql``有两个可选参
+数：``placeholders`` 和  ``as_dict``。 ``placeholders`` 是可选的值序列能被替换或者，如果DB驱动支持，是在你的SQL中一个字典键匹配的占位符。
 
-If ``as_dict`` is set to True,
-and the results cursor returned by the DB driver will be
-converted to a sequence of dictionaries keyed with the db
-field names.  Results returned with ``as_dict = True ``are
-the same as those returned when applying **.as_list()** to a normal select.
+
+如果 ``as_dict`` 设置为True，DB驱动返回的结果指针会被转换成字典键序列，用
+db对象字段名。对正常的查询用``as_dict = True ``返回与用 **.as_list()** 的结果是一样的。
 ``
 [{field1: value1, field2: value2}, {field1: value1b, field2: value2b}]
 ``:code
 
-#### ``_lastsql``
+#### ``_lastsql``文件
 
-Whether SQL was executed manually using executesql or was SQL generated by the DAL, you can always find the SQL code in ``db._lastsql``. This is useful for debugging purposes:
+不论SQL 采用executesql 手动执行还是通过DAL 生成SQL 代码，你总能在``db._lastsql``中找到SQL的代码。这对调试程序非常有用：
 
 ``_lastdb``:inxx
 ``
@@ -597,48 +719,51 @@ SELECT person.id, person.name FROM person;
 ``:code
 
 -------
-web2py never generates queries using the "*" operator. web2py is always explicit when selecting fields.
+web2py生成查询时从不用 "*" 符。web2py查询字段时总是要求明确的。
 -------
 
-### ``drop``
+### 删除``drop``
 
-Finally, you can drop tables and all data will be lost:
+最后，你能删除表随之所有的数据将丢失：
 
 ``drop``:inxx
 ``
 >>> db.person.drop()
 ``:code
 
-### Indexes
+### 索引 Indexes
 
-Currently the DAL API does not provide a command to create indexes on tables, but this can be done using the ``executesql`` command. This is because the existence of indexes can make migrations complex, and it is better to deal with them explicitly. Indexes may be needed for those fields that are used in recurrent queries.
+目前DAL API不提供命令生成表的索引，但这可以用``executesql`` 命令实现。
+这是因为索引的存在会使迁移复杂化，最好进行显式地处理。索引对那些用在
+循环查询的字段是需要的。
 
-Here is an example of how to [[create an index using SQL in SQLite http://www.sqlite.org/lang_createindex.html]]:
+下面是一个 [[create an index using SQL in SQLite http://www.sqlite.org/lang_createindex.html]]:的例子
 ``
 >>> db = DAL('sqlite://storage.db')
 >>> db.define_table('person', Field('name'))
 >>> db.executesql('CREATE INDEX IF NOT EXISTS myidx ON person (name);')
 ``:code
 
-Other database dialects have very similar syntaxes but may not support the optional "IF NOT EXISTS" directive.
+其它数据库术语也有相同的语法，但不直接支持IF NOT EXISTS的选项。
 
-### Legacy databases and keyed tables
+### 传统数据库和键表
 
-web2py can connect to legacy databases under some conditions.
+web2py在某些条件下可以连接到传统数据库。
 
-The easiest way is when these conditions are met:
-- Each table must have a unique auto-increment integer field called "id"
-- Records must be referenced exclusively using the "id" field.
+最简单的方法是当下面条件满足：
+- 每张表必须有唯一的自增的整型字段“id”。
+- 记录必须通过“id”字段显式引用。
 
 -------
-When accessing an existing table, i.e., a table not created by web2py in the current application, always set ``migrate=False``.
+当访问一张现存的表，例如，在当前应用中不能通过web2py生成，总是设置 ``migrate=False``。
 -------
 
-If the legacy table has an auto-increment integer field but it is not called "id", web2py can still access it but the table definition must contain explicitly as ``Field('....','id')`` where ... is the name of the auto-increment integer field.
+如果传统表有自增整型字段如果不叫“id”，web2py仍能访问，但是表的定义
+必须显式包含 ``Field('....','id')`` 这里…是那个自增整型字段的名字。
 
 ``keyed table``:inxx
 
-Finally if the legacy table uses a primary key that is not an auto-increment id field it is possible to use a "keyed table", for example:
+最终，如果原表用非自动递增的id字段做主键，则是“键控的表”，例如：
 ``
 db.define_table('account',
     Field('accnum','integer'),
@@ -648,58 +773,66 @@ db.define_table('account',
     migrate=False)
 ``:code
 
-- ``primarykey`` is a list of the field names that make up the primary key. 
-- All primarykey fields have a ``NOT NULL`` set even if not specified.
-- Keyed table can only refer are to other keyed tables.
-- Referenceing fields must use the ``reference tablename.fieldname`` format.
-- The ``update_record`` function is not available for Rows of keyed tables.
+- ``primarykey`` 是一组构成主键的字段列表。
+- 所有的主键字段即便没有指定都有``NOT NULL`` 设置。 
+- 对只能引用的键表而言就是其它的键表。
+- 引用字段必须使用``reference tablename.fieldname`` 格式。
+- ``update_record`` 函数对键表Rows对象不可用。
 
 -------
-Note that currently this is only available for DB2, MS-SQL, Ingres and Informix, but others can be easily added.
+注意目前这仅对DB2、MS-SQL、Ingres和Informix有用，其它数据库可以简
+单添加。
 -------
 
-At the time of writing, we cannot guarantee that the ``primarykey`` attribute works with every existing legacy table and every supported database backend.
-For simplicity, we recommend, if possible, creating a database view that has an auto-increment id field.
+在撰写本书的时候，我们不能保证``primarykey`` 属性能用于每个现存的传统
+表及每个支持的后端数据库。为了简单化，我们推荐，如果可能，就创建一个
+带自增的id字段的数据库视图。
 
-### Distributed transaction
+### 分布式事务
 ``distributed transactions``:inxx
 
 ------
-At the time of writing this feature is only supported
-by PostgreSQL, MySQL and Firebird, since they expose API for two-phase commits.
+在写本书的时候，这个功能仅能被PostgreSQL、MySQL和Firebird支持，
+因为它们公开两个阶段提交的API。
 ------
 
-Assuming you have two (or more) connections to distinct PostgreSQL databases, for example:
+假定你有到不同PostgreSQL数据库的两个（或更多）连接，例如：
 ``
 db_a = DAL('postgres://...')
 db_b = DAL('postgres://...')
 ``:code
 
-In your models or controllers, you can commit them concurrently with:
+在你的模块或控制器中，你能用下面语句同时提交它们：
 ``
 DAL.distributed_transaction_commit(db_a, db_b)
 ``:code
 
-On failure, this function rolls back and raises an ``Exception``.
+失败了，这个函数回滚并引发``Exception``。
 
-In controllers, when one action returns, if you have two distinct connections and you do not call the above function, web2py commits them separately. This means there is a possibility that one of the commits succeeds and one fails. The distributed transaction prevents this from happening.
+控制器中，当动作返回，如果你有两个确切的连接而你又没有调用上面的
+函数，web2py分别提交这两个事务。这意味着有可能一个事务处理成功而另外
+一个失败了。分布式事务能够防止这样的情况发生。
 
-### Manual uploads
+### 手册上传
 
-Consider the following model:
+考虑下面的模型：
 ``
 >>> db.define_table('myfile', Field('image', 'upload'))
 ``:code
 
-Normally an insert is handled automatically via a SQLFORM or a crud form (which is a SQLFORM) but occasionally you already have the file on the filesystem and want to upload it programmatically. This can be done in this way:
+正常情况insert通过SQLFORM或者crud表单（是SQLFORM）自动地处理，
+但偶尔你已经有相关文件系统的文件，你想编程上传。这能用下面的方式完成：
 ``
 >>> stream = open(filename, 'rb')
 >>> db.myfile.insert(image=db.myfile.image.store(stream, filename))
 ``:code
 
-The ``store`` method of the upload field object takes a file stream and a filename. It uses the filename to determine the extension (type) of the file, creates a new temp name for the file (according to web2py upload mechanism) and loads the file content in this new temp file (under the uploads folder unless specified otherwise). It returns the new temp name, which is then stored in the ``image`` field of the ``db.myfile`` table.
+上传field对象的``store`` 方法采用文件stream和文件名参数。它用文件名确定文件
+扩展名（类型），为该文件创建新的临时文件（依据web2py上传机制），把
+文件内容装载在新临时文件（在上传文件夹内，特别说明的除外）。它返回新
+临时文件名，存储在``db.myfile``表的 ``image`` 字段。
 
-Note, if the file is to be stored in an associated blob field rather than the file system, the ``store()`` method will not insert the file in the blob field (because ``store()`` is called before the insert), so the file must be explicitly inserted into the blob field:
+注意，如果文件要存储在关联的blob字段而不是在文件系统，``store()``方法不会把文件插入到blob字段（因为，``store()``方法在插入操作前被调用），因此文件必须显式地被插入到blob字段： 
 ``
 >>> db.define_table('myfile',
         Field('image', 'upload', uploadfield='image_file'),
@@ -709,7 +842,7 @@ Note, if the file is to be stored in an associated blob field rather than the fi
         image_file=stream.read())
 ``:code
 
-The opposite of ``.store`` is ``.retrieve``:
+与 ``.store`` 相反的是``.retrieve``:
 
 ``
 >>> row = db(db.myfile).select().first()
@@ -720,7 +853,7 @@ The opposite of ``.store`` is ``.retrieve``:
 
 ### ``Query``, ``Set``, ``Rows``
 
-Let's consider again the table defined (and dropped) previously and insert three records:
+让我们再思考下前面的表定义（删除），并插入三条记录：
 ``
 >>> db.define_table('person', Field('name'))
 >>> db.person.insert(name="Alex")
@@ -731,40 +864,42 @@ Let's consider again the table defined (and dropped) previously and insert three
 3
 ``:code
 
-You can store the table in a variable. For example, with variable ``person``, you could do:
+你能用变量存放表。例如，用变量``person``，你能执行： 
 
 ``Table``:inxx
 ``
 >>> person = db.person
 ``:code
 
-You can also store a field in a variable such as ``name``.  For example, you could also do:
+你也可以用变量存储字段，比如 ``name``。举个例子，你能执行：
 
 ``Field``:inxx
 ``
 >>> name = person.name
 ``:code
 
-You can even build a query (using operators like ==, !=, <, >, <=, >=, like, belongs) and store the query in a variable ``q`` such as in:
+你甚至还能生成query（用运算符==、!= 、<、>、<=、>=、like和belongs），用变量
+``q`` 存储query，如下所示：
 
 ``Query``:inxx
 ``
 >>> q = name=='Alex'
 ``:code
 
-When you call ``db`` with a query, you define a set of records. You can store it in a variable ``s`` and write:
+当你查询调用 ``db`` 时，你定义了记录集。你能用变量``s``存储，象这样写：
 
 ``Set``:inxx
 ``
 >>> s = db(q)
 ``:code
 
-Notice that no database query has been performed so far. DAL + Query simply define a set of records in this db that match the query.
-web2py determines from the query which table (or tables) are involved and, in fact, there is no need to specify that.
+注意迄今还没有执行数据库查询操作。DAL+Query简单定义了在db中符合查询
+的记录集。web2py从涉及查询的表（或多张表）来决定，事实上，无需具体说
+明。
 
-### ``select``
+### 查询``select``
 
-Given a Set, ``s``, you can fetch the records with the command ``select``:
+给定一个集合 ``s``，你能用``select``（查询）命令得到记录：
 
 ``Rows``:inxx ``select``:inxx
 ``
@@ -772,16 +907,18 @@ Given a Set, ``s``, you can fetch the records with the command ``select``:
 ``:code
 
 ``Row``:inxx
-It returns an iterable object of class ``gluon.sql.Rows`` whose elements are Row objects. ``gluon.sql.Row`` objects act like dictionaries, but their elements can also be accessed as attributes, like ``gluon.storage.Storage``.The former differ from the latter because its values are readonly.
+它返回``gluon.sql.Rows``类的迭代对象，它的成员是Row对象。``gluon.sql.Row``对
+象用起来像字典，它们的成员也能作为属性访问，比如``gluon.storage.Storage``。前者与后者有区别是因为它的值是只读的。
+  
 
-The Rows object allows looping over the result of the select and printing the selected field values for each row:
+Rows对象允许对select结果循环，为每行打印所选字段的值：
 ``
 >>> for row in rows:
         print row.id, row.name
 1 Alex
 ``:code
 
-You can do all the steps in one statement:
+你能用一个语句完成所有步骤：
 ``
 >>> for row in db(db.person.name=='Alex').select():
         print row.name
@@ -790,7 +927,8 @@ Alex
 
 ``ALL``:inxx
 
-The select command can take arguments. All unnamed arguments are interpreted as the names of the fields that you want to fetch. For example, you can be explicit on fetching field "id" and field "name":
+select命令能带参数。所有未命名的参数被解释为你想要取到的字段名。例如，你
+能显式地得到字段id 和字段name。
 ``
 >>> for row in db().select(db.person.id, db.person.name):
         print row.name
@@ -799,7 +937,7 @@ Bob
 Carl
 ``:code
 
-The table attribute ALL allows you to specify all fields:
+表的属性ALL允许你指定所有字段：
 ``
 >>> for row in db().select(db.person.ALL):
         print row.name
@@ -808,9 +946,9 @@ Bob
 Carl
 ``:code
 
-Notice that there is no query string passed to db. web2py understands that if you want all fields of the table person without additional information then you want all records of the table person.
-
-An equivalent alternative syntax is the following:
+注意：没有查询字符串传递给db。web2py明白如果你没有附加信息想要person
+表的所有字段，就是想要person表的所有记录。
+一个等同可以替换的语法如下：
 ``
 >>> for row in db(db.person.id > 0).select():
         print row.name
@@ -819,15 +957,16 @@ Bob
 Carl
 ``:code
 
-and web2py understands that if you ask for all records of the table person (id > 0) without additional information, then you want all the fields of table person.
+web2py知悉如果没有额外的信息就是你索要person表所有记录（id>0），那么
+你想要person表的所有字段。
 
-Given one row
+给定一行
 
 ``
 row = rows[0]
 ``
 
-you can extract its values using multiple equivalent expressions:
+你能用多条等同的表达来得到值：
 
 ``
 >>> row.name
@@ -838,82 +977,81 @@ Alex
 Alex
 ``
 
-The latter syntax is particularly handy when selecting en expression instead of a column. We will show this later.
+当查询表达式而非列的时候，后者的语法特别方便。我们会在后面展示。
+你也能执行
 
-You can also do
 ``
 rows.compact = False
 ``
-to disable the notation
+禁用compact（紧凑）表示法
 ``
 row[i].name
 ``
-and enable, instead, the less compact notation:
+相反，启用不紧凑表示：
 ``
 row[i].person.name
 ``
-Yes this is unusual and rarely needed.
+是的，这是不寻常的，也不是极少数情况下才需要。
 
 #### Shortcuts
 ``DAL shortcuts``:inxx
 
-The DAL supports various code-simplifying shortcuts.
-In particular:
+DAL支持各种各样代码简化的捷径。特别是：
 ``
 myrecord = db.mytable[id]
 ``:code
 
-returns the record with the given ``id`` if it exists. If the ``id`` does not exist, it returns ``None``. The above statement is equivalent to
+返回存在的给定 ``id`` 的记录。如果``id`` 不存在，返回 ``None``。上面的语句等价于
 
 ``
 myrecord = db(db.mytable.id==id).select().first()
 ``:code
 
-You can delete records by id:
+你能通过id删除记录：
 
 ``
 del db.mytable[id]
 ``:code
 
-and this is equivalent to
+这等价于
 
 ``
 db(db.mytable.id==id).delete()
 ``:code
 
-and deletes the record with the given ``id``, if it exists.
+如果存在的话，用给定的``id``删除记录。
 
-You can insert records:
+你能插入记录：
 
 ``
 db.mytable[0] = dict(myfield='somevalue')
 ``:code
 
-It is equivalent to
+它等价于
 
 ``
 db.mytable.insert(myfield='somevalue')
 ``:code
 
-and it creates a new record with field values specified by the dictionary on the right hand side.
+它用右手边字典指定的字段值创建新记录。
 
-You can update records:
+你能更新记录：
 
 ``
 db.mytable[id] = dict(myfield='somevalue')
 ``:code
 
-which is equivalent to
+它等价于：
 
 ``
 db(db.mytable.id==id).update(myfield='somevalue')
 ``:code
 
-and it updates an existing record with field values specified by the dictionary on the right hand side.
+它用右手边字典所指定的字段值更新现存的记录。
 
-#### Fetching a ``Row``
+#### 得到一个``Row``对象
 
-Yet another convenient syntax is the following:
+然而，另一种方便的语法如下：
 
 ``
 record = db.mytable(id)
@@ -921,38 +1059,42 @@ record = db.mytable(db.mytable.id==id)
 record = db.mytable(id,myfield='somevalue')
 ``:code
 
-Apparently similar to ``db.mytable[id]`` the above syntax is more flexible and safer. First of all it checks whether ``id`` is an int (or ``str(id)`` is an int) and returns ``None`` if not (it never raises an exception). It also allows to specify multiple conditions that the record must meet. If they are not met, it also returns ``None``.
+显然与``db.mytable[id]``相同，但上面的语法更灵活和安全。首先它检查``id``是否是整型（或``str(id)``函数结果是否是整型），如果不是返回``None``（它绝不会引发异常）。它允许指定多个记录必须满足的条件。
+如果条件不满足，也返回 ``None``。
 
-#### Recursive ``select``s
+
+#### 递归查询 ``select``s
 ``recursive selects``:inxx
 
-Consider the previous table person and a new table "dog" referencing a "person":
+思考前面定义的person表，还有一张引用person表的新表dog：
 ``
 >>> db.define_table('dog', Field('name'), Field('owner',db.person))
 ``:code
 
-and a simple select from this table:
+从这张表的简单查询：
 ``
 >>> dogs = db(db.dog).select()
 ``:code
 
-which is equivalent to
+它等价于
 
 ``
 >>> dogs = db(db.dog._id>0).select()
 ``:code
 
-where ``._id`` is a reference to the primary key of the table. Normally ``db.dog._id`` is the same as ``db.dog.id`` and we will assume that in most of this book. ``_id``:inxx
+此处 ``._id`` 是对该表主键的引用。正常情况``db.dog._id`` 和 ``db.dog.id`` 是一样的，本
+书大部分都这么假定。 ``_id``:inxx
 
 
-For each Row of dogs it is possible to fetch not just fields from the selected table (dog) but also from linked tables (recursively):
+对dog表的Row，不仅能够从查询的表（dog）得到还能从链接表（递归地）
+得到：
 ``
 >>> for dog in dogs: print dog.name, dog.owner.name
 ``:code
 
-Here ``dog.owner.name`` requires one database select for each dog in dogs and it is therefore inefficient. We suggest using joins whenever possible instead of recursive selects, nevertheless this is convenient and practical when accessing individual records.
-
-You can also do it backwards, by selecting the dogs referenced by a person:
+``dog.owner.name`` 要求在dog表中数据库查询命令，因此它不高效。我们建议联合
+而不是递归查询，尽管如此当访问个人记录这样简单而且实用
+通过对 person表引用的dogs表，你能后向完成。
 
 ``
 person =  db.person(id)
@@ -960,18 +1102,19 @@ for dog in person.dog.select(orderby=db.dog.name):
     print person.name, 'owns', dog.name
 ``:code
 
-In this last expressions ``person.dog`` is a shortcut for
+这里最后表达式person.dog是下面的快捷表示
 
 ``
 db(db.dog.owner==person.id)
 ``:code
 
-i.e. the Set of ``dog``s referenced by the current ``person``. This syntax breaks down if the referencing table has multiple references to the referenced table. In this case one needs to be more explicit and use a full Query.
+即被当前``person``引用到的 ``dog``s Set集对象。如果引用表格对被引用表多次引用，
+该语法出问题。这种情况下，需要更清楚并且使用完全查询。
 
 
-#### Serializing ``Rows`` in views
+#### 视图中序列化``Rows`` 对象
 
-Given the following action containing a query
+给出下面包含查询的动作：
 ``SQLTABLE``:inxx
 
 ``
@@ -979,35 +1122,39 @@ def index()
     return dict(rows = db(query).select())
 ``:code
 
-The result of a select can be displayed in a view with the following syntax:
+用下面的语法，查询结果在视图中显示：
 ``
 {{extend 'layout.html'}}
 <h1>Records</h1>
 {{=rows}}
 ``:code
 
-Which is equivalent to:
+这等价于：
 ``
 {{extend 'layout.html'}}
 <h1>Records</h1>
 {{=SQLTABLE(rows)}}
 ``:code
 
-``SQLTABLE`` converts the rows into an HTML table with a header containing the column names and one row per record. The rows are marked as alternating class "even" and class "odd". Under the hood, Rows is first converted into a SQLTABLE object (not to be confused with Table) and then serialized. The values extracted from the database are also formatted by the validators associated to the field and then escaped.
+``SQLTABLE``把rows 对象变成包含列名标头的HTML 表，每条记录一个对象。
+Rows 对象交替标示为even 类和odd 类。在后台，Rows 对象首先转换成
+SQLTABLE对象（不要与Table混淆），然后序列化。从数据库提出的值也被与
+field相关的验证器格式化，然后转义（注意：在视图中这样用db不被视为好的
+MVC实践）。
 
-Yet it is possible and sometimes convenient to call SQLTABLE explicitly.
+但是，显式调用SQLTABLE可能有时也很方便。
 
-The SQLTABLE constructor takes the following optional arguments:
+SQLTABLE构造函数采用下面可选参数：
 
-- ``linkto`` the URL or an action to be used to link reference fields (default to None)
-- ``upload`` the URL or the download action to allow downloading of uploaded files (default to None)
-- ``headers`` a dictionary mapping field names to their labels to be used as headers (default to ``{}``). It can also be an instruction. Currently we support ``headers='fieldname:capitalize'``.
-- ``truncate`` the number of characters for truncating long values in the table (default is 16)
-- ``columns`` the list of fieldnames to be shown as columns (in tablename.fieldname format).
-   Those not listed are not displayed (defaults to all).
-- ``**attributes`` generic helper attributes to be passed to the most external TABLE object.
+- ``linkto`` URL或用来链接引用字段的动作（默认None）
+- ``upload`` URL或允许对已上传文件下载的动作（默认None）
+- ``headers`` 把字段名映射成用做标头的标签的字典（默认 ``{}``）。也可以是指令。当前我们支持 ``headers='fieldname:capitalize'``。
+- ``truncate`` 表中长值截断的字符位数（默认16）
+- ``columns`` 以列的方式显示的fieldname列表（tablename.fieldname格式）。那
+些未列出的将不显示（默认all）
+- ``**attributes`` 通常帮助对象属性会传递给大部分外部TABLE对象。
 
-Here is an example:
+这有一个例子：
 ``
 {{extend 'layout.html'}}
 <h1>Records</h1>
@@ -1021,30 +1168,33 @@ Here is an example:
 ``SQLFORM.grid``:inxx ``SQLFORM.smartgrid``:inxx
 
 ------
-``SQLTABLE`` is useful but there are types when one needs more. ``SQLFORM.grid`` is an extension of SQLTABLE that creates a table with search features and pagination, as well as ability to open detailed records, create, edit and delete records. ``SQLFORM.smartgrid`` is a further generalizaiton that allows all of the above but also creates buttons to access referencing records.
+``SQLTABLE`` 有用，但需要更多的时候是有类型的。``SQLFORM.grid`` 是SQLTABLE
+的扩展，能创建具有搜索特性和分页的表，它能打开详细记录、创建、编辑、删
+除记录。``SQLFORM.smartgrid`` 更一般化，不仅允许上述所有功能还能创建访问
+引用记录的按钮。
 ------
 
-Here is an example of usage of ``SQLFORM.grid``:
+使用``SQLFORM.grid``的例子如下：
 
 ``
 def index():
     return dict(grid=SQLFORM.grid(query))
 ``:code
 
-and the corresponding view:
+和相应的视图：
 
 ``
 {{extend 'layout.html'}}
 {{=grid}}
 ``
 
-``SQLFORM.grid`` and ``SQLFORM.smartgrid`` should be preferrable to ``SQLTABLE`` because they are more powerful although higher level and therefore more constraining. They will be explained in more detail in chapter 8.
+``SQLFORM.grid``和``SQLFORM.smartgrid``是比``SQLTABLE``更好的选择，因为它们虽然高层级而有所限制但功能更强。这将在第8章作更为详细的解释。
 
-#### ``orderby``, ``groupby``, ``limitby``, ``distinct``
+#### 排序、分组、限制、区别``orderby``, ``groupby``, ``limitby``, ``distinct``
 
-The ``select`` command takes five optional arguments: orderby, groupby, limitby, left and cache. Here we discuss the first three.
+``select`` 命令采用五个可选参数：orderby, groupby,limitby, left 和 cache。这里我们讨论前三个。
 
-You can fetch the records sorted by name:
+你能得到名字字母顺序排序的记录：
 
 ``orderby``:inxx
 ``
@@ -1056,7 +1206,7 @@ Bob
 Carl
 ``:code
 
-You can fetch the records sorted by name in reverse order (notice the tilde):
+你能得到名字按逆序排序的记录（注意波浪线~）：
 ``
 >>> for row in db().select(
         db.person.ALL, orderby=~db.person.name):
@@ -1066,7 +1216,7 @@ Bob
 Alex
 ``:code
 
-You can have the fetched records appear in random order:
+你能让得到的记录以随机顺序显示：
 ``
 >>> for row in db().select(
         db.person.ALL, orderby='<random>'):
@@ -1077,14 +1227,15 @@ Bob
 ``:code
 
 -----
-The use of ``orderby='<random>'`` is not supported on Google NoSQL.  However, in this situation and likewise in many others where built-ins are insufficient, imports can be used:
+``orderby='<random>'`` 的用法不被Google NoSQL支持。但是这样的情况，同样还有
+其它很多，内置插件不够，可以采用import：
 ``
 import random
 rows=db(...).select().sort(lambda row: random.random())
 ``:code
 -----
 
-And you can sort the records according to multiple fields by concatenating them with a "|":
+你能根据多字段进行记录排序，多个字段用“|”符号串联：
 ``
 >>> for row in db().select(
         db.person.ALL, orderby=db.person.name|db.person.id):
@@ -1094,7 +1245,7 @@ Bob
 Alex
 ``:code
 
-Using ``groupby`` together with ``orderby``, you can group records with the same value for the specified field (this is back-end specific, and is not on the Google NoSQL):
+同时用``groupby``和``orderby``，你能把指定字段值相同的记录分组（这是后端指定的，不是对Google NoSQL的）：
 ``
 >>> for row in db().select(
         db.person.ALL,
@@ -1107,9 +1258,11 @@ Carl
 
 ``distinct``:inxx
 
-With the argument ``distinct=True``, you can specify that you only want to select distinct records. This has the same effect as grouping using all specified fields except that it does not require sorting. When using distinct it is important not to select ALL fields, and in particular not to select the "id" field, else all records will always be distinct.
+用参数 ``distinct=True``，你能指定仅仅想查询不同的记录。与用所有指定字段分组
+是同样效果，除了它不需要排序之外。当用distinct，很重要的是不要查询所有
+字段，特别是不要用id字段，否则所有的记录总是不同的。
 
-Here is an example:
+这有一个例子：
 ``
 >>> for row in db().select(db.person.name, distinct=True):
         print row.name
@@ -1118,7 +1271,7 @@ Bob
 Carl
 ``:code
 
-Notice that ``distinct`` can also be an expression for example:
+注意``distinct``参数也能做为表达式，例如： 
 ``
 >>> for row in db().select(db.person.name,distinct=db.person.name):
         print row.name
@@ -1127,7 +1280,7 @@ Bob
 Carl
 ``:code
 
-With limitby=(min, max), you can select a subset of the records from offset=min to but not including offset=max (in this case, the first two starting at zero):
+用limitby，你能查询记录的子集（这种情况，头两个从0开始）：
 
 ``limitby``:inxx
 ``
@@ -1138,9 +1291,9 @@ Bob
 ``:code
 
 
-#### Logical operators
+#### 逻辑运算符
 
-Queries can be combined using the binary AND operator "``&``":
+查询可以用二进制与AND运算符 "``&``"连接：
 
 ``and``:inxx ``or``:inxx ``not``:inxx
 ``
@@ -1149,14 +1302,14 @@ Queries can be combined using the binary AND operator "``&``":
 4 Alex
 ``:code
 
-and the binary OR operator "``|``":
+二进制或OR运算符 "``|``":
 ``
 >>> rows = db((db.person.name=='Alex') | (db.person.id>3)).select()
 >>> for row in rows: print row.id, row.name
 1 Alex
 ``:code
 
-You can negate a query (or sub-query) with the "``!=``" binary operator:
+你能取反查询（或者子查询），用二进制运算符号 "``!=``" :
 ``
 >>> rows = db((db.person.name!='Alex') | (db.person.id>3)).select()
 >>> for row in rows: print row.id, row.name
@@ -1164,7 +1317,7 @@ You can negate a query (or sub-query) with the "``!=``" binary operator:
 3 Carl
 ``:code
 
-or by explicit negation with the "``~``" unary operator:
+或用 "``~``" 一元运算符显式取反：
 ``
 >>> rows = db((~db.person.name=='Alex') | (db.person.id>3)).select()
 >>> for row in rows: print row.id, row.name
@@ -1172,9 +1325,9 @@ or by explicit negation with the "``~``" unary operator:
 3 Carl
 ``:code
 
-Due to Python restrictions in overloading "``and``" and "``or``" operators, these cannot be used in forming queries.  The binary operators "``&``" and "``|``" must be used instead. Note that these operators (unlike "``and``" and "``or``") have higher precedence than comparison operators, so the "extra" parentheses in the above examples are mandatory.
-
-It is also possible to build queries using in-place logical operators:
+因为Python限制超载"``and``"和 "``or``" 运算符，这些不能用在形成查询语句。因而，
+必须使用二进制运算符。
+也有可能用合适的逻辑运算符来构建查询：
 
 ``
 >>> query = db.person.name!='Alex'
@@ -1184,7 +1337,7 @@ It is also possible to build queries using in-place logical operators:
 
 #### ``count``, ``isempty``, ``delete``, ``update``
 
-You can count records in a set:
+你能对集合中的记录计数：
 
 ``count``:inxx ``isempty``:inxx
 
@@ -1193,39 +1346,41 @@ You can count records in a set:
 3
 ``:code
 
-Notice that ``count`` takes an optional ``distinct`` argument which defaults to False, and it works very much like the same argument for ``select``.
+注意``count`` 采用可选的 ``distinct`` 参数，默认False，它的作用与``select``命令中的
+``distinct``参数非常像。
 
-Sometimes you may need to check is a table is empty. A more efficient way than counting is using the ``isempty`` method:
+有时你需要检查表是否为空。比计数更有效的方法是用 ``isempty`` 方法：
 
 ``
 >>> print db(db.person.id > 0).isempty()
 False
 ``:code
 
-or equivalently:
+或等同于：
 
 ``
 >>> print db(db.person).isempty()
 False
 ``:code
 
-You can delete records in a set:
+你能delete（删除）集合中的记录：
 
 ``delete``:inxx
 ``
 >>> db(db.person.id > 3).delete()
 ``:code
 
-And you can update all records in a set by passing named arguments corresponding to the fields that need to be updated:
+把参数名传递给相应的你需要修改的字段，你能update（更新修改）集合中的
+所有记录：
 
 ``update``:inxx
 ``
 >>> db(db.person.id > 3).update(name='Ken')
 ``:code
 
-#### Expressions
+#### 表达式
 
-The value assigned an update statement can be an expression. For example consider this model
+赋给更新语句的参数值可以是表达式。例如，考虑下面这个模型：
 ``
 >>> db.define_table('person',
         Field('name'),
@@ -1234,7 +1389,7 @@ The value assigned an update statement can be an expression. For example conside
         visits = db.person.visits + 1)
 ``:code
 
-The values used in queries can also be expressions
+用在查询语句中的参数值也可以是表达式：
 ``
 >>> db.define_table('person',
         Field('name'),
@@ -1243,25 +1398,25 @@ The values used in queries can also be expressions
 >>> db(db.person.visits == db.person.clicks + 1).delete()
 ``:code
 
-#### ``update_record``
+#### ``update_record``方法
 
 ``update_record``:inxx
-web2py also allows updating a single record that is already in memory using ``update_record``
+we2py允许使用``update_record``更新已经在内存中的单个记录：
 
 ``
 >>> row = db(db.person.id==2).select().first()
 >>> row.update_record(name='Curt')
 ``:code
 
-``update_record`` should not be confused with
+``update_record`` 不该与下面混淆
 
 ``
 >>> row.update(name='Curt')
 ``:code
 
-because for a single row, the method ``update`` updates the row object but not the database record, as in the case of ``update_record``.
+因为对单个row对象，方法``update`` 更新row对象，而不是数据库的记录，如同``update_record``（更新数据库记录而不是row对象）。
 
-It is also possible to change the attributes of a row (one at the time) and then call ``update_record()`` without arguments to save the changes:
+能修改row对象的属性（有一个），无参调用 ``update_record()`` 保存修改：
 
 ``
 >>> row = db(db.person.id > 2).select().first()
@@ -1269,10 +1424,10 @@ It is also possible to change the attributes of a row (one at the time) and then
 >>> row.update_record() # saves above change
 ``:code
 
-#### ``first`` and ``last``
+#### ``first`` 和 ``last``方法
 ``first``:inxx ``last``:inxx
 
-Given a Rows object containing records:
+给出一个包含记录的Rows对象：
 
 ``
 >>> rows = db(query).select()
@@ -1280,23 +1435,24 @@ Given a Rows object containing records:
 >>> last_row = rows.last()
 ``:code
 
-are equivalent to
+等价于：
 ``
 >>> first_row = rows[0] if len(rows)>0 else None
 >>> last_row = rows[-1] if len(rows)>0 else None
 ``:code
 
-#### ``as_dict`` and ``as_list``
+#### ``as_dict``和 ``as_list``方法
 ``as_list``:inxx ``as_dict``:inxx
 
-A Row object can be serialized into a regular dictionary using the ``as_dict()`` method and a Rows object can be serialized into a list of dictionaries using the ``as_list()`` method. Here are some examples:
+使用``as_dict()`` 方法能把Row对象序列化为规则字典，用 ``as_list()`` 方法能把Rows对象序列化为字典列表。以下是一些例子：
 ``
 >>> rows = db(query).select()
 >>> rows_list = rows.as_list()
 >>> first_row_dict = rows.first().as_dict()
 ``:code
 
-These methods are convenient for passing Rows to generic views and or to store Rows in sessions (since Rows objects themselves cannot be serialized since contain a reference to an open DB connection):
+这些方法很方便地把Rows 传递给通用视图，或存储Rows 在会话中（因为
+Rows对象自身不能被序列化，它有一个打开DB连接的引用）：
 ``
 >>> rows = db(query).select()
 >>> session.rows = rows # not allowed!
@@ -1306,14 +1462,16 @@ These methods are convenient for passing Rows to generic views and or to store R
 #### ``find``, ``exclude``, ``sort``
 ``find``:inxx ``exclude``:inxx ``sort``:inxx
 
-There are times when one needs to perform two selects and one contains a subset of a previous select. In this case it is pointless to access the database again. The ``find``, ``exclude`` and ``sort`` objects allow you to manipulate a Rows objects and generate another one without accessing the database. More specifically:
-- ``find`` returns a new set of Rows filtered by a condition and leaves the original unchanged.
-- ``exclude`` returns a new set of Rows filtered by a condition and removes them from the original Rows.
-- ``sort`` returns a new set of Rows sorted by a condition and leaves the original unchanged.
+当需要执行两个查询，其中一个包含上次查询的子集。这种情况，再访问数据
+库是无谓的。 ``find``, ``exclude`` 和``sort`` 对象允许你操Rows对象，不必访问数据库生
+成另外一个。更具体：
+- ``find`` 返回经一个条件过滤的新的Rows，源中保持不变。
+- ``exclude`` 返回经一个条件过滤的新的Rows，并在源Rows中删除。
+- ``sort`` 返回由一个条件排序的新的Rows，源中保持不变。
 
-All these methods take a single argument, a function that acts on each individual row.
+这些方法用单个参数，函数作用于每一行。
 
-Here is an example of usage:
+下面是用法示例：
 ``
 >>> db.define_table('person',Field('name'))
 >>> db.person.insert(name='John')
@@ -1336,7 +1494,7 @@ Alex
 John
 ``:code
 
-They can be combined:
+它们可以组合为：
 ``
 >>> rows = db(db.person).select()
 >>> rows = rows.find(
@@ -1349,84 +1507,88 @@ Max
 ``:code
 
 
-### Other methods
+### 其它方法
 
 #### ``update_or_insert``
 ``update_or_insert``:inxx
 
-Some times you need to perform an insert only if there is no record with the same values as those being inserted.
-This can be done with
+有时你执行插入操作，仅当没有同值的记录才被插入。能这样做
 
 ``
 db.define_table('person',Field('name'),Field('birthplace'))
 db.person.update_or_insert(name='John',birthplace='Chicago')
 ``:code
 
-The record will be inserted only of there is no other user called John born in Chicago.
+这条记录只有没其它生于Chicago叫John的用户才能被插入。
 
-You can specify which values to use as a key to determine if the record exists. For example:
+你能指定那个值作为关键值决定记录是否存在。例如：
 ``
 db.person.update_or_insert(db.person.name=='John',
      name='John',birthplace='Chicago')
 ``:code
 
-and if there is John his birthplace will be updated else a new record will be created.
+如果有John记录它的出生地会被更新，否则，新的记录会被创建。
 
 #### ``validate_and_insert``, ``validate_and_update``
 
 ``validate_and_insert``:inxx ``validate_and_update``:inxx
 
-The function
+函数
 
 ``
 ret = db.mytable.validate_and_insert(field='value')
 ``:code
 
-works very much like
+作用与下面非常相像
 
 ``
 id = db.mytable.insert(field='value')
 ``:code
 
-except that it calls the validators for the fields before performing the insert and bails out if the validation does not pass. If validation does not pass the errors can be found in ``ret.error``. If it passes, the id of the new record is in ``ret.id``. Mind that normally validation is done by the form processing logic so this function is rarely needed.
+除了在执行插入前为字段调用验证器，如果验证不通过则安全退出。如果验证
+器通不过，出错信息记录在 ``ret.error``。如果通过，新记录的id在``ret.id``中。请注意
+正常情况验证被表单处理逻辑执行，因此这个函数几乎不需要。
 
-Similarly
+同样地
 
 ``
 ret = db(query).validate_and_update(field='value')
 ``:code
 
-works very much the same as
+作用与下面语句一样
 
 ``
 num = db(query).update(field='value')
 ``:code
 
-except that it calls the validators for	the fields before performing the update. Notice that it only works if query involves a single table. The number of updated records can be found in ``res.updated`` and errors will be ``ret.errors``.
+除了在执行更新前为字段调用验证器。注意仅当插入涉及到单个表时才用。更新
+记录数在``res.updated`` ，错误将记在``ret.errors``。
 
-#### ``smart_query`` (experimental)
-
-There are times when you need to parse a query using natural language such as
+#### ``smart_query`` 方法（实验性的）
+有时当你使用自然语言解析查询命令，例如
 
 ``
 name contain m and age greater than 18
 ``
 
-The DAL provides a method to parse this type of queries:
+DAL提供了方法解析这类查询命令：
 
 ``
 search = 'name contain m and age greater than 18'
 rows = db.smart_query([db.person],search).select()
 ``
 
-The first argument must be a list of tables or fields that should be allowed in the search. It raises a ``RuntimeError`` if the search string is invalid. This functionality can be used to build RESTful interfaces (see chapter 10) and it is used internally by the ``SQLFORM.grid`` and ``SQLFORM.smartgrid``.
+第一个参数必须是允许被搜索的表或字段列表。如果搜索字符串无效，导致 ``RuntimeError`` 。这项功能能用来构建RESTful 接口（参看第10 章），它被``SQLFORM.grid`` 和 ``SQLFORM.smartgrid``在内部使用。
 
-In the smartquery search string, a field can be identified by fieldname only and or by tablename.fieldname. Strings may be delimited by double quotes if they contain spaces.
+在智能查询搜索字符串中，字段仅能被字段名标识，或 tablename.fieldname。如
+果包含空格，字符串可以用双引号分隔。
 
-### Computed fields
+### 计算字段
 ``compute``:inxx
 
-DAL fields may have a ``compute`` attribute. This must be a function (or lambda) that takes a Row object and returns a value for the field. When a new record is modified, including both insertions and updates, if a value for the field is not provided, web2py tries to compute from the other field values using the ``compute`` function. Here is an example:
+DAL field有``compute``属性。这必须是采用Row对象的函数（或lambda），并为
+field返回值。当一条新纪录被修改，包括插入和更新，如果为field的值没有提
+供，web2py尝试用``compute``函数从其它字段值计算。这是一个例子： 
 ``
 >>> db.define_table('item',
         Field('unit_price','double'),
@@ -1438,25 +1600,29 @@ DAL fields may have a ``compute`` attribute. This must be a function (or lambda)
 9.95
 ``:code
 
-Notice that the computed value is stored in the db and it is not computed on retrieval, as in the case of virtual fields, described later. Two typical applications of computed fields are:
-- in wiki applications, to store the processed input wiki text as HTML, to avoid re-processing on every request
-- for searching, to compute normalized values for a field, to be used for searching.
+注意计算得到的值存在db中，在检索它计算，如同在后面描述的虚拟字段情况
+一样。计算字段的两种典型应用如下：
+- wiki应用，存储已处理的输入wiki文本为HTML，避免每次请求的在处理
+- 为了搜索，为字段计算正常的值，用来搜索。
 
-### Virtual fields
+### 虚拟字段
 
-#### Old style virtual fields
+#### 旧风格虚拟字段
 ``virtualfields``:inxx
 
-Virtual fields are also computed fields (as in the previous subsection) but they differ from those because they are ''virtual'' in the sense that they are not stored in the db and they are computed each time records are extracted from the database. They can be used to simplify the user's code without using additional storage but they cannot be used for searching.
+虚拟字段也是计算字段（上一小节），但它有所区别的是因为它是virtual，在
+这个意义上，它不存储在db中，当每次记录从数据库中提取时，它就计算。它
+们用来简化用户代码而不用附加存储，但不能用于搜索。
 
-In order to define one or more virtual fields, you have to define a container class, instantiate it and link it to a table or to a select. For example, consider the following table:
+为定义一个或多个虚拟字段，你需要定义容器类，实例化它并链接到表或查询。
+例如，考虑下面的表：
 ``
 >>> db.define_table('item',
         Field('unit_price','double'),
         Field('quantity','integer'),
 ``:code
 
-One can define a ``total_price`` virtual field as
+ ``total_price`` 虚拟字段能被定义如下：
 ``
 >>> class MyVirtualFields(object):
         def total_price(self):
@@ -1464,9 +1630,10 @@ One can define a ``total_price`` virtual field as
 >>> db.item.virtualfields.append(MyVirtualFields())
 ``:code
 
-Notice that each method of the class that takes a single argument (self) is a new virtual field. ``self`` refers to each one row of the select. Field values are referred by full path as in ``self.item.unit_price``. The table is linked to the virtual fields by appending an instance of the class to the table's ``virtualfields`` attribute.
+注意这个类的每个方法采用单个参数（self）是一个新的虚拟字段。``self`` 指查询
+的每个row（行）。Field值在``self.item.unit_price``全路径引用。表链接到虚拟字段，通过追加类的实例到表的 ``virtualfields`` 属性。
 
-Virtual fields can also access recursive fields as in
+虚拟字段能访问递归字段
 ``
 >>> db.define_table('item',
         Field('unit_price','double'))
@@ -1480,9 +1647,9 @@ Virtual fields can also access recursive fields as in
 >>> db.order_item.virtualfields.append(MyVirtualFields())
 ``:code
 
-Notice the recursive field access ``self.order_item.item.unit_price`` where ``self`` is the looping record.
+注意递归字段访问 ``self.order_item.item.unit_price`` ，``self`` 是循环记录。
 
-They can also act on the result of a JOIN
+这也能对JOIN结果动作
 ``
 >>> db.define_table('item',
         Field('unit_price','double'))
@@ -1498,7 +1665,8 @@ They can also act on the result of a JOIN
 >>> for row in rows: print row.order_item.total_price
 ``:code
 
-Notice how in this case the syntax is different. The virtual field accesses both ``self.item.unit_price`` and ``self.order_item.quantity`` which belong to the join select. The virtual field is attached to the rows of the table using the ``setvirtualfields`` method of the rows object. This method takes an arbitrary number of named arguments and can be used to set multiple virtual fields, defined in multiple classes, and attach them to multiple tables:
+注意这种情况下语法的不同之处。虚拟字段访问了``self.item.unit_price`` 和 ``self.order_item.quantity``，属于联合查询。
+使用rows对象``setvirtualfields``方法，虚拟字段连接到表的行。这个方法采用任意个命名的参数，用来设置多个虚拟字段，多个类中定义，并把它们连接到多张表：
 ``
 >>> class MyVirtualFields1(object):
         def discounted_unit_price(self):
@@ -1517,7 +1685,7 @@ Notice how in this case the syntax is different. The virtual field accesses both
         print row.order_item.discounted_total_price
 ``:code
 
-Virtual fields can be ''lazy''; all they need to do is return a function and access it by calling the function:
+虚拟字段能 ''lazy''；所有需要做的是返回函数，调用函数访问它：
 ``
 >>> db.define_table('item',
         Field('unit_price','double'),
@@ -1533,7 +1701,7 @@ Virtual fields can be ''lazy''; all they need to do is return a function and acc
         print item.lazy_total_price()
 ``:code
 
-or shorter using a lambda function:
+或用lambda函数较短的写法：
 ``
 >>> class MyVirtualFields(object):
         def lazy_total_price(self):
@@ -1542,11 +1710,12 @@ or shorter using a lambda function:
 ``:code
 
 
-#### New style virtual fields (experimental)
+#### 新风格的虚拟字段（实验性的）
 
-web2py provides a new and easier way to define virtual fields and lazy virtual fields. This section is marked experimental because they APIs may still change a little from what is described here.
+web2py提供一种新的更简单的方法定义和lazy虚拟字段。这部分标记为实验是
+因为有可能在此描述的API会有一些改变。
 
-Here we will consider the same example as in the previous subsection. In particular we consider the following model:
+这里我们考虑前面章节中相同的例子。我们特别考虑下面的模型：
 
 ``
 >>> db.define_table('item',
@@ -1554,50 +1723,52 @@ Here we will consider the same example as in the previous subsection. In particu
         Field('quantity','integer'),
 ``:code
 
-One can define a ``total_price`` virtual field as
+如下定义一个``total_price`` 虚拟字段：
 
 ``
 >>> db.item.total_price = Field.Virtual(lambda row: row.unit_price*row.quantity)
 ``:code
 
-i.e. by simply defining a new field ``total_price`` to be a ``Field.Virtual``. The only argument of the constructor is a function that takes a row and returns the computed values.
+即简单定义一个新字段``total_price``为``Field.Virtual``。构造函数的唯一参数是函数，该函数用row参数并返回已计算值。
 
-A virtual field defined as the one above is automatically computed for all records when the records are selected:
+上面定义的虚拟字段为所有被查询的记录自动计算：
 
 ``
 >>> for row in db(db.item).select(): print row.total_price
 ``
 
-It is also possible to define lazy virtual fields which are calculated on-demand, when called.
-For example:
+也能定义lazy虚拟字段，当调用时，按需计算。例如：
 
 ``
 >>> db.item.total_price = Field.Lazy(lambda row, discount=0.0: \
        row.unit_price*row.quantity*(1.0-discount/100))
 ``:code
 
-In this case ``row.total_price`` is not a value but a function. The function takes the same arguments as the function passed to the ``Lazy`` constructor except for ``row`` which is implicit (think of it as ``self`` for rows objects).
+这种情况，``row.total_price`` 不是值而是函数。函数与它传递给``Lazy`` 构造函数同样的参数以外，``row`` 是隐式的（把它视为``self`` ，rows对象）
 
-The lazy field in the example above allows one to compute the total price for each ``item``:
+上面例子中lazy字段允许计算每个 ``item``总价格：
 
 ``
 >>> for row in db(db.item).select(): print row.total_price()
 ``
 
-And it also allows to pass an optional ``discount`` percentage (15%):
+它也允许传递可选``discount`` 百分比（15%）:
 
 ``
 >>> for row in db(db.item).select(): print row.total_price(15)
 ``
 
 ------
-Mind that virtual fields do not have the same attributes as the other fields (default, readable, requires, etc) and they do not appear in the list of ``db.table.fields`` and are not visualized by default in tables (TABLE) and grids (SQLFORM.grid, SQLFORM.smartgrid).
+记住虚拟字段没有和其它字段相同的属性（default、readable 和 requires等），
+它们不出现在``db.table.fields``列表，并且在表（TABLE）和网格中默认不可见
+（SQLFORM.grid、SQLFORM.smartgrid）。
 ------
 
-### One to many relation
+### 一对多关系
 ``one to many``:inxx
 
-To illustrate how to implement one to many relations with the web2py DAL, define another table "dog" that refers to the table "person" which we redefine here:
+为说明采用web2py DAL如何实现一对多关系，我们在这定义另外一张引用到
+person表的dog表：
 ``
 >>> db.define_table('person',
                     Field('name'),
@@ -1608,13 +1779,14 @@ To illustrate how to implement one to many relations with the web2py DAL, define
                     format='%(name)s')
 ``:code
 
-Table "dog" has two fields, the name of the dog and the owner of the dog. When a field type is another table, it is intended that the field reference the other table by its id. In fact, you can print the actual type value and get:
+表dog有两个字段，表的name和owner。当字段类型是其它表的，这意图是引用
+到其它表的字段通过它的id。事实上，你能显示实际类型值，并得到：
 ``
 >>> print db.dog.owner.type
 reference person
 ``:code
 
-Now, insert three dogs, two owned by Alex and one by Bob:
+现在，插入三条dog记录，Alex两条，Bob一条：
 ``
 >>> db.dog.insert(name='Skipper', owner=1)
 1
@@ -1624,7 +1796,7 @@ Now, insert three dogs, two owned by Alex and one by Bob:
 3
 ``:code
 
-You can select as you did for any other table:
+你能象对其它任何表一样进行查询：
 ``
 >>> for row in db(db.dog.owner==1).select():
         print row.name
@@ -1632,7 +1804,9 @@ Skipper
 Snoopy
 ``:code
 
-Because a dog has a reference to a person, a person can have many dogs, so a record of table person now acquires a new attribute dog, which is a Set, that defines the dogs of that person. This allows looping over all persons and fetching their dogs easily:
+因为dog引用 person，一个人可以有很多狗，因此，现在person表的记录得到新
+的属性dog，它是定义人所有的狗集合。这允许对所有人进行循环，很轻易得到
+他们的狗：
 
 ``referencing``:inxx
 ``
@@ -1648,9 +1822,11 @@ Bob
 Carl
 ``:code
 
-#### Inner joins
+#### 内联Inner joins
 
-Another way to achieve a similar result is by using a join, specifically an INNER JOIN. web2py performs joins automatically and transparently when the query links two or more tables as in the following example:
+另一种方式通过使用一个连接实现了类似的结果，具体是INNER JOIN（内
+联）。web2py自动和透明地执行连接，当查询链接到两张或多张表，如同下面
+的例子：
 
 ``Rows``:inxx ``inner join``:inxx ``join``:inxx
 ``
@@ -1662,22 +1838,24 @@ Alex has Snoopy
 Bob has Puppy
 ``:code
 
-Observe that web2py did a join, so the rows now contain two records, one from each table, linked together. Because the two records may have fields with conflicting names, you need to specify the table when extracting a field value from a row. This means that while before you could do:
+观察web2py联合，因此现在rows对象包含两条记录，每张表一条，链接在一
+起。因为两条记录可能有名字相冲突的字段，当你从行（对象）取出字段值要
+指定表。这意味着当你执行前：
 ``
 row.name
 ``:code
 
-and it was obvious whether this was the name of a person or a dog, in the result of a join you have to be more explicit and say:
+显然无论这是人名还是狗名，联合查询结果，你必须更清晰地说：
 ``
 row.person.name
 ``:code
 
-or:
+或：
 ``
 row.dog.name
 ``:code
 
-There is an alterantive syntax for INNER JOINS:
+有INNER JOIN（内联）的替代语法：
 ``
 >>> rows = db(db.person).select(join=db.dog.on(db.person.id==db.dog.owner))
 >>> for row in rows:
@@ -1687,7 +1865,8 @@ Alex has Snoopy
 Bob has Puppy
 ``:code
 
-While the output is the same, the generated SQL in the two cases can be different. The latter syntax removes possible ambiguities when the same table is joined twice and aliased:
+当输出一样时，两种情况生成的SQL不同。当同一个表联合两次和别名时，后
+者语法消除可能的奇异：
 
 ``
 >>> db.define_table('dog',
@@ -1699,11 +1878,13 @@ While the output is the same, the generated SQL in the two cases can be differen
           db.person.with_alias('owner2').on(db.person.id==db.dog.owner2)])
 ``
 
-The value of ``join`` can be list of ``db.table.on(...)`` to join.
+ ``join`` 值能是 ``db.table.on(...)`` 列表联合。
 
-#### Left outer join
+#### 左外联Left outer join
 
-Notice that Carl did not appear in the list above because he has no dogs. If you intend to select on persons (whether they have dogs or not) and their dogs (if they have any), then you need to perform a LEFT OUTER JOIN. This is done using the argument "left" of the select command. Here is an example:
+注意Carl不出现在上面的列表，因为他没有狗。如果你打算查询人（不论他有
+没有狗）和他的狗（如果他们有），那你需要执行LEFT OUTER JOIN。这用选
+择命令的参数“left”完成。下面是例子：
 
 ``Rows``:inxx ``left outer join``:inxx ``outer join``:inxx
 ``
@@ -1718,18 +1899,22 @@ Bob has Puppy
 Carl has None
 ``:code
 
-where:
+此处：
 ``
 left = db.dog.on(...)
 ``:code
 
-does the left join query. Here the argument of ``db.dog.on`` is the condition required for the join (the same used above for the inner join). In the case of a left join, it is necessary to be explicit about which fields to select.
+做left join（左联）查询。``db.dog.on``的参数是为join需要的条件（与上面内联同
+样的）。在左联，对哪个字段查询必须是清晰的。
 
-Multiple left joins can be combined by passing a list or tuple of ``db.mytable.on(...)`` to the  ``left`` attribute.
+多左联能通过``db.mytable.on(...)``传递列表或元组给``left`` 属性。 
 
-#### Grouping and counting
+#### 分组和计数Grouping and counting
 
-When doing joins, sometimes you want to group rows according to certain criteria and count them. For example, count the number of dogs owned by every person. web2py allows this as well. First, you need a count operator. Second, you want to join the person table with the dog table by owner. Third, you want to select all rows (person + dog), group them by person, and count them while grouping:
+当执行联合，有时你需要根据一定的标准分类rows对象并进行计数。例如，统
+计每个人拥有的狗的数量。Web2py也允许这么做。首先，你需要count运算符。
+其次，你想通过owner 联合person 表和dog 表。第三，你想查询所有
+rows（person+dog），用person分组，当分组时进行统计：
 
 ``grouping``:inxx
 ``
@@ -1741,13 +1926,17 @@ Alex 2
 Bob 1
 ``:code
 
-Notice the count operator (which is built-in) is used as a field. The only issue here is in how to retrieve the information. Each row clearly contains a person and the count, but the count is not a field of a person nor is it a table. So where does it go? It goes into the storage object representing the record with a key equal to the query expression itself.
+注意count运算符（内嵌的）用做一个字段。这里仅有的问题是如何取回信息。
+每行明确包含一个人，还有数字，但是count不是person的字段也不是一张表。
+因此，它在哪？它在存储对象代表记录，有关键词等价于查询表达式本身。
 
-### Many to many
+### 多对多关系
 ``many-to-many``:inxx
-In the previous examples, we allowed a dog to have one owner but one person could have many dogs. What if Skipper was owned by Alex and Curt? This requires a many-to-many relation, and it is realized via an intermediate table that links a person to a dog via an ownership relation.
+在之前的例子，我们允许一只狗有一个主人，而一个人可以有多只狗。如果狗
+Skipper为Alex和Curt所有会怎样？这需要多对多关系，它通过中间表实现，
+通过所有关系表链接人到狗。
 
-Here is how to do it:
+下面是怎么做：
 ``
 >>> db.define_table('person',
                     Field('name'))
@@ -1758,7 +1947,7 @@ Here is how to do it:
                     Field('dog', db.dog))
 ``:code
 
-the existing ownership relationship can now be rewritten as:
+现存的所有关系现在重新写作：
 ``
 >>> db.ownership.insert(person=1, dog=1) # Alex owns Skipper
 >>> db.ownership.insert(person=1, dog=2) # Alex owns Snoopy
@@ -1766,20 +1955,20 @@ the existing ownership relationship can now be rewritten as:
 
 ``:code
 
-Now you can add the new relation that Curt co-owns Skipper:
+现在，你能添加新的关系，Curt共同所有Skipper：
 ``
 >>> db.ownership.insert(person=3, dog=1) # Curt owns Skipper too
 
 ``:code
 
-Because you now have a three-way relation between tables, it may be convenient to define a new set on which to perform operations:
+因为现在你在表之间有三重关系，定义新的集合执行操作是很方便的：
 ``
 >>> persons_and_dogs = db(
         (db.person.id==db.ownership.person) \
         & (db.dog.id==db.ownership.dog))
 ``:code
 
-Now it is easy to select all persons and their dogs from the new Set:
+现在，从新Set（集）很容易查询所有人及他们的狗：
 ``
 >>> for row in persons_and_dogs.select():
         print row.person.name, row.dog.name
@@ -1789,7 +1978,7 @@ Bob Puppy
 Curt Skipper
 ``:code
 
-Similarly, you can search for all dogs owned by Alex:
+类似地，你能对所有的狗查找Alex所有的：
 ``
 >>> for row in persons_and_dogs(db.person.name=='Alex').select():
         print row.dog.name
@@ -1797,7 +1986,7 @@ Skipper
 Snoopy
 ``:code
 
-and all owners of Skipper:
+和Skipper所有的主人：
 ``
 >>> for row in persons_and_dogs(db.dog.name=='Skipper').select():
         print row.person.name
@@ -1805,9 +1994,10 @@ Alex
 Curt
 ``:code
 
-A lighter alternative to Many 2 Many relations is tagging. Tagging is discussed in the context of the ``IS_IN_DB`` validator. Tagging works even on database backends that do not support JOINs like the Google App Engine NoSQL.
+轻量级替换多对多关系是标签。Tagging在 ``IS_IN_DB`` 验证器内容部分讨论。
+Tagging甚至能工作在数据库后端，象Google App Engine NoSQL，不支持JOIN。
 
-### Many to many, ``list:<type>``, and ``contains``
+### 多对多， ``list:<type>``，和``contains``
 ``list:string``:inxx
 ``list:integer``:inxx
 ``list:reference``:inxx
@@ -1815,7 +2005,7 @@ A lighter alternative to Many 2 Many relations is tagging. Tagging is discussed 
 ``multiple``:inxx
 ``tags``:inxx
 
-web2py provides the following special field types:
+web2py提供下列特殊字段类型：
 
 ``
 list:string
@@ -1823,13 +2013,15 @@ list:integer
 list:reference <table>
 ``:code
 
-They can contain lists of strings, of integers and of references respectively.
+它们分别包含字符串列表、整型列表和引用列表。
 
-On Google App Engine NoSQL ``list:string`` is mapped into ``StringListProperty``, the other two are mapped into ``ListProperty(int)``. On relational databases they all mapped into text fields which contain the list of items separated by ``|``. For example ``[1,2,3]`` is mapped into ``|1|2|3|``.
+就Google App Engine NoSQL``list:string`` 映射为``StringListProperty``，其它两个映
+射为``ListProperty(int)``。就关系数据库，它们都映射为文本字段，包含用``|``分隔的项目列表。例如``[1,2,3]`` 映射为| ``|1|2|3|``。
 
-For lists of string the items are escaped so that any ``|`` in the item is replaced by a ``||``. Anyway this is an internal representation and it is transparent to the user.
+对于字符串列表，字符有转义的，其中任何 ``|``替换为``||``。无论如何，这是内部表示
+对用户是透明的。
 
-You can use ``list:string``, for example, in the following way:
+你能用``list:string``，用下面的方式，例如： 
 
 ``
 >>> db.define_table('product',
@@ -1843,15 +2035,16 @@ You can use ``list:string``, for example, in the following way:
 Toy Car ['red', 'green']
 ``:code
 
-``list:integer`` works in the same way but the items must be integers.
+``list:integer`` 相同的方式用，但项目必须是整型。
 
-As usual the requirements are enforced at the level of forms, not at the level of ``insert``.
+通常，要求在表单层是强制的，不在``insert``层。 
 
 ------
-For ``list:<type>`` fields the ``contains(value)`` operator maps into a non trivial query that checks for lists containing the ``value``.  The ``contains`` operator also works for regular ``string`` and ``text`` fields and it maps into a ``LIKE '%value%'``.
+对``list:<type>`` 字段，``contains(value)`` 运算符映射为非trival 查询，检查包
+含 ``value``的列表。 ``contains`` 运算符也为规则``string`` 和``text`` 字段用，它映射为``LIKE '%value%'``。
 ------
 
-The ``list:reference`` and the ``contains(value)`` operator are particularly useful to de-normalize many-to-many relations. Here is an example:
+``list:reference`` 和 ``contains(value)`` 运算符特别有用，非规范化多对多关系。下面是例子：
 
 ``
 >>> db.define_table('tag',Field('name'),format='%(name)s')
@@ -1871,25 +2064,27 @@ Toy Car [1, 2, 3]
 Toy Car red, green, blue
 ``:code
 
-Notice that a ``list:reference tag`` field get a default constraint
+注意``list:reference tag`` 字段有默认约束
 
 ``
 requires = IS_IN_DB(db,'tag.id',db.tag._format,multiple=True)
 ``:code
 
-that produces a ``SELECT/OPTION`` multiple drop-box in forms.
+在表单中产生 ``SELECT/OPTION``多个下拉框。
 
-Also notice that this field gets a default ``represent`` attribute which represents the list of references as a comma-separated list of formatted references. This is used in read forms and ``SQLTABLE``s.
+也要注意这个字段默认``represent``属性，以逗号分隔格式化的引用代表引用列表。
+这用在读表单和``SQLTABLE``s。
 
 -----
-While ``list:reference`` has a default validator and a default representation, ``list:integer`` and ``list:string`` do not. So these two need an ``IS_IN_SET`` or an ``IS_IN_DB`` validator if you want to use them in forms.
+``list:reference`` 有默认验证器和默认表示，但 ``list:integer`` 和 ``list:string``没有。因此，如果你想在表单中使用，这两个需要``IS_IN_SET`` 或 ``IS_IN_DB`` 验证器。
 -----
 
 
-### Other operators
+### 其它运算符
 
-web2py has other operators that provide an API to access equivalent SQL operators.
-Let's define another table "log" to store security events, their event_time and severity, where the severity is an integer number.
+Web2py 有其它运算符提供API 访问相同SQL 运算符。让我们定义另一张
+表”log” 存储安全事件，它们的event_time（时间时间）和severity（严重程
+度），severity是整型数。
 
 ``date``:inxx ``datetime``:inxx ``time``:inxx
 ``
@@ -1898,8 +2093,8 @@ Let's define another table "log" to store security events, their event_time and 
                            Field('severity', 'integer'))
 ``:code
 
-As before, insert a few events, a "port scan", an "xss injection" and an "unauthorized login".
-For the sake of the example, you can log events with the same event_time but with different severities (1, 2, 3 respectively).
+如前面，插入一些时间，“port scan”（端口扫描），“xss injection”（xss 注
+入）和“unauthorized login”（未经授权登录）。
 ``
 >>> import datetime
 >>> now = datetime.datetime.now()
@@ -1918,7 +2113,7 @@ For the sake of the example, you can log events with the same event_time but wit
 ``like``:inxx ``startswith``:inxx
 ``contains``:inxx ``upper``:inxx ``lower``:inxx
 
-Fields have a like operator that you can use to match strings:
+Field有like运算符，你能用来匹配字符串：
 
 ``
 >>> for row in db(db.log.event.like('port%')).select():
@@ -1926,36 +2121,35 @@ Fields have a like operator that you can use to match strings:
 port scan
 ``:code
 
-Here "port%" indicates a string starting with "port". The percent sign character, "%", is a wild-card character that means "any sequence of characters".
+“port %”表示字符串以 “port”开始。百分符号“%”，是通配符，代表任何字符
+序列。Web2py也提供一些快捷：
 
-web2py also provides some shortcuts:
 
 ``
 db.mytable.myfield.startswith('value')
 db.mytable.myfield.contains('value')
 ``:code
 
-which are equivalent respectively to
+分别与下面语句等价：
 
 ``
 db.mytable.myfield.like('value%')
 db.mytable.myfield.like('%value%')
 ``:code
 
-Notice that ``contains`` has a special meaning for ``list:<type>`` fields and it was discussed in a previous section.
+注意 ``contains`` 容器对``list:<type>`` 字段有特殊的意义，它已在之前章节讨论过。
 
-The ``contains`` method can also be passed a list of values and an optional boolean argument ``all`` to search for records that contain all values:
+``contains``容器方法也能传递值列表，可选布尔参数，``all``表示搜索包含所有制的记录：
 
 ``
 db.mytable.myfield.contains(['value1','value2'], all=True)
 ``
-or any value from the list
+或从列表的任何值
 ``
 db.mytable.myfield.contains(['value1','value2'], all=false)
 ``
 
-
-The ``upper`` and ``lower`` methods allow you to convert the value of the field to upper or lower case, and you can also combine them with the like operator:
+``upper``和``lower``方法允许你把字段的值转换为大写或小写，你也能用like运算符连接它们：
 
 ``upper``:inxx ``lower``:inxx
 ``
@@ -1967,7 +2161,8 @@ port scan
 #### ``year``, ``month``, ``day``, ``hour``, ``minutes``, ``seconds``
 ``hour``:inxx ``minutes``:inxx ``seconds``:inxx ``day``:inxx ``month``:inxx ``year``:inxx
 
-The date and datetime fields have day, month and year methods. The datetime and time fields have hour, minutes and seconds methods. Here is an example:
+Date 和datetime 字段有day、month 和year 方法。datetime 和time 字段有
+hour、minutes和seconds方法。下面是例子：
 
 ``
 >>> for row in db(db.log.event_time.year()==2009).select():
@@ -1977,9 +2172,10 @@ xss injection
 unauthorized login
 ``:code
 
-#### ``belongs``
+#### ``belongs``运算符
 
-The SQL IN operator is realized via the belongs method which returns true when the field value belongs to the specified set (list of tuples):
+SQL IN运算符通过belongs方法实现，当字段值属于指定集合（元组列表），
+返回真：
 
 ``belongs``:inxx
 ``
@@ -1989,7 +2185,8 @@ port scan
 xss injection
 ``:code
 
-The DAL also allows a nested select as the argument of the belongs operator. The only caveat is that the nested select has to be a ``_select``, not a ``select``, and only one field has to be selected explicitly, the one that defines the set.
+ DAL也允许嵌套查询，belongs运算符的参数。唯一要注意的是，嵌套查询徐要
+``_select``不是``select``，仅有一个字段显式查询，就是定义集合的那个。
 
 ``nested select``:inxx
 ``
@@ -2001,17 +2198,18 @@ xss injection
 unauthorized login
 ``:code
 
-#### ``sum``, ``min``, ``max`` and ``len``
+#### ``sum``, ``min``, ``max`` 和 ``len``
 
 ``sum``:inxx ``min``:inxx ``max``:inxx
-Previously, you have used the count operator to count records. Similarly, you can use the sum operator to add (sum) the values of a specific field from a group of records. As in the case of count, the result of a sum is retrieved via the store object:
+之前，你已用过count运算符统计记录数。相似地，你能用sum运算符来累积
+（求和）记录组中指定字段值。在count情况下，求和的结果通过存储对象得到：
 ``
 >>> sum = db.log.severity.sum()
 >>> print db().select(sum).first()[sum]
 6
 ``:code
 
-You can also use ``min`` and ``max`` to the mininum and maximum value for the selected records
+你能用 ``min`` 和 ``max`` 运算符得到查询记录中的最小和最大值。
 
 ``
 >>> max = db.log.severity.max()
@@ -2019,27 +2217,31 @@ You can also use ``min`` and ``max`` to the mininum and maximum value for the se
 3
 ``:code
 
-``.len()`` computes the length of a string, text or boolean fields.
+``.len()`` 计算string字符串、text文本或boolean布尔字段的长度。
 
-Expressions can be combined to form more complex expressions. For example here we are computing the sum of the length of all the severity strings in the logs, increased of one:
+表达式可以组合形成更复杂的表达式。例如，我们正在计算日志中所有严重字
+符串，长度的总和，增加一个：
 
 ``
 >>> sum = (db.log.severity.len()+1).sum()
 >>> print db().select(sum).first()[sum]
 ``:code
 
-#### Substrings
+#### 子字符串Substrings
 
-One can build an expression to refer to a substring. For example, we can group dogs whose name starts with the same three characters and select only one from each group:
+可以构建表达式引用子字符串。例如，我们分类dogs，它的名字用三个相同的
+字符开始，并且每类中查询一个：
 
 ``
 db(db.dog).select(dictinct = db.dog.name[:3])
 ``:code
 
 
-#### Default values with ``coalesce`` and ``coalesce_zero``
+#### ``coalesce``默认值 和``coalesce_zero``
 
-There are times when you need to pull a value from database but also need a default values if the value for a record is set to NULL. In SQL there is a keyword, ``COALESCE``, for this. web2py has an equivalent ``coalesce`` method:
+有时候当你需要从数据库中取出值，如果记录的值设置为NULL，也需要默认
+值。在SQL中有一个关键词， ``COALESCE``，来实现。Web2py有相同的``coalesce``
+方法：
 
 ``
 >>> db.define_table('sysuser',Field('username'),Field('fullname'))
@@ -2051,8 +2253,9 @@ Max Power
 tim
 ``
 
-Other times you need to compute a mathematical expression but some fields have a value set to None while it should be zero.
-``coalesce_zero`` comes to the rescue by defaulting None to zero in the query:
+其它时候，你需要计算数学表达式，但一些字段值设置为None，而它应该为
+0。
+``coalesce_zero`` 用来完成查询中默认转换None到0。
 
 ``
 >>> db.define_table('sysuser',Field('username'),Field('points'))
@@ -2063,54 +2266,53 @@ Other times you need to compute a mathematical expression but some fields have a
 10
 ``
 
-### Generating raw sql
+### 生成原始sql
 ``raw SQL``:inxx
 
-Sometimes you need to generate the SQL but not execute it. This is easy to do with web2py since every command that performs database IO has an equivalent command that does not, and simply returns the SQL that would have been executed. These commands have the same names and syntax as the functional ones, but they start with an underscore:
+S有时你需要生成SQL但不执行。用web2py很容易做到，因为每个执行数据库
+IO命令，有等同的不执行命令，很容易地返回应该执行的SQL。这些命令有像
+函数一样的相同的名字和语法，但他们以下划线开头：
 
-Here is ``_insert`` ``_insert``:inxx
+以下是``_insert`` ``_insert``:inxx
 ``
 >>> print db.person._insert(name='Alex')
 INSERT INTO person(name) VALUES ('Alex');
 ``:code
 
-Here is ``_count`` ``_count``:inxx
+以下是 ``_count`` ``_count``:inxx
 ``
 >>> print db(db.person.name=='Alex')._count()
 SELECT count(*) FROM person WHERE person.name='Alex';
 ``:code
 
-Here is ``_select`` ``_select``:inxx
+以下是 ``_select`` ``_select``:inxx
 ``
 >>> print db(db.person.name=='Alex')._select()
 SELECT person.id, person.name FROM person WHERE person.name='Alex';
 ``:code
 
-Here is ``_delete`` ``_delete``:inxx
+以下是``_delete`` ``_delete``:inxx
 ``
 >>> print db(db.person.name=='Alex')._delete()
 DELETE FROM person WHERE person.name='Alex';
 ``:code
 
-And finally, here is ``_update`` ``_update``:inxx
+最后是``_update`` ``_update``:inxx
 ``
 >>> print db(db.person.name=='Alex')._update()
 UPDATE person SET  WHERE person.name='Alex';
 ``:code
 
 -----
-Moreover you can always use ``db._lastsql`` to return the most recent
-SQL code, whether it was executed manually using executesql or was SQL
-generated by the DAL.
+而且你总能用 ``db._lastsql`` 返回最近SQL代码，无论它是用 executesql手动执行还是DAL生成SQL。
 -----
 
-### Exporting and importing data
+### 导出和导入数据
 ``export``:inxx ``import``:inxx
 
-#### CSV (one Table at a time)
+#### CSV（一张表一次）
 
-When a DALRows object is converted to a string it is automatically
-serialized in CSV:
+当DAL Rows对象被转换为字符串，它自动序列为CSV格式：
 
 ``csv``:inxx
 ``
@@ -2122,55 +2324,57 @@ person.id,person.name,dog.id,dog.name,dog.owner
 2,Bob,3,Puppy,2
 ``:code
 
-You can serialize a single table in CSV and store it in a file "test.csv":
+你能用CSV格式序列单个表，并把它存在文件“test.csv”：
 ``
 >>> open('test.csv', 'w').write(str(db(db.person.id).select()))
 ``:code
 
-and you can easily read it back with:
+你能容易地读回：
 ``
 >>> db.person.import_from_csv_file(open('test.csv', 'r'))
 ``:code
 
-When importing, web2py looks for the field names in the CSV header. In this example, it finds two columns: "person.id" and "person.name". It ignores the "person." prefix, and it ignores the "id" fields. Then all records are appended and assigned new ids. Both of these operations can be performed via the appadmin web interface.
+当导入，web2py在CSV头中查找字段名。这个例子它找到两列：“person.id”和
+“person.name”。它忽略“person.”前缀，忽略“id”字段。然后所有记录追加，并
+指定新的id。这些操作可以通过appadmin web接口执行。
 
-#### CSV (all tables at once)
+#### CSV（所有表一次）
 
-In web2py, you can backup/restore an entire database with two commands:
+web2py中，你能 用两个命令back/restore（备份/恢复）整个数据库：
 
-To export:
+导出：
 ``
 >>> db.export_to_csv_file(open('somefile.csv', 'wb'))
 ``:code
 
-To import:
+导入：
 ``
 >>> db.import_from_csv_file(open('somefile.csv', 'rb'))
 ``:code
 
-This mechanism can be used even if the importing database is of a different type than the exporting database. The data is stored in "somefile.csv" as a CSV file where each table starts with one line that indicates the tablename, and another line with the fieldnames:
+这种机制即便是导入数据库与导出数据库不同也能够使用。数据以CSV文件存
+储在“somefile.csv”，每张表一行开头表示表名，另起行字段名：
 ``
 TABLE tablename
 field1, field2, field3, ...
 ``:code
 
-Two tables are separated ``\r\n\r\n``. The file ends with the line
+两张表用 ``\r\n\r\n``分隔。文件以下面表示结束
 ``
 END
 ``:code
 
-The file does not include uploaded files if these are not stored in the database. In any case it is easy enough to zip the "uploads" folder separately.
+如果不存储在数据库中，文件不包括上传的文件。任何情况，轻而易举分开压
+缩“uploads”文件夹。
+在导入时，新记录追加在数据库，如果它不是空的。一般，新导入记录不会与
+源记录（保存的）有相同的记录id，但web2py会存引用，因此即使id的值改
+变了它们不会破损。
+如果表包含字段 “uuid”，这个字段会用来标识重复的。而且，如果导入记录与
+已有记录有同样的“uuid”，之前的记录会更新。
 
-When importing, the new records will be appended to the database if it is not empty. In general the new imported records will not have the same record id as the original (saved) records but web2py will restore references so they are not broken, even if the id values may change.
+####CSV和远程数据库同步
 
-If a table contains a field called
-"uuid", this field will be used to identify duplicates.  Also, if an
-imported record has the same "uuid" as an existing record, the
-previous record will be updated.
-
-#### CSV and remote database synchronization
-
-Consider the following model:
+考虑下面的模型;
 ``
 db = DAL('sqlite:memory:')
 db.define_table('person',
@@ -2186,20 +2390,18 @@ if not db(db.person).count():
     db.dog.insert(owner=id, name="Snoopy")
 ``:code
 
-Each record is identified by an ID and referenced by that ID. If you
-have two copies of the database used by distinct web2py installations,
-the ID is unique only within each database and not across the databases.
-This is a problem when merging records from different databases.
+每条记录用ID标识，通过ID 引用。如果你有数据库的两个拷贝，被distinct
+web2py安装使用，ID仅在每个数据库是唯一，而不是数据库之间。当从不同数
+据库融合记录，这是一个问题。
 
-In order to make a record uniquely identifiable across databases, they
-must:
-- have a unique id (UUID),
-- have an event_time (to figure out which one is more recent if multiple copies),
-- reference the UUID instead of the id.
+为了使记录在数据库之间也是唯一标识的，它们必须：
+- 有唯一id（UUID）
+- 有event_time（如果多拷贝区分出那个是最近的）
+- 引用UUID而不是id
 
-This can be achieved without modifying web2py. Here is what to do:
+这无需修改web2py而得到。下面是如何做：
 
-**1.** Change the above model into:
+**1.** 改变上面的模型如下：
 
 ``
 db.define_table('person',
@@ -2224,10 +2426,12 @@ if not db(db.person.id).count():
 ``:code
 
 -------
-Note, in the above table definitions, the default value for the two 'uuid' fields is set to a lambda function, which returns a UUID (converted to a string). The lambda function is called once for each record inserted, ensuring that each record gets a unique UUID, even if multiple records are inserted in a single transaction.
+注意，在上表定义，两个’UUID’字段默认值是lambda函数，返回UUID（转
+换为字符串）。每条记录插入，lambda函数就被调用一次，即使单个事务中插
+入多条记录，确保每条记录有唯一UUID。
 -------
 
-**2.** Create a controller action to export the database:
+**2.**创建控制行动导出数据库：
 
 ``
 def export():
@@ -2237,7 +2441,7 @@ def export():
     return s.getvalue()
 ``:code
 
-**3.** Create a controller action to import a saved copy of the other database and sync records:
+**3.** 创建控制行动导入保存的其它数据库拷贝和同步记录：
 
 ``
 def import_and_sync():
@@ -2257,22 +2461,22 @@ def import_and_sync():
     return dict(form=form)
 ``:code
 
-Notice that ``session=None`` disables the CSRF protection since this URL is intended to be accessed from outside.
+注意 ``session=None`` 禁用CSRF保护，因为这个URL设想是从外部访问。
 
-**4.** Create an index manually to make the search by uuid faster.
+**4.** 手动创建索引用uuid搜索更快。
 
-Notice that steps 2 and 3 work for every database model; they are not
-specific for this example.
+注意步骤2和3适用每个数据库模型；它们不是专门为这个例子的。
 
 ``XML-RPC``:inxx
-Alternatively, you can use XML-RPC to export/import the file.
+换个方法，你能用XML-RPC导出/导入文件。
 
-If the records reference uploaded files, you also need to export/import the content of the uploads folder. Notice that files therein are already labeled by UUIDs so you do not need to worry about naming conflicts and references.
+如果记录引用上传文件，你也需要导出/导入上传文件夹的内容。注意那些文件
+已被UUID标识了，因此你不必担心名字冲突和引用。
 
-#### HTML and XML (one Table at a time)
+#### HTML与XML（一张表一次）
 
 ``DALRows objects``:inxx
-DALRows objects also have an ``xml`` method (like helpers) that serializes it to XML/HTML:
+DAL Rows 对象也有 ``xml`` 方法（同帮助对象），序列化到XML/HTML：
 
 ``HTML``:inxx
 
@@ -2303,7 +2507,8 @@ DALRows objects also have an ``xml`` method (like helpers) that serializes it to
 ``:code
 
 ``DALRows custom tags``:inxx
-If you need to serialize the DALRows in any other XML format with custom tags, you can easily do that using the universal TAG helper and the * notation:
+如果你需要序列DAL Rows其它任何XML格式用定制标签，你能用通用TAG
+帮助对象轻易实现，注意：
 ``XML``:inxx
 
 ``
@@ -2319,20 +2524,21 @@ If you need to serialize the DALRows in any other XML format with custom tags, y
 </result>
 ``:code
 
-#### Data representation
+#### 数据表示
 
 ``export_to_csv_file``:inxx
-The ``export_to_csv_file`` function accepts a keyword argument named ``represent``. When ``True`` it will use the columns ``represent`` function while exporting the data instead of the raw data.
+``export_to_csv_file`` 函数接受关键词参数``represent``。当 ``True`` ，导出数据时它会用列``represent`` 函数而不是原始数据。
 
 ``colnames``:inxx
-The function also accepts a keyword argument named ``colnames`` that should contain a list of column names one wish to export. It defaults to all columns.
+函数接受关键词参数``colnames`` ，包含想要导出的列的名字列表。默认对所有列。
 
-Both ``export_to_csv_file`` and ``import_from_csv_file`` accept keyword arguments that tell the csv parser the format to save/load the files:
-- ``delimiter``: delimiter to separate values (default ',')
-- ``quotechar``: character to use to quote string values (default to double quotes)
-- ``quoting``: quote system (default ``csv.QUOTE_MINIMAL``)
+``export_to_csv_file`` 和 ``import_from_csv_file`` 接受关键词参数，告诉csv解析器保存
+/载入文件格式：
+- ``delimiter``:分隔值的分隔符（默认‘，’）
+- ``quotechar``:用来分隔字符串的字符（默认双引号）
+- ``quoting``：quote系统（默认``csv.QUOTE_MINIMAL``）
 
-Here is some example usage:
+下面是应用举例：
 ``
 >>> import csv
 >>> db.export_to_csv_file(open('/tmp/test.txt', 'w'),
@@ -2341,19 +2547,23 @@ Here is some example usage:
         quoting=csv.QUOTE_NONNUMERIC)
 ``:code
 
-Which would render something similar to
+这会呈现相似的
 ``
 "hello"|35|"this is the text description"|"2009-03-03"
 ``:code
 
-For more information consult the official Python documentation ``quoteall``:cite
+更多信息咨询Python官方文档 ``quoteall``:cite
 
-### Caching selects
+### 缓存查询
 
-The select method also takes a cache argument, which defaults to None. For caching purposes, it should be set to a tuple where the first element is the cache model (cache.ram, cache.disk, etc.), and the second element is the expiration time in seconds.
+查询方法也采用一个缓存参数，默认None。为缓存目的，它应该设置为元组，
+第一个元素是缓存模型（cache.ram ，cache..disk等），第二个元素是用秒计的
+终止时间。
 
-In the following example, you see a controller that caches a select on the previously defined db.log table. The actual select fetches data from the back-end database no more frequently than once every 60 seconds and stores the result in cache.ram. If the next call to this controller occurs in less than 60 seconds since the last database IO, it simply fetches the previous data from cache.ram.
-
+下面的例子，你看到控制器，缓存查询之前定义的db.log表。实际查询从后端数
+据库得到数据，经常不会每60秒超过一次，存储结果在cache.ram里。下一次调
+用这个控制器发生在自上次数据库IO60秒内，它只从cache.ram里得到之前的
+数据。
 ``cache select``:inxx
 ``
 def cache_db_select():
@@ -2362,14 +2572,15 @@ def cache_db_select():
 ``:code
 
 -------
-The results of a ``select`` are complex, un-pickleable objects; they cannot be stored in a session and cannot be cached in any other way than the one explained here.
+``select``查询结果是复杂的、un-pickleable对象；它们不能存在会话里，除了在这解释的以外，也不能用其它任何方式缓存。
 -------
 
-### Self-Reference and aliases
+### 自引用和别名
 
 ``self reference``:inxx
 ``alias``:inxx
-It is possible to define tables with fields that refer to themselves although the usual notation may fail. The following code would be wrong because it uses a variable ``db.person`` before it is defined:
+用引用到自己的字段定义表是可能的，但通常的符号会失败。下面的代码出错，
+因为它在定义之前用到变量 ``db.person`` 。
 ``
 db.define_table('person',
     Field('name'),
@@ -2377,7 +2588,7 @@ db.define_table('person',
     Field('mother_id', db.person))
 ``:code
 
-The solution consists of using an alternate notation
+解决方法在于用替代符号
 ``reference table``:inxx
 ``
 db.define_table('person',
@@ -2386,10 +2597,11 @@ db.define_table('person',
     Field('mother_id', 'reference person'))
 ``:code
 
-In fact ``db.tablename`` and ``"reference tablename"`` are equivalent field types.
+事实上，``db.tablename``和``"reference tablename"`` 是等价的字段类型。
 
 ``with_alias``:inxx
-If the table refers to itself, then it is not possible to perform a JOIN to select a person and its parents without use of the SQL "AS" keyword. This is achieved in web2py using the ``with_alias``. Here is an example:
+如果表引用自己，那么不用SQL“AS”关键词就不能执行联合JOIN查询一个人
+以及他的父母。这在web2py中用``with_alias``实现。下面是例子：
 ``
 >>> Father = db.person.with_alias('father')
 >>> Mother = db.person.with_alias('mother')
@@ -2409,12 +2621,12 @@ Claudia None None
 Marco Massimo Claudia
 ``:code
 
-Notice that we have chosen to make a distinction between:
-- "father_id": the field name used in the table "person";
-- "father": the alias we want to use for the table referenced by the above field; this is communicated to the database;
-- "Father": the variable used by web2py to refer to that alias.
+注意，我们选择区分下面参数：
+- "father_id": ：字段名用在表“person”；
+- "father": 我们想用来上述字段引用的表的别名；与数据库沟通；
+- "Father": web2py用的变量，引用那个别名。
 
-The difference is subtle, and there is nothing wrong in using the same name for the three of them:
+差别很小，把它们三个用成一样的名字也没有什么错：
 ``
 db.define_table('person',
     Field('name'),
@@ -2438,21 +2650,22 @@ Claudia None None
 Marco Massimo Claudia
 ``:code
 
-But it is important to have the distinction clear in order to build correct queries.
+但是为了构建正确的查询，清楚区别很重要。
 
-### Advanced features
+### 高级特性
 
-#### Table inheritance
+#### 表继承 Table inheritance
 ``inheritance``:inxx
 
-It is possible to create a table that contains all the fields from another table. It is sufficient to pass the other table in place of a field to ``define_table``. For example
+能创建包含另外表的所有字段的表。它足以把表传递并替带 ``define_table``的一个
+字段。例如：
 ``
 db.define_table('person', Field('name'))
 db.define_table('doctor', db.person, Field('specialization'))
 ``:code
 
 ``dummy table``:inxx
-It is also possible to define a dummy table that is not stored in a database in order to reuse it in multiple other places. For example:
+也能定义虚拟表，不存储在数据库里，而是为在多个其它地方使用。例如：
 
 ``
 signature = db.Table(db, 'signature',
@@ -2464,63 +2677,67 @@ signature = db.Table(db, 'signature',
 db.define_table('payment', Field('amount', 'double'), signature)
 ``:code
 
-This example assumes that standard web2py authentication is enabled.
+这个例子假设标准web2py认证已启用。
 
-Notice that if you user ``Auth`` web2py already creates one such table for you:
+注意如果你使用``Auth`` ，web2py已为你创建了这样的表：
 
 ``
 auth = Auth(db)
 db.define_table('payment', Field('amount', 'double'), auth.signature)
 ``
 
-When using table inheritance, if you want the inheriting table to inherit validators, be sure to define the validators of the parent table before defining the inheriting table.
+当使用表继承，如果你想继承的表也继承验证器，要确认在定义继承的表之前
+就定义了父表验证器。
 
-#### Common fields and multi-tenancy
+#### 共同fields 和 multi-tenancy多分租
 ``common fields``:inxx
 ``multi tenancy``:inxx
 
-``db._common_fields`` is a list of fields that should belong to all the tables. This list can also contain tables and it it is understood as all fields from the table. For example occasionally you find yourself in need to add a signature to all your tables but the ```auth`` tables. In this case, after you ``db.define_tables()`` but before defining any other table, insert
+``db._common_fields`` 是属于所有表的字段列表。这列表还能包含表，它被理解为从
+表来所有字段。例如，偶尔你发现需要为所有的表添加签名， ```auth`` 表。这种情况，你调用 ``db.define_tables()`` 后，在定义另外表之前，插入
 
 ``
 db._common_fields.append(auth.signature)
 ``
 
-One field is special: "request_tenant".
-This field does not exist but you can create it and add it to any of your tables (or them all):
+request_tenant字段是特殊的。这个字段不存在，但你能创建，并把它添加到你
+的任意的表（或所有它们）：
 
 ``
 db._common_fields.append(Field('request_tenant',
     default=request.env.http_host,writable=False))
 ``
 
-For every table with a field called ``db._request_tenant``, all records for all queries are always automatically filtered by:
+对每张有叫做``db._request_tenant``字段的表，
+所有查询的全部记录会被自动过滤：
 
 ``
 db.table.request_tenant == db.table.request_tenant.default
 ``:code
 
-and for every record insert, this field is set to the default value.
-In the example above we have chosen
+每插入记录，这个字段设置为默认值。上面的例子我们选择：
 ``
 default = request.env.http_host
 ``
-i.e. we have chose to ask our app to filter all tables in all queries with
+即我们选择询问我们的应用来过滤全部查询的所有的表：
 ``
 db.table.request_tenant == request.env.http_host
 ``
 
-This simple trick allow us to turn any application into a multi-tenant application. i.e. even if we run one instance of the app and we use one single database, if the app is accessed under two or more domains (in the example the domain name is retrieved from ``request.env.http_host``) the visitors will see different data depending on the domain. Think of running multiple web stores under different domains with one app and one database.
+这个简单技巧允许我们把任何应用变换为多分租应用。也就是即使我们运行一
+个应用实例，我们用到单个数据库，如果应用被两个或多个域访问（例子中，
+域名从``request.env.http_host``得到），访问者看到依赖域的不同数据。想
+想在不同的域名下运行多个Web stores，有一个应用程序和一个数据库。 
 
-You can turn off multi tenancy filters using: ``ignore_common_filters``:inxx
+你能用如下语句关闭多分租过滤：``ignore_common_filters``:inxx
 ``
 rows = db(query, ignore_common_filters=True).select()
 ``:code
 
-#### Common filters
+#### 通用过滤器 Common filters
 
-A common filter is a generalization of the above multi-tenancy idea.
-It provides an easy way to prevent repeating of the same query. 
-Consider for example the following table:
+通用过滤器是上面multi-tenant想法产生的。它提供了简单方法防止重复同样的
+查询。考虑下表这个例子：
 
 ``
 db.define_table('blog_post',
@@ -2531,28 +2748,32 @@ db.define_table('blog_post',
 )
 ``
 
-Any select, delete or update in this table, will include only public blog posts. The attribute can also be changed in controllers:
+任何表中的查询、删除和更新，只会包括公开的博客posts。属性也能在控制器中
+修改：
 
 ``
 db.blog_post._common_filter = lambda query: db.blog_post.is_public == True
 ``
 
-It serves both as a way to avoid repeating the "db.blog_post.is_public==True" phrase in each blog post search, and also as a security enhancement, that prevents you from forgetting to disallow viewing of none public posts.
+它是一个服务于，在每个blog post搜索，既避免重复"db.blog_post.is_public==True"的办法，也是一种安全增强，防止你遗忘禁止
+浏览非公开的posts。
 
-In case you actually do want items left out by the common filter (for example, allowing the admin to see none public posts), you can either remove the filter:
+一种情况，你确实想要被通用过滤器滤掉的项目（例如，允许 admin看非公开
+posts），你能删除过滤器：
 ``
 db.blog_post._common_filter = None
 ``
-or ignore it:
+或忽略它：
 ``
 db(query, ignore_common_filters=True).select(...)
 ``
 
-#### Custom ``Field`` types (experimental)
+#### 定制``Field`` 类型（实验性的）
 
 ``SQLCustomType``:inxx
 
-It is possible to define new/custom field types. For example we consider here the example if a field that contains binary data in compressed form:
+能定义新的或自定义字段类型。例如我们思考下面的例子，一个字段包含
+压缩形式的二进制数据：
 
 ``
 from gluon.dal import SQLCustomType
@@ -2568,24 +2789,30 @@ compressed = SQLCustomType(
 db.define_table('example', Field('data',type=compressed))
 ``:code
 
-``SQLCustomType`` is a field type factory. Its ``type`` argument must be one of the standard web2py types. It tells web2py how to treat the field values at the web2py level. ``native`` is the name of the field as far as the database is concerned. Allowed names depend on the database engine. ``encoder`` is an optional transformation function applied when the data is stored and ``decoder`` is the optional reversed transformation function.
+``SQLCustomType`` 是字段类型工厂。它的t``type`` 参数必须是标准web2py类型之一。它
+告诉web2py在web2py层级如何处理字段值。只要关注数据库，``native`` 是字段名字
+允许的名字取决于数据库引擎。``encoder`` 可选变换功能，当数据存储时应用； ``decoder`` 是可选的反变换功能。
 
-This feature is marked as experimental. In practice is has been in web2py for a long time and it works but it can make the code not portable, for example when the native type is database specific. It does not work on Google App Engine NoSQL.
+这个特性标记为实验阶段。实践中，它在web2py用了好长时间，它有用，但会
+使代码不可移植，例如，当native type （原先类型）是数据库专用的。它不能用
+在Google App Engine NoSQL。
 
-#### Using DAL without define tables
+#### 不定义表使用DAL
 
-The DAL can be used from any Python program simply by doing this:
+只要通过下面的语句， DAL就能被Python程序使用：
 
 ``
 from gluon import DAL, Field
 db = DAL('sqlite://storage.sqlite',folder='path/to/app/databases')
 ``:code
 
-i.e. import the DAL, Field, connect and specify the folder which contains the .table files (the app/databases folder).
+即导入DAL和Field，连接和指定包含.table文件的文件夹（应用/数据库文件
+夹）。
 
-To access the data and its attributes we still have to define all the tables we are going to access with ``db.define_tables(...)``.
+为访问数据和它的属性，我们仍需要用 ``db.define_tables(...)``定义我们将要访问的所有表。
 
-If we just need access to the data but not to the web2py table attributes, we get away without re-defining the tables but simply asking web2py to read the necessary info from the metadata in the .table files:
+如果我们就需要访问数据而不是web2py表的属性，我们无需再定义表，而是
+简单要求web2py从.table元数据文件读取必要信息：
 
 ``
 from gluon import DAL, Field
@@ -2593,25 +2820,26 @@ db = DAL('sqlite://storage.sqlite',folder='path/to/app/databases',
          auto_import=True))
 ``:code
 
-This allows us to access any ``db.table`` without need to re-define it.
+这允许我们访问任何``db.table`` 而无需再定义它。
 
-#### Copy data from one db into another
+#### 从一个db复制数据到另外一个
 
-Consider the situation in which you have been using the following database:
+考虑你正使用下面数据库的情况：
 
 ``
 db = DAL('sqlite://storage.sqlite')
 ``
 
-and you wish to move to another database using a different connection string:
+你希望用不同的连接字符串移到另外一个数据库：
 
 ``
 db = DAL('postgresql://username:password@hocalhost/mydb')
 ``
 
-Before you switch, you want to move the data and rebuild all the metadata for the new database. We assume the new database to exist but we also assume it is empty.
+在你切换之前，你想为新的数据库移动数据并重建所有的元数据。我们假定新
+数据库存在，但我们也假定它是空的。
 
-Web2py provides a script that does this work for you:
+web2py为你提供完成这个工作的脚本：
 
 ``
 cd web2py
@@ -2621,19 +2849,21 @@ python scripts/cpdb.py \
    -Y 'postgresql://username:password@hocalhost/mydb'
 ``
 
-After running the script you can simply switch the connection string in the model and everything should work out of the box. The new data should be there.
+运行脚本后，你能在模型中轻松切换连接字符串，所有的要能够即开即用。新
+数据就在那儿。
 
-This script provides various command line options that allows you to move data from one application to another, move all tables or only some tables, clear the data in the tables. for more info try:
+脚本提供了各种各样的命令行选项，允许你从一个应用到领一个移动数据，移
+动所有的表或仅是一些，清除表中的数据。更多信息尝试：
 
 ``
 python scripts/cpdb.py -h
 ``
 
-#### Note on new DAL and adapters
+#### 新的DAL和适配器的注意事项
 
-The source code of the Database Abstraction Layer was completely rewritten in 2010. While it stays backward compatible, the rewrite made it more modular and easier to extend. Here we explain the main logic.
-
-The file "gluon/dal.py" defines, among other, the following classes.
+数据库抽象层的源代码在2010年完全重写。在它保持后向兼容的同时，重
+写令它更模块化并且更加易于扩展。我们解释下主要逻辑。
+文件“gluon/dal.py”，除其它外，定义下列类。
 
 ``
 ConnectionPool
@@ -2649,38 +2879,39 @@ Set
 Rows
 ``
 
-Their use has been explained in the previous sections, except for ``BaseAdapter``. When the methods of a ``Table`` or ``Set`` object need to communicate with the database they delegate to methods of the adapter the task to generate the SQL and or the function call.
+它们的使用，除``BaseAdapter``，在之前章节解释了。当``Table`` 或 ``Set`` 对象的方法与数据库通信时，它们委托适配器方法产生SQL任务或函数调用。
 
-For example:
+例如：
 
 ``
 db.myable.insert(myfield='myvalue')
 ``
 
-calls
+调用
 
 ``
 Table.insert(myfield='myvalue')
 ``
 
-which delegates the adapter by returning:
+这委托适配器返回：
 
 ``
 db._adapter.insert(db.mytable,db.mytable._listify(dict(myfield='myvalue')))
 ``
 
-Here ``db.mytable._listify`` converts the dict of arguments into a list of ``(field,value)`` and calls the ``insert`` method of the ``adapter``. ``db._adapter`` does more or less the following:
+这里 ``db.mytable._listify`` 方法把参数字典转换为``(field,value)``列表，并调用``adapter``
+的``insert``。 ``db._adapter`` 或多或少完成下面：
 
 ``
 query = db._adapter._insert(db.mytable,list_of_fields)
 db._adapter.execute(query)
 ``
 
-where the first line builds the query and the second executes it.
+此处，第一行创建查询，第二行执行。
 
-``BaseAdapter`` define the interface for all adapters.
+``BaseAdapter`` 为所有适配器定义接口。
 
-"gluon/dal.py" at the moment of writing this book, contains the following adapters:
+“gluon/dal.py”在写本书的时候，包含下面适配器：
 
 ``
 SQLiteAdapter extends BaseAdapter
@@ -2707,9 +2938,9 @@ CouchDBAdapter extends NoSQLAdapter (experimental)
 MongoDBAdapter extends NoSQLAdapter (experimental)
 ``
 
-which override the behavior of the ``BaseAdapter``.
+覆盖了 ``BaseAdapter``的举动。
 
-Each adapter has more or less this structure:
+每个适配器多少有下面的结构：
 
 ``
 class MySQLAdapter(BaseAdapter):
@@ -2747,15 +2978,15 @@ class MySQLAdapter(BaseAdapter):
 
 ``:code
 
-Looking at the various adapters as examples should be easy to write new ones.
+看着各种各样例子所示的适配器，很容易写出新的。
 
-When ``db`` instance is created:
+当``db`` 实例创建：
 
 ``
 db = DAL('mysql://...')
 ``
 
-the prefix in the uri string defines the adapter. The mapping is defined in the following dictionary also in "gluon/dal.py":
+uri字符串前缀定义了适配器。映射也在“gluon/dal.py”下面字典定义：
 
 ``
 ADAPTERS = {
@@ -2786,36 +3017,52 @@ ADAPTERS = {
 }
 ``:code
 
-the uri string is then parsed in more detail by the adapter itself.
+uri字符串被适配器自己解析得更清晰。
 
-For any adapter you can replace the driver with a different one:
+任何适配器，你能用不同的驱动替换：
 
 ``
 from gluon.dal import MySQLAdapter
 MySQLAdapter.driver = mysqldb
 ``
 
-and you can specify optional driver arguments and adapter arguments:
+你能指定可选驱动参数和适配器参数：
 
 ``
 db =DAL(..., driver_args={}, adapter_args={})
 ``
 
 
-#### Gotchas
+#### Gotchas 陷阱
 
-**SQLite** does not support dropping and altering columns. That means that web2py migrations will work up to a point. If you delete a field from a table, the column will remain in the database but be invisible to web2py. If you decide to reinstate the column, web2py will try re-create it and fail. In this case you must set ``fake_migrate=True`` so that metadata is rebuilt without attempting to add the column again. Also, for the same reason, **SQLite** is not aware of any change of column type. If you insert a number in a string field, it will be stored as string. If you later change the model and replace the type "string" with type "integer", SQLite will continue to keep the number as a string and this may cause problem when you try to extract the data.
+**SQLite** 不支持删除和修改列。这意味着，web2py迁移的工作会到一种情况。
+如果你从表删除一个字段，列仍然在数据库但对web2py不可见。如果你决定再
+安置列，web2py将会再创建它，但不成功。这种情况，你必须设置``fake_migrate=True`` ，以使元数据重建而不必再添加列。同样原因，**SQLite** 也不清
+楚列类型的任何改变。如果你在string字段插入数字，它被存为字符串。如果你后
+面改变模型，用类型integer替换类型string，SQLite会继续保持数字是字符串，
+当你试图提取数据的时候会引发问题。
 
-**MySQL** does not support multiple ALTER TABLE within a single transaction. This means that any migration process is broken into multiple commits. If something happens that causes a failure it is possible to break a migration (the web2py metadata are no longer in sync with the actual table structure in the database). This is unfortunate but it can be prevented (migrate one table at the time) or it can be fixed a posteriori (revert the web2py model to what corresponds to the table structure in database, set ``fake_migrate=True`` and after the metadata has been rebuilt, set ``fake_migrate=False`` and migrate the table again).
+**MySQL** 在单个事务范围不支持多ALTER TABLE。这意味着任何迁移操作会
+分解为多个commit。如果出现失败，它造成迁移中断（web2py元数据不再与真
+实数据库表结构保持同步）。这不走运，但能够避免（一次迁移一张表），或
+后验更正（恢复web2py模型到与数据库表结构相应的，设置``fake_migrate=True`` ，元数据被重建后，设置f``fake_migrate=False`` False，再次迁移表格。）
 
-**Google SQL** has the same problems as MySQL and more. In particular table metadata itself must be stored in the database in a table that is not migrated by web2py. This is because Google App Engine has a readonly file system. Web2py migrations in Google:SQL combined with the MySQL issue described above can result in metadata corruption. Again, this can be prevented (my migrating the table at once and then setting migrate=False so that the metadata table is not accessed any more) or it can fixed a posteriori (my accessing the database using the Google dashboard and deleting any corrupted entry from the table called ``web2py_filesystem``.
+**Google SQL** 有与MySQL相同的问题，还更多些。特别是表元数据本身必须
+存在数据库的表中，不被web2py迁移的。这是因为Google App Engine有只读文
+件系统。Google中web2py迁移：上述SQ L结合MySQL问题会导致元数据崩溃。
+再一次，这能被阻止（我迁移表一次，然后设置migrate=False，元数据表不能
+再被访问），或它能后验修复（我用Google dashboard访问数据库，从叫做``web2py_filesystem``的表删除任何损坏的条目）
 
 ``limitby``:inxx
-**MSSQL** does not support the SQL OFFSET keyword. Therefore the database cannot do pagination. When doing a ``limitby=(a,b)`` web2py will fetch the first ``b`` rows and discard the first the ``a``. This may result in a considerable overhead when compared with other database engines.
+**MSSQL** 不支持SQL OFFSET关键词。因此数据库不能做分页。当执行``limitby=(a,b)`` web2py会得到最初的 ``b`` 的行，而丢弃最初的 ``a``。与
+其它数据库引擎比，这会导致相当大的开销
 
-**Oracle** also does not support pagination. It does not support neither the OFFSET nor the LIMIT keywords. Web2py achieves pagination by translating a ``db(...).select(limitby=(a,b))`` into a complex three-way nested select (as suggested by official Oracle documentation). This works for simple select but may break for complex selects involving alised fields and or joins.
+**Oracle** 也不支持分页。它既不支持OFFSET也不支持LIMIT关键词。web2py实
+现分页但把 ``db(...).select(limitby=(a,b))`` 翻译成复杂的三层嵌套查询（Oracle官方文档建议）。简单查询有效，但可能因涉及别名字段和联合查询而中断。
 
-**MSSQL** has problems with circular references in tables that have ONDELETE CASCADE. This is an MSSSQL bug and you work around it by setting the ondelete attribute for all reference fields to "NO ACTION". You can also do it once and for all before you define tables:
+**MSSQL** 有循环引用的问题在ONDELETE CASCADE表中。这是MSSQL漏洞，
+你可以对所有引用字段设置ondelete属性为“NO ACTION”克服它。也能在定义
+表前对所有的设置一次。
 
 ``
 db = DAL('mssql://....')
@@ -2824,19 +3071,21 @@ for key in ['reference','reference FK']:
         '%(on_delete_action)s','NO ACTION')
 ``:code
 
-**MSSQL** also has problems with arguments passed to the DISTINCT keyword and therefore
- while this works,
+**MSSQL** 也有参数传递给DISTINCT关键词的问题，因此在这样工作：
 
 ``
 db(query).select(distinct=True)
 ``
 
-this does not
+它不
 
 ``
 db(query).select(distinct=db.mytable.myfield)
 ``
 
-**Google NoSQL (Datastore)** does not allow joins, left joins, aggregates, expression, OR involving more than one table, the like operator and search in "text"" fields. Transactions are limited and not provided automatically by web2py (you need to use the Google API ``run_in_transaction`` which you can look up in the Google App Engine documentation online). Google also limits the number of records you can retrieve in each one query (1000 at the time of writing). On the Google datastore record IDs are integer but they are not sequential. While on SQL the "list:string" type is mapped into a "text" type, on the Google Datastore it is mapped into a ``ListStringProperty``. Similarly "list:integer" and "list:reference" are mapped into "ListProperty". This makes that searches for content inside these fields types are more efficient on Google NoSQL than on SQL databases.
+**Google NoSQL (Datastore)** 不允许联合，左联，聚类，表达式，多于一张表
+的OR，like运算及在“text”字段中搜索。事务受限制，不会被web2py自动提供
+（你需要用Google API``run_in_transaction`` ，你能在Google App Engine在线文档中查找到）。Google也限制你每次能检索的记录数（写书时是1000条）。Google数据存储记录ID是整型，但它们不连续。当SQL“list:string”类型映射到“text” 类型，在Google数据存储，它映射为``ListStringProperty``。相同地，“list:integer”和“list:reference”映射为“ListProperty”。这使在这些字段类型内容搜索，Google
+NoSQL比SQL数据库更高效。
 
 
