@@ -1,9 +1,10 @@
-## Email and SMS
+## 电子邮件和短信系统
 ``Mail``:inxx
 
-### Setting up email
+### 设置电子邮件
 
-Web2py provides the ``gluon.tools.Mail`` class to make it easy to send emails using web2py. One can define a mailer with
+Web2py提供``gluon.tools.Mail``类使得用web2py发送电子邮件变得简单。可
+用下面语句定义邮件服务器：
 ``
 from gluon.tools import Mail
 mail = Mail()
@@ -12,7 +13,8 @@ mail.settings.sender = 'you@example.com'
 mail.settings.login = 'username:password'
 ``:code
 
-Note, if your application uses ``Auth`` (discussed in the next chapter), the ``auth`` object will include its own mailer in ``auth.settings.mailer``, so you can use that instead as follows:
+注意，如果你的应用使用``Auth`` （下一章讨论），``auth`` 对象包括它自己的邮
+件对象在``auth.settings.mailer``，因此你可以用它，如下面所示：
 ``
 mail = auth.settings.mailer
 mail.settings.server = 'smtp.example.com:25'
@@ -20,32 +22,33 @@ mail.settings.sender = 'you@example.com'
 mail.settings.login = 'username:password'
 ``:code
 
-You need to replace the mail.settings with the proper parameters for your SMTP server. Set ``mail.settings.login = None`` if the SMTP server does not require authentication.
+你需要用你的SMTP服务器合适的参数替换mail.settings。如果SMTP服务
+器不需要认证，设置 ``mail.settings.login = None`` 。
 
 ``email logging``:inxx
 
 --------
-For debugging purposes you can set
+为了调试的目的，你可以设置
 ``
 mail.settings.server = 'logging'
 ``:code
-and emails will not be sent but logged to the console instead.
+电子邮件不发送而是记录在控制台。
 -------
 
-#### Configuring email for Google App Engine
+#### 给Google App Engine配置电子邮件
 ``email from GAE``:inxx
-For sending emails from Google App Engine account:
+为从Google App Engine账户发送电子邮件：
 
 ``
 mail.settings.server = 'gae'
 ``:code
 
-At the time of writing web2py does not support attachments and encrypted emails on Google App Engine.
+撰写本书的时候，web2py不支持附件和Google App Engine加密电子邮件。
 
-#### x509 and PGP Encryption
+#### x509和PGP加密
 ``PGP``:inxx ``x509``:inxx
 
-It is possible to send x509 (SMIME) encrypted emails using the following settings:
+能用下面的设置发送x509（SMIME）加密邮件：
 ``
 mail.settings.cipher_type = 'x509'
 mail.settings.sign = True
@@ -56,7 +59,7 @@ mail.settings.x509_sign_certfile = 'filename.cert'
 mail.settings.x509_crypt_certfiles = 'filename.cert'
 ``:code
 
-It is possible to send PGP encrypted emails using the following settings:
+能用下面的设置发送PGP加密邮件：
 ``
 from gpgme import pgp
 mail.settings.cipher_type = 'gpg'
@@ -65,12 +68,12 @@ mail.settings.sign_passphrase = 'your passphrase'
 mail.settings.encrypt = True
 ``:code
 
-The latter requires the python-pyme package.
+后者需要python-pyme包。
 
-### Sending emails
+### 发送电子邮件
 ``mail.send``:inxx ``email html``:inxx ``email attachments``:inxx
 
-Once ``mail`` is defined, it can be used to send email via:
+一旦``mail`` 定义了，它能用来发送邮件通过：
 ``
 mail.send(to=['somebody@example.com'],
           subject='hello',
@@ -79,24 +82,24 @@ mail.send(to=['somebody@example.com'],
           message='hi there')
 ``:code
 
-Mail returns ``True`` if it succeeds in sending the email and ``False`` otherwise.  A complete argument list for ``mail.send()`` is as follows:
+如果成功发送了电子邮件，它返回``True``，否则返回``False``。``mail.send()`` 完整参数列表如下：
 
 ``
 send(self, to, subject='None', message='None', attachments=1,
      cc=1, bcc=1, reply_to=1, encoding='utf-8',headers={})
 ``:code
 
-Note, ``to``, ``cc``, and ``bcc`` each take a list of email addresses.
+注意，``to``, ``cc``, 和``bcc`` ，每个用电子邮件地址列表。
 
-``headers`` is dictionary of headers to refine the headers just before sending the email. For example:
+``headers`` 是头的字典，在发送电子邮件之前提炼标头，例如：
 
 ``
 headers = {'Return-Path' : 'bounces@example.org'}
 ``:code
 
-Following are some additional examples demonstrating the use of ``mail.send()``.
+以下是展示``mail.send()``使用的一些附加的例子。
 
-#### Simple text email
+#### 简单文本电子邮件
 
 ``
 mail.send('you@example.com',
@@ -104,7 +107,7 @@ mail.send('you@example.com',
   'Plain text body of the message')
 ``:code
 
-#### HTML emails
+#### HTML电子邮件
 
 ``
 mail.send('you@example.com',
@@ -112,11 +115,11 @@ mail.send('you@example.com',
   '<html>html body</html>')
 ``:code
 
-If the email body starts with ``<html>`` and ends with ``</html>``, it will be sent as a HTML email.
+如果电子邮件主体用``<html>``开始并以``</html>``结束，它作为HTML电子邮件发送。 
 
-#### Combining text and HTML emails
+#### 文本和HTML混合电子邮件
 
-The email message can be a tuple (text, html):
+电子邮件消息能是元组（文本，html）：
 
 ``
 mail.send('you@example.com',
@@ -124,7 +127,7 @@ mail.send('you@example.com',
   ('Plain text body', '<html>html body</html>'))
 ``:code
 
-#### ``cc`` and ``bcc`` emails
+#### 抄送和密送``cc`` 和 ``bcc`` emails
 
 ``
 mail.send('you@example.com',
@@ -134,7 +137,7 @@ mail.send('you@example.com',
   bcc=['other3@example.com', 'other4@example.com'])
 ``:code
 
-#### Attachments
+#### 附件Attachments
 
 ``
 mail.send('you@example.com',
@@ -143,7 +146,7 @@ mail.send('you@example.com',
   attachments = mail.Attachment('/path/to/photo.jpg', content_id='photo'))
 ``:code
 
-#### Multiple attachments
+#### 多附件 Multiple attachments
 
 ``
 mail.send('you@example.com',
@@ -153,37 +156,38 @@ mail.send('you@example.com',
                  mail.Attachment('/path/to/second.file')])
 ``:code
 
-### Sending SMS messages
+### Se发送短信
 ``SMS``:inxx
-Sending SMS messages from a web2py application requires a third party service that can relay the messages to the receiver. Usually this is not a free service, but it differs from country to country. We have tried a few of these services with little success. Phone companies block emails originating from these services since they are eventually used as a source of spam.
-
-A better way is to use the phone companies themselves to relay the SMS. Each phone company has an email address uniquely associated with every cell-phone number, so SMS messages can be sent as emails to the phone number.
-
-web2py comes with a module to help in this process:
+从web2py应用发送短消息需要第三方服务，传递消息到接收者。通常，这
+不是免费服务，而且国家与国家不同。我们尝试了很多的服务几乎都不成功。电
+话公司封堵源自这些服务的电子邮件，因为它们最终用做垃圾邮件源。
+好点的方法是用电话公司自己来转发SMS。每个电话公司有电子邮件地址
+唯一关联每个移动电话号码，因此SMS消息能作为电子邮件发送到电话号码。
+web2py提供模块帮助这个处理：
 ``
 from gluon.contrib.sms_utils import SMSCODES, sms_email
 email = sms_email('1 (111) 111-1111','T-Mobile USA (tmail)')
 mail.sent(to=email, subject='test', message='test')
 ``:code
 
-SMSCODES is a dictionary that maps names of major phone companies to the email address postfix. The ``sms_email`` function takes a phone number (as a string) and the name of a phone company and returns the email address of the phone.
+SMSCODES是字典，映射主要电话公司名字到电子邮件地址前缀。``sms_email``函
+数用电话号码（作为字符串）和电话公司的名字，并返回电话的电子邮件地址。 
 
-### Using the template system to generate messages
+### 用模板系统生成消息
 ``emails``:inxx
 
-It is possible to use the template system to generate emails. For example, consider the database table
+能用模板系统生成邮件。例如，考虑如下数据库表：
 ``
 db.define_table('person', Field('name'))
 ``:code
 
-where you want to send to every person in the database the following message,
-stored in a view file "message.html":
+你打算发送给数据库里每个人，下面的存在视图文件“message.html”的消息：
 ``
 Dear {{=person.name}},
 You have won the second prize, a set of steak knives.
 ``:code
 
-You can achieve this in the following way
+你可以用下面的方法实现：
 ``
 for person in db(db.person).select():
     context = dict(person=person)
@@ -193,33 +197,41 @@ for person in db(db.person).select():
               message=message)
 ``:code
 
-Most of the work is done in the statement
+大部分工作在如下语句中完成：
 ``
 response.render('message.html', context)
 ``:code
 
-It renders the view "message.html" with the variables defined in the dictionary "context", and it returns a string with the rendered email text. The context is a dictionary that contains variables that will be visible to the template file.
+用定义在字典“context”的变量呈现了视图“message.html”，而且它用呈现
+的电子邮件文本返回字符串。context是字典包含对模板文件可视的变量。
+如果消息用 ``<html>``开始并以``</html>``结束，这个电子邮件是HTML电子邮件。
 
-If the message starts with ``<html>`` and ends with ``</html>``, the email will be an HTML email.
 
-Note, if you want to include a link back to your website in an HTML email, you can use the ``URL`` function. However, by default, the ``URL`` function generates a relative URL, which will not work from an email. To generate an absolute URL, you need to specify the ``scheme`` and ``host`` arguments to the URL function. For example:
+注意，如果你想在你的HTML电子邮件中包含回到你的网站链接，你可以
+用``URL``函数。然而，默认情况，``URL``函数生成相对URL，从电子邮件不能用。
+要生成绝对URL，你需要指定URL函数的``scheme`` 和 ``host``参数。例如：
+ 
 ``
 <a href="{{=URL(..., scheme=True, host=True)}}">Click here</a>
 ``:code
 
-or
+或者
 
 ``
 <a href="{{=URL(..., scheme='http', host='www.site.com')}}">Click here</a>
 ``:code
 
-The same mechanism that is used to generate email text can also be used to generate SMS messages or any other type of message based on a template.
+用在生成电子邮件文本的同样的机制，也用来生成SMS消息或其它任何基于模
+板类型消息。
 
-### Sending messages using a background task
+### 用后台任务发送消息
 
-The operation of sending an email message can take up to several seconds because of the need to log into and communicate with a potentially remote SMTP server. To keep the user from having to wait for the send operation to complete, it is sometimes desirable to queue the email to be sent at a later time via a background task. As described in Chapter 4, this can be done by setting up a homemade task queue or using the web2py scheduler. Here we provide an example using a homemade task queue.
-
-First, in a model file within our application, we set up a database model to store our email queue:
+发送电子邮件消息的操作可占用几秒，因为需要登录和通信可能的远端的
+SMTP服务器。为避免用户等待发送操作完成，有时希望通过后台任务让邮件排
+队稍后发送。正如第4章描述的，这能通过设置自制任务队列或用web2py调度
+器实现。下面我们提供了一个使用自制任务队列的例子。
+首先，在我们应用模型文件里，我们设置数据库模型存储我们的电子邮件
+队列：
 ``
 db.define_table('queue',
     Field('status'),
@@ -228,7 +240,7 @@ db.define_table('queue',
     Field('message'))
 ``:code
 
-From a controller, we can then enqueue messages to be sent by:
+然后，从控制器，我们能排队要发送的消息：
 ``
 db.queue.insert(status='pending',
                 email='you@example.com',
@@ -236,7 +248,7 @@ db.queue.insert(status='pending',
                 message='test')
 ``:code
 
-Next, we need a background processing script that reads the queue and sends the emails:
+接下来，我们需要后台处理脚本读取队列并发送邮件：
 ``
 ## in file /app/private/mail_queue.py
 import time
@@ -253,16 +265,23 @@ while True:
     time.sleep(60) # check every minute
 ``:code
 
-Finally, as described in Chapter 4, we need to run the mail_queue.py script as if it were inside a controller in our app:
+最后，如第四章描述的，我们需要运行mail_queue.py脚本，如同它在我们
+应用控制器中：
 ``
 python web2py.py -S app -M -N -R applications/app/private/mail_queue.py
 ``:code
 
-where ``-S app`` tells web2py to run "mail_queue.py" as "app", ``-M`` tells web2py to execute models, and ``-N`` tells web2py not to run cron.
+``-S app`` 告诉web2py以“app”运行“mail_queue.py”，``-M`` 告诉web2py执行模型，``-N`` 告诉web2py不要运行cron。
 
-Here we assume that the ``mail`` object referenced in "mail_queue.py" is defined in a model file in our app and is therefore available in the "mail_queue.py" script because of the ``-M`` option. Also notice that it is important to commit any change as soon as possible in order not to lock the database to other concurrent processes.
+这里我们假定在“mail_queue.py”引用的 ``mail`` 对象定义在我们应用的模型文
+件，因此是在“mail_queue.py”脚本中可用的，因为 ``-M`` 选项。也要注意，为了对
+其它并发的处理不锁定数据库，尽可能快地提交任何改变是重要的。
 
-As noted in Chapter 4, this type of background process should not be executed via cron (except perhaps for cron @reboot) because you need to be sure that no more than one instance is running at the same time.
+如第四章记述的，这种后台进程的类型不能通过cron（可能cron@reboot
+除外）执行，因为你需要确认在同一个时间仅有一个实例在运行。
 
-Note, one drawback to sending email via a background process is that it makes it difficult to provide feedback to the user in case the email fails. If email is sent directly from the controller action, you can catch any errors and immediately return an error message to the user. With a background process, however, the email is sent asynchronously, after the controller action has already returned its response, so it becomes more complex to notify the user of a failure.
+注意，通过后台处理发送电子邮件的一个缺点是，它使得在电子邮件失败的情
+况给用户提供反馈困难。如果电子邮件从控制器动作直接发送，你能捕捉到任
+何错误，并立即返回错误消息给用户。可是用后台进程，电子邮件异步发送，
+在控制器动作已经返回了它的响应以后，因此它告知用户失败变得更加复杂。
 
