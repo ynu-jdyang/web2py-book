@@ -1,161 +1,199 @@
 
-## Overview
+## 概述
 
-### Startup
+### 启动
 
 ``Linux``:inxx ``Mac``:inxx ``Windows``:inxx
 
-web2py comes in binary packages for Windows and Mac OS X. They include the Python interpreter so you do not need to have it pre-installed. There is also a source code version that runs on Windows, Mac, Linux, and other Unix systems. The Windows and OS X binary versions include the necessary Python interpreter. The source code package assumes that Python is already installed on the computer.
+wweb2py 提供用于Windows 和Mac OS X 的二进制包。二进制版本包含了
+Python 解释器， 因此用户不需要预先安装。源代码版本能在
+Windows、Mac、Linux和其它Unix系统上运行。Windows和OS X上的二进制版
+本包括必要的Python解释器。源代码包版本假定计算机安装了Python。
 
-web2py requires no installation. To get started, unzip the downloaded zip file for your specific operating system and execute the corresponding ``web2py`` file.
+web2py 不需要安装。启动时，针对特定的操作系统，解压下载的压缩
+（zip）文件，并运行相应的web2py文件。
 
-On Windows, run:
+在Windows上，运行:
 ``
 web2py.exe
 ``:code
 
-On OS X, run:
+在OS X上，运行：
 ``
 open web2py.app
 ``:code
 
-On Unix and Linux, run from source by typing:
+在Unix和Linux上，通过输入以下命令从源代码运行：
 ``
 python2.5 web2py.py
 ``:code
 
-To run web2py on Windows from source install first  [[Mark Hammond's "Python for Windows extensions http://sourceforge.net/projects/pywin32/]], then run:
+为了在Windows 上从源代码运行web2py，需要先安装Mark Hammond's
+"Python for Windows extensions，之后运行:
 ``
 python2.5 web2py.py
 ``:code
 
 
-The web2py program accepts various command line options which are discussed later.
+web2py程序接受各种命令行选项，这将在后面讨论。
 
-By default, at startup, web2py displays a startup window and then displays a GUI widget that asks you to choose a one-time administrator password, the IP address of the network interface to be used for the web server, and a port number from which to serve requests. By default, web2py runs its web server on 127.0.0.1:8000 (port 8000 on localhost), but you can run it on any available IP address and port. You can query the IP address of your network interface by opening a command line and typing ``ipconfig`` on Windows or ``ifconfig`` on OS X and Linux. From now on we assume web2py is running on localhost (127.0.0.1:8000). Use 0.0.0.0:80 to run web2py publicly on any of your network interfaces.
+默认情况下，在启动时，web2py会显示一个启动窗口，然后显示一个GUI
+部件，要求您选择一个一次性管理员密码、网络接口的IP地址和端口号，其中
+IP 地址用于web 服务器， 端口号用于服务请求。web2py 默认情况下在
+127.0.0.1:8000（本地主机localhost上的8000端口）上运行它的Web 服务器，
+但它也能够在任何可用的IP地址和端口上运行。你可以查询网络接口的IP地址，
+方法是在Windows 下打开命令行、键入ipconfig 或在OS X 和Linux 下键入
+ifconfig。从现在开始，我们假定web2py在localhost（127.0.0.1:8000）上运行。
+使用0.0.0.0:80可以在任何网络接口上运行公开web2py
 
 [[image @///image/en400.png center 306px]]
 
-If you do not provide an administrator password, the administration interface is disabled. This is a security measure to prevent publicly exposing the admin interface.
+如果你不提供管理员密码，管理界面是不可用的。这是为了防止暴露管理界
+面而采取的安全措施。
 
-The administrative interface, **admin**, is only accessible from localhost unless you run web2py behind Apache with mod_proxy. If **admin** detects a proxy, the session cookie is set to secure and **admin** login does not work unless the communication between the client and the proxy goes over HTTPS; this is a security measure. All communications between the client and **admin** must always be local or encrypted; otherwise an attacker would be able to perform a man-in-the middle attack or a replay attack and execute arbitrary code on the server.
+管理界面， **admin**， 仅能通过localhost（本地主机）访问，除非你在后台使用
+带有mod_proxy的Apache服务器上运行web2py。 如果 **admin** 检测到代理， 会话
+cookie 被设为安全，**admin** 登录不起作用，除非客户端和代理之间的采用
+HTTPS通信；这是一项安全措施。客户端和 **admin** 之间的所有通信必须始终是
+本地的或加密的；否则，攻击者将能发动中间攻击或重放（replay）攻击，并
+在服务器端执行任意代码。
 
-After the administration password has been set, web2py starts up the web browser at the page:
+设置管理密码后，web2py在如下页面启动web浏览器：
 ``
 http://127.0.0.1:8000/
 ``:code
 
-If the computer does not have a default browser, open a web browser and enter the URL.
+如果计算机没有默认的浏览器，打开一个web浏览器并输入URL。
 
 [[image @///image/en500.png center 480px]]
 
-Clicking on "administrative interface" takes you to the login page for the administration interface.
+点击 "administrative interface"，将带你到管理界面的登录页面。
 
 [[image @///image/en600.png center 480px]]
 
 The administrator password is the password you chose at startup.
-Notice that there is only one administrator, and therefore only one administrator password. For security reasons, the developer is asked to choose a new password every time web2py starts unless the <recycle> option is specified. This is distinct from the authentication mechanism in web2py applications.
+管理员密码是您在启动时选择的密码。请注意，管理员只有一个，因此也只
+有一个管理员密码。出于安全原因，web2py每次启动时，开发人员都要选择一
+个新密码，除非<recycle>选项被指定。这有别于web2py应用中的身份验证机制。
 
-After the administrator logs into web2py, the browser is redirected to the "site" page.
+管理员登录web2py之后，浏览器被定向到"site"页面。
 
 [[image @///image/en700.png center 480px]]
 
-This page lists all installed web2py applications and allows the administrator to manage them.
-web2py comes with three applications:
+该页面列出了全部已安装的web2py应用，并允许管理员管理它们。
+web2py带有3个应用：
 ``admin``:inxx ``examples``:inxx ``welcome``:inxx ``scaffolding``:inxx
-- An **admin** application, the one you are using right now.
-- An **examples** application, with the online interactive documentation and a replica of the web2py official website.
-- A **welcome** application. This is the basic template for any other web2py application. It is referred to as the scaffolding application. This is also the application that welcomes a user at startup.
+- **admin** 应用，即你正在使用的应用。
+- **examples**应用，包含在线交互式文档和一个web2py官方网站的副本。
+- **welcome** 应用。这是任何其它web2py应用的基本模板，也被称为基本
+构建应用（scaffolding application）。它也是在启动时欢迎用户的应用。
 
 ``appliances``:inxx
-Ready-to-use web2py applications are referred to as web2py ''appliances''.  You can download many freely available appliances from ``appliances``:cite . web2py users are encouraged to submit new appliances, either in open-source or closed-source (compiled and packed) form.
+立即可用的web2py应用被称作 web2py “appliances”.  你可以在``appliances``下载许多免费提供的应用范例。鼓励web2py用户提交新的应用范例，无论是以开源还是闭源（编译和包装）的形式。
 
-From the **admin** application's ''site'' page, you can perform the following operations:
-- **install** an application by completing the form on the bottom right of the page. Give a name to the application, select the file containing a packaged application or the URL where the application is located, and click "submit".
-- **uninstall** an application by clicking the corresponding button. There is a confirmation page.
-- **create** a new application by choosing a name and clicking "create".
-- **package** an application for distribution by clicking on the corresponding button. A downloaded application is a tar file containing everything, including the database. You should not untar this file; it is automatically unpackaged by web2py when installed with **admin**.
-- **clean up** an application's temporary files, such as sessions, errors and cache files.
-- **EDIT** an application.
+从**admin** 应用的''site'' 页面，你可以执行以下操作：
+- 通过填写页面右下角的表单，**install** 应用。给应用命名，选择包含封装应用的
+文件夹或应用所处位置的URL，并点击“submit”。
+- 通过点击相应按钮，**uninstall** 应用。有一个确认页面。
+- 通过选择一个名称，并点击**create** 即可创建一个新应用。
+- 通过点击相应的按钮，**package** 应用发行。下载的应用是一个包括数据库的完整
+压缩（tar）文件。你不用解压这个文件；使用**admin**安装后web2py会自动
+将它解压。
+- **clean up** 应用临时文件，例如会话、错误和缓存文件。
+- **EDIT**应用。
 
 -----
-When you create a new application using **admin**, it starts as a clone of the "welcome" scaffolding app with a "models/db.py" that creates a SQLite database, connects to it, instantiates Auth, Crud and Service, configures them. It also provides a "controller/default.py" which exposes actions "index", "download", "user" for user management, and "call" for services. In the following, we assume that these files have been removed; we will be creating apps from scratch.
+在你用 **admin**创建新应用时， 它开始是作为带有一
+个"models/db.py"的"welcome"基本构建应用的克隆，"models/db.py"创建一个SQLite数据库，并连接到该数据库，实例化Auth、Crud和Service，并配置它们它还提供了一个"controller/default.py"，为用户管理暴露了动作"index"、"download"和"user"，为服务暴露了"call"。下面，我们假设这些文件已被删除；我们将从头开始创建应用。
 -----
 
 -----
-web2py also comes with a **wizard**, described later in this chapter, that can write an alternate scaffolding code for you based on layouts and plugins available on the web and based on high level description of the models.
+web2py中配备的 **wizard**，在本章后面介绍，基于网络上提供的布局、插件和
+模型的高层次描述，向导能为用户编写替代框架代码。
 -----
 
-### Say hello
+### 问好
 ``index``:inxx
 
-Here, as an example, we create a simple web app that displays the message "Hello from MyApp" to the user. We will call this application "myapp". We will also add a counter that counts how many times the same user visits the page.
+作为一个例子，我们现在创建一个简单的Web应用，它向用户显示"Hello
+from MyApp"。我们把这个应用称为“myapp”。我们还将增加一个统计用户访问
+相同页面次数的计数器。
 
-You can create a new application simply by typing its name in the form on the top right of the **site** page in **admin**.
+通过在**admin**内**site** 页面右上角表单中键入应用的名称，你就可以创建一个
+新应用。
 
 [[image @///image/en800.png center 447px]]
 
-After you press [create], the application is created as a copy of the built-in welcome application.
+你按下[create]之后，新应用就会作为内置welcome的副本被创建。
 
 [[image @///image/en900.png center 480px]]
 
-To run the new application, visit:
+要运行新应用，请访问：
 ``
 http://127.0.0.1:8000/myapp
 ``:code
 
-Now you have a copy of the welcome application.
+现在，你有一个welcome应用的副本了。
 
-To edit an application, click on the ''design'' button for the newly created application.
+为了编辑应用，可以点击新创建应用的 ''design'' 按钮。
 
-The **Edit** page tells you what is inside the application.
-Every web2py application consists of certain files, most of which fall into one of isx categories:
-- **models**: describe the data representation.
-- **controllers**: describe the application logic and workflow.
-- **views**: describe the data presentation.
-- **languages**: describe how to translate the application presentation to other languages.
-- **modules**: Python modules that belong to the application.
-- **static files**: static images, CSS  files``css-w,css-o,css-school``:cite , JavaScript files``js-w,js-b``:cite , etc.
-- **plugins**: groups of files designed to work together.
+**Edit**页面告诉你应用内部有些什么。每个web2py应用包括一些特定文件，
+其中大部分可归纳为以下六类：
+- **models**：描述数据表示。
+- **controllers**:描述了应用逻辑和工作流程。
+- **views**:描述数据表达。
+- **languages**: 描述如何将应用表达翻译成其它语言。
+- **modules**: 属于应用的Python模块。
+-**staticfiles**:静态图像，CSS[css:w,css:o,css:school]文件，JavaScript[js:w,js:b]文件等等。 files``css-w,css-o,css-school``:cite , JavaScript files``js-w,js-b``:cite , etc.
+- **plugins**::用于设计协同工作的文件组。
  
-Everything is neatly organized following the Model-View-Controller design pattern. Each section in the ''edit'' page corresponds to a subfolder in the application folder.
+遵循MVC设计模式，应用设计井然有序。edit页面中的每个部分对应于应
+用文件夹的一个子文件夹。
 
-Notice that section headings will toggle their content. Folder names under static files are also collapsible.
+请注意，节标题将切换其内容。静态文件的文件夹名称也是可折叠的。
 
 -------
-Each file listed in the section corresponds to a file physically located in the subfolder. Any operation performed on a file via the **admin** interface (create, edit, delete) can be performed directly from the shell using your favorite editor.
+节中列出的每个文件对应于子文件夹中的实体文件。通过 **admin** 界面对文件
+的任何操作（创建、编辑、删除），都可以使用您偏爱的编辑器直接从shell执行。
 -------
 
-The application contains other types of files (database, session files, error files, etc.), but they are not listed on the ''edit'' page because they are not created or modified by the administrator; they are created and modified by the application itself.
+该应用包含其它类型的文件（数据库、会话文件、错误文件等），但它们并
+没有在编辑页面中列出，因为它们不是由管理员创建或修改的;它们由应用本身
+创建和修改。
 
-The controllers contain the logic and workflow of the application. Every URL gets mapped into a call to one of the functions in the controllers (actions). There are two default controllers: "appadmin.py" and "default.py". **appadmin** provides the database administrative interface; we do not need it now. "default.py" is the controller that you need to edit, the one that is called by default when no controller is specified in the URL. Edit the "index" function as follows:
+控制器包含应用逻辑和工作流程。每个URL都被映射成控制器（action）中
+某个函数的调用。有两个默认控制器：："appadmin.py"和"default.py"。 **appadmin** 提
+供数据库管理界面；目前我们还不需要它。“default.py”是你需要编辑的控制器，
+当URL中没有指定控制器时，默认调用它。编辑"index"函数如下：
 ``
 def index():
     return "Hello from MyApp"
 ``:code
 
-Here is what the online editor looks like:
+下面是在线编辑器的图示：
 
 [[image @///image/en1000.png center 480px]]
 
-Save it and go back to the ''edit'' page. Click on the index link to visit the newly created page.
+保存并返回到edit页面。点击index链接访问新创建的页面。
 
-When you visit the URL
+当你访问URL时
 ``
 http://127.0.0.1:8000/myapp/default/index
 ``:code
 
-the index action in the default controller of the myapp application is called. It returns a string that the browser displays for us. It should look like this:
+myapp应用中的默认控制器的index行为将被调用。它返回一个在浏览器中
+显示的字符串。如下图所示：
 
 [[image @///image/en1100.png center 480px]]
 
-Now, edit the "index" function as follows:
+现在，编辑"index"函数如下：
 ``
 def index():
     return dict(message="Hello from MyApp")
 ``:code
 
-Also from the ''edit'' page, edit the view "default/index.html" (the view file associated with the action) and completely replace the existing contents of that file with the following:
+从edit页面，编辑视图"default/index.html"（视图文件与action有
+关），并且用如下内容完全替换该文件的当前内容：
 ``
 <html>
    <head></head>
@@ -165,47 +203,51 @@ Also from the ''edit'' page, edit the view "default/index.html" (the view file a
 </html>
 ``:code
 
-Now the action returns a dictionary defining a ``message``. When an action returns a dictionary, web2py looks for a view with the name
+现在action返回一个定义``message``的字典。当action返回一个字典时，web2py会查找一个名称如下的视图：
 
 ``[controller]/[function].[extension]``:code
 
- and executes it. Here [extension] is the requested extension. If no extension is specified, it defaults to "html", and that is what we will assume here. Under this assumption, the view is an HTML file that embeds Python code using special {{ }} tags. In particular, in the example, the ``{{=message}}`` instructs web2py to replace the tagged code with the value of the ``message`` returned by the action. Notice that ``message`` here is not a web2py keyword but is defined in the action. So far we have not used any web2py keywords.
+ 并执行它。这里[extension]是请求的扩展名。如果没有指定扩展名，默认
+为"html" ，这里我们也将这样假设。在这个假设下，视图是一个使用特殊标签{{
+}}并嵌入Python 代码的HTML 文件。特别是，在本例中 ``{{=message}}`` 指示
+web2py用action返回的``message`` 值取代标签代码。注意，这里 ``message`` 不是一
+个web2py关键字，但被定义在action中。到目前为止我们没有使用任何web2py关键字。
 
-If web2py does not find the requested view, it uses the "generic.html" view that comes with every application.
-
--------
-If an extension other than "html" is specified ("json" for example), and the view file "[controller]/[function].json" is not found, web2py looks for the view "generic.json". web2py comes with generic.html, generic.json, generic.xml, and generic.rss. These generic views can be modified for each application individually, and additional views can be added easily.
--------
-
--------
-Generic views are a development tool. In production every action should have its own view. In fact, by default, generic views are only enabled from localhost.
--------
+如果web2py没有找到请求的视图, 它将使用通用视图“generic.html”。
 
 -------
-You can also specify a view with ``response.view = 'default/something.html'``
+如果指定"html"以外的扩展名（例如"json"），并且视图文件"[controller]/[function].json"未被找到，web2py将查找"generic.json"视图。web2py带有generic.html、generic.json、generic.xml和generic.rss。应用可以单独修改这些通用视图，并且可以很容易的添加其它视图。
 -------
 
-Read more on this topic in Chapter 10.
+-------
+通用视图是一种开发工具。在生产中每个action都应有自己的视图。实际上，默认时通用视图只能从localhost启用。
+-------
 
-If you go back to "EDIT" and click on index, you will now see the following HTML page:
+-------
+你也可以使用 ``response.view = 'default/something.html'``指定一个视图。
+-------
+
+在第10章中，你也可以阅读这个主题的更多内容。
+
+如果你回到"EDIT" 并点击index，你将看到如下HTML页面：
 
 [[image @///image/en1200.png center 480px]]
 
-For debugging purposes you can always append
+为了调试目的，你可以随时添加如下代码
 
 ``
 {{=response.toolbar()}}
 ``:code
 
-to the code in a view and it will show you some useful information, including the request, response and session objects, and list all db queries with their timing.
+到视图中，它会向你显示一些有用信息，包括请求、响应和会话对象，并列出所有数据库查询及其时间。
 
-### Let's count
+### 计数
 ``session``:inxx
-Let's now add a counter to this page that will count how many times the same visitor displays the page.
+我们现在添加一个计数器到向页面中，该计数器将统计相同访问者访问页面的次数。
 
-web2py automatically and transparently tracks visitors using sessions and cookies. For each new visitor, it creates a session and assigns a unique "session_id". The session is a container for variables that are stored server-side. The unique id is sent to the browser via a cookie. When the visitor requests another page from the same application, the browser sends the cookie back, it is retrieved by web2py, and the corresponding session is restored.
+web2py将自动、透明的使用会话和cookie追踪访问者。对于新访问者,它创建一个会话并分配唯一的"session_id"。会话是一个存储服务器端变量的容器。唯一的id通过cookie发送到浏览器。当访问者请求同一应用中的另一页面时，浏览器发回cookie，它被web2py回收并且相应的会话被恢复。
 
-To use the session, modify the default controller:
+为了使用会话，修改默认控制器如下：
 ``
 def index():
     if not session.counter:
@@ -215,16 +257,18 @@ def index():
     return dict(message="Hello from MyApp", counter=session.counter)
 ``:code
 
-Notice that ``counter`` is not a web2py keyword but ``session`` is. We are asking web2py to check whether there is a counter variable in the session and, if not, to create one and set it to 1. If the counter is there, we ask web2py to increase the counter by 1. Finally we pass the value of the counter to the view.
+注意 ``counter`` 不是web2py关键字但 ``session`` 是。我们要求web2py检查会话
+中是否有计数器变量，如果没有创建一个并将其设为1。如果有计数器变量，我
+们要求web2py把计数器的值加1。最后，我们把计数器的值传递给视图。
 
-A more compact way to code the same function is this:
+更紧凑的实现相同功能的代码如下：
 ``
 def index():
     session.counter = (session.counter or 0) + 1
     return dict(message="Hello from MyApp", counter=session.counter)
 ``:code
 
-Now modify the view to add a line that displays the value of the counter:
+现在修改视图，添加一行显示计数器值的代码：
 ``
 <html>
    <head></head>
@@ -235,20 +279,20 @@ Now modify the view to add a line that displays the value of the counter:
 </html>
 ``:code
 
-When you visit the index page again (and again) you should get the following HTML page:
+当你再次访问index页面时，你应该得到以下HTML页面：
 
 [[image @///image/en1300.png center 480px]]
 
-The counter is associated with each visitor, and is incremented each time the visitor reloads the page. Different visitors see different counters.
+计数器与每个访问者相关，访问者每次重载页面时计数器递增1。不同访问者看到的计数器不同。
 
-### Say my name
+### 访问我的名字
 ``form``:inxx ``request.vars``:inxx
 
-Now create two pages (first and second), where the first page creates a form, asks the visitor's name, and redirects to the second page, which greets the visitor by name.
+现在创建两个页面(first和second)，其中first页面创建一个表单，询问访问者的名字，并重定向到second页面，second页面通过名字问候访问者。
 
 [[yUML diagram @///image/en1400.png center 293px]]
 
-Write the corresponding actions in the default controller:
+在默认控制器中写入相应action(动作)：
 ``
 def first():
     return dict()
@@ -257,8 +301,7 @@ def second():
     return dict()
 ``:code
 
-Then create a view "default/first.html" for the first action,
-and enter:
+然后为first action创建一个视图"default/first.html"，并输入：
 ``
 {{extend 'layout.html'}}
 What is your name?
@@ -268,33 +311,33 @@ What is your name?
 </form>
 ``:code
 
-Finally, create a view "default/second.html" for the second action:
+最后，为second action创建一个视图"default/second.html"：
 ``
 {{extend 'layout.html'}}
 <h1>Hello {{=request.vars.visitor_name}}</h1>
 ``:code
 
 ``layout``:inxx
-In both views we have extended the basic "layout.html" view that comes with web2py. The layout view keeps the look and feel of the two pages coherent. The layout file can be edited and replaced easily, since it mainly contains HTML code.
+在这两个视图中，我们都扩展了web2py自带的基本视图"layout.html"。layout视图保持两页面的外观和感觉一致。因为layout文件主要包含HTML代码，因此可以轻松地编辑和替换。
 
-If you now visit the first page, type your name:
+如果你现在访问first页面，输入你的姓名：
 
 [[image @///image/en1500.png center 480px]]
 
-and submit the form, you will receive a greeting:
+并提交表单，你将收到一个问候：
 
 [[image @///image/en1600.png center 480px]]
 
-### Postbacks
+### 回传
 ``redirect``:inxx ``URL``:inxx ``postback``:inxx
 
-The mechanism for form submission that we used before is very common, but it is not good programming practice. All input should be validated and, in the above example, the burden of validation would fall on the second action. Thus the action that performs the validation is different from the action that generated the form. This tends to cause redundancy in the code.
+T我们之前使用的表单提交机制是很常见的，但这并不是好的编程习惯。在上面的例子中，应当验证所有的输入，验证的负担会落在secondaction上。执行验证的action与生成表单的action是不同的。这往往造成代码冗余。
 
-A better pattern for form submission is to submit forms to the same action that generated them, in our example the "first". The "first" action should receive the variables, process them, store them server-side, and redirect the visitor to the "second" page, which retrieves the variables. This mechanism is called a ''postback''.
+一个更好的表单提交模式是将表单提交给生成它们的action，在我们的例子中是"first"。"first"action应该接受变量、处理变量和将变量存储在服务器端，并将访问者重新定向到"second"页面，这个页面将回收变量。这种机制被称为回传（postback）。
 
 [[yUML diagram @///image/en1700.png center 293px]]
 
-Modify the default controller to implement self-submission:
+修改默认控制器以实现自提交：
 ``
 def first():
     if request.vars.visitor_name:
@@ -306,7 +349,7 @@ def second():
     return dict()
 ``:code
 
-Then modify the "default/first.html" view:
+之后，修改视图"default/first.html"：
 ``
 {{extend 'layout.html'}}
 What is your name?
@@ -316,30 +359,32 @@ What is your name?
 </form>
 ``:code
 
-and the "default/second.html" view needs to retrieve the data from the ``session`` instead of from the ``request.vars``:
+并且"default/second.html"视图需要从 ``session``而非``request.vars``恢复数据：
 ``
 {{extend 'layout.html'}}
 <h1>Hello {{=session.visitor_name or "anonymous"}}</h1>
 ``:code
 
-From the point of view of the visitor, the self-submission behaves exactly the same as the previous implementation. We have not added validation yet, but it is now clear that validation should be performed by the first action.
+从访问者的角度，自提交与以前的实现方法表现完全相同。我们还没有加入验证，但现在很清楚验证应该由first action执行。
 
-This approach is better also because the name of the visitor stays in the session, and can be accessed by all actions and views in the applications without having to be passed around explicitly.
+这种方法比较好，因为访问者的名字留在session中，并且应用中所有action和view都可以访问它而无需显式传递。
 
-Note that if the "second" action is ever called before a visitor name is set, it will display "Hello anonymous" because  ``session.visitor_name`` returns ``None``. Alternatively we could have added the following code in the controller (inside the ``second`` function):
+注意，在访问者设定名字之前，如果"second" action 被调用，它将显
+示"Hello anonymous"，因为``session.visitor_name`` 返回``None``. 另外，我们可以在
+控制器中添加下面的代码（在 ``second`` 函数内）：
 
 ``
 if not request.function=='first' and not session.visitor_name:
     redirect(URL('first'))
 ``:code
 
-This is a general mechanism that you can use to enforce authorization on controllers, though see Chapter 9 for a more powerful method.
+这是在控制器上强制授权的一种普遍机制，不过功能更强大的方法参阅第9章。
 
 ``FORM``:inxx ``INPUT``:inxx ``requires``:inxx ``IS_NOT_EMPTY``:inxx ``accepts``:inxx
 
-With web2py we can move one step further and ask web2py to generate the form for us, including validation. web2py provides helpers (FORM, INPUT, TEXTAREA, and SELECT/OPTION) with the same names as the equivalent HTML tags. They can be used to build forms either in the controller or in the view.
+使用web2py，我们可以更进一步，请web2py为我们生成包括验证的表单。web2py提供帮助对象(FORM、INPUT、TEXTAREA和SELECT/OPTION)，它们与等效的HTML标签同名。它们可以用于在控制器或视图中构建表单。
 
-For example, here is one possible way to rewrite the first action:
+例如，这里是改写first action的一种可能方式:
 ``
 def first():
     form = FORM(INPUT(_name='visitor_name', requires=IS_NOT_EMPTY()),
@@ -350,9 +395,9 @@ def first():
     return dict(form=form)
 ``:code
 
-where we are saying that the FORM tag contains two INPUT tags. The attributes of the input tags are specified by the named arguments starting with underscore. The ``requires`` argument is not a tag attribute (because it does not start by underscore) but it sets a validator for the value of visitor_name.
+这里我们说FORM标签包含两个INPUT标签。input标签的属性由以下划线开头的命名参数指定。``requires``参数不是一个标签属性（因为它不以下划线开头），但它为visitor_name的值设置了一个验证。
 
-Here is yet another better wat to create the same form:
+这里是创建相同表单的另一种更好的方式：
 
 ``
 def first():
@@ -363,35 +408,36 @@ def first():
     return dict(form=form)
 ``:code
 
-The ``form`` object can be easily serialized in HTML by embedding it in the "default/first.html" view.
+通过在视图"default/first.html"中嵌入``form``对象，可以很容易的在HTML中将它序列化。
 ``
 {{extend 'layout.html'}}
 What is your name?
 {{=form}}
 ``:code
 
-The ``form.process()`` method applies the validators and returns the form itself. The ``form.accepted`` variable is set to True if the form was processed and passed validation. If the self-submitted form passes validation, it stores the variables in the session and redirects as before. If the form does not pass validation, error messages are inserted into the form and shown to the user, as below:
+``form.process()``方法使用了验证器并返回表单本身。如果表单已经被处理并通过验证,form.accepted变量将被设为True。如果自提交表单通过验证，它将在会话中存储变量并像以前一样重定向。如果表单没有通过验证，错误消息会被插入到表单中，并以如下方式显示给用户：
 
 [[image @///image/en1800.png center 480px]]
 
-In the next section we will show how forms can be generated automatically from a model.
+下一节，我们将展示如何从模型自动生成表单。
 
-### An image blog
+### 图像博客
 ``upload``:inxx
 
-Here, as another example, we wish to create a web application that allows the administrator to post images and give them a name, and allows the visitors of the web site to view the named images and submit comments.
+作为另一个例子，在这里我们希望创建一个Web应用，它允许管理员发布图片并给它们命名，同时允许网站访问者查看命名的图片并提交评论。
 
-As before, from the **site** page in **admin**, create a new application called ``images``, and navigate to the ''edit'' page:
+像以前一样，从 **admin**中的**site** 页面创建一个命名为``images``的新应用，并
+导航到edit页面：
 
 [[image @///image/en1900.png center 480px]]
 
-We start by creating a model, a representation of the persistent data in the application (the images to upload, their names, and the comments). First, you need to create/edit a model file which, for lack of imagination, we call "db.py". We assume the code below will replace any existing code in "db.py". Models and controllers must have a ``.py`` extension since they are Python code. If the extension is not provided, it is appended by web2py. Views instead have a ``.html`` extension since they mainly contain HTML code.
+我们开始创建一个模型，即应用中持久数据的表示(上传的图像、它们的名字和评论)。首先，你需要创建/编辑模型文件，由于缺乏想象力，我们称之为"db.py"。我们假设下面的代码将取代"db.py"中任何现有的代码。模型和控制器必须具有``.py``扩展名，因为它们是Python代码。如果没有提供扩展名，web2py会添加。视图具有``.html``扩展名，因为它们主要包含HTML代码。
 
-Edit the "db.py" file by clicking the corresponding "edit" button:
+通过点击相应的"edit"按钮，可以编辑"db.py"文件
 
 [[image @///image/en2000.png center 480px]]
 
-and enter the following:
+并输入以下代码 ：
 
 ``IS_EMAIL``:inxx ``IS_NOT_EMPTY``:inxx ``IS_IN_DB``:inxx
 ``
@@ -417,118 +463,127 @@ db.comment.body.requires = IS_NOT_EMPTY()
 db.comment.image_id.writable = db.comment.image_id.readable = False
 ``:code
 
-Let's analyze this line by line.
+让我们来逐行分析。
 
-Line 1 defines a global variable called ``db`` that represents the database connection. In this case it is a connection to a SQLite database stored in the file  "applications/images/databases/storage.sqlite". In the SQLite case, if the database does not exist, it is created. You can change the name of the file, as well as the name of the global variable ``db``, but it is convenient to give them the same name, to make it easy to remember.
+第1行定义一个表示数据库连接的称为``db``的全局变量。在本例中，它是一个到SQLit 数据库连接，该数据库存储在"applications/images/databases/storage.sqlite"文件中。在SQLite情况下，如果数据库不存在则创建它。你可以更改文件和全局变量``db``的名称，但给予它们相同的名称更便于记忆。
 
-Lines 3-5 define a table "image". ``define_table`` is a method of the ``db`` object. The first argument, "image", is the name of the table we are defining. The other arguments are the fields belonging to that table. This table has a field called "title", a field called "file", and a field called "id" that serves as the table primary key ("id" is not explicitly declared because all tables have an id field by default). The field "title" is a string, and the field "file" is of type "upload". "upload" is a special type of field used by the web2py Data Abstraction Layer (DAL) to store the names of uploaded files. web2py knows how to upload files (via streaming if they are large), rename them safely, and store them.
+第3-5行定义一个"image"表。``define_table`` 是 ``db`` 对象的一个方法。第一个参
+数"image"是我们定义的表的名称。其它参数都是属于该表的字段。该表有一个"title"字段，一个"file"字段，一个"id"字段，并且"id"字段作为表的主键（"id"没有显式声明，因为默认时所有表都有一个id字段）。"title"字段是一个字符串，字段"file"是"upload"类型。"upload"是一个特殊的字段类型，web2py数据抽象层（DAL）用它来存储上传文件的名称。web2py知道如何上传文件（如果文件大则用流媒体）、安全的重命名文件和存储文件。
 
-When a table is defined, web2py takes one of several possible actions:
-- if the table does not exist, the table is created;
-- if the table exists and does not correspond to the definition, the table is altered accordingly, and if a field has a different type, web2py tries to convert its contents;
-- if the table exists and corresponds to the definition, web2py does nothing.
+当定义表时，web2py可能采取如下动作之一：
+- 如果表不存在则创建它;
+-如果表存在但不符合定义，表将被相应的修改，如果字段有不同的类型，web2py会设法转换其内容；
+- 如果表存在并且符合定义，web2py不执行任何操作。
 
-This behavior is called "migration". In web2py migrations are automatic, but can be disabled for each table by passing ``migrate=False`` as the last argument of ``define_table``.
+这种行为被称为"migration"。在web2py中迁移（migration）是自动的，但
+通过传递``migrate=False``作为``define_table``的最后一个参数，可以禁用每个表的迁移。
 
-Line 6 defines a format string for the table. It determines how a record should be represented as a string. Notice that the ``format`` argument can also be a function that takes a record and returns a string. For example:
+第6行为表定义了一个格式字符串。它决定如何将记录表示为一个字符串。请注意，``format`` 参数也可以是一个函数，该函数需要一个记录并返回一个字符串。例如：
 
 ``
 format=lambda row: row.title
 ``:code
 
 Lines 8-12 define another table called "comment".
-A comment has an "author", an "email" (we intend to store the email address of the author of the comment), a "body" of type "text" (we intend to use it to store the actual comment posted by the author), and an "image_id" field of type reference that points to ``db.image`` via the "id" field.
+8-12 行定义另一个名为"comment" 的表。一条评论包
+含"author" 、"email"（我们打算存储评论者的电子邮件地址）、"text"类型
+的"body"（我们打算用它来存储作者发布的评论）和引用类型的通过"id"字段指
+向``db.image`` 的"image_id"字段。
 
-In line 14, ``db.image.title`` represents the field "title" of table "image". The attribute ``requires`` allows you to set requirements/constraints that will be enforced by web2py forms. Here we require that the "title" is unique:
+在第14行，``db.image.title`` 表示"image"表的"title" 字段。属性``requires`` 允许你设置web2py表单强制执行的规定/限制。这里我们要求"title"是唯一的：
 
 ``IS_NOT_IN_DB(db, db.image.title)``:code
 
-''Notice this is optional because it is set automatically given that ``Field('title', unique=True)``''.
+''注意这是可选的，因为 ``Field('title', unique=True)``它将被自动设置。''
 
-The objects representing these constraints are called validators. Multiple validators can be grouped in a list. Validators are executed in the order they appear.
-``IS_NOT_IN_DB(a, b)`` is a special validator that checks that the value of a field ``b`` for a new record is not already in ``a``.
+表示这些限制的对象被称为验证。多个验证可以组合在一个列表中，并且
+根据出现的顺序执行验证。
+``IS_NOT_IN_DB(a, b)`` 是一个特殊验证，它检查新纪
+录字段``b`` 的值是否已经在``a``中。
 
-Line 15 requires that the field "image_id" of table "comment" is in ``db.image.id``. As far as the database is concerned, we had already declared this  when we defined the table "comment".
-Now we are explicitly telling the model that this condition should be enforced by web2py, too, at the form processing level when a new comment is posted, so that invalid values do not propagate from input forms to the database. We also require that the "image_id" be represented by the "title", ``'%(title)s'``, of the corresponding record.
+第15行要求表"comment"的"image_id"字段在 ``db.image.id``中。就涉及的数据
+库而言，当定义表"comment"时我们已经声明了这一点。
+该条件应当由web2py强制执行，这样
+无效值就不会从输入表单传递到数据库。 我们还要求用相应记录的"title" ，即``'%(title)s'``来代表"image_id"。
 
-Line 20 indicates that the field "image_id" of table "comment" should not be shown in forms, ``writable=False`` and not even in readonly forms, ``readable=False``.
+第20 行表明"comment" 表的字段"image_id" 不应显示在表单中``writable=False`` ，甚至只读形式也不行``readable=False``。
 
-The meaning of the validators in lines 15-17 should be obvious.
+15-17行中验证的含义应该是显而易见的。
 
 ``format``:inxx
-Notice that the validator
+注意如下验证
 ``
 db.comment.image_id.requires = IS_IN_DB(db, db.image.id, '%(title)s')
 ``:code
 
-can be omitted (and would be automatic) if we specify a format for referenced table:
+如果我们为引用的表指定格式，可以省略（并且是自动的）它：
 ``
 db.define_table('image', ..., format='%(title)s')
 ``:code
 
-where the format can be a string or a function that takes a record and returns a string.
+这里格式可以是一个字符串或一个函数，它接收一个记录并返回一个字符串。
 
 ``appadmin``:inxx
-Once a model is defined, if there are no errors, web2py creates an application administration interface to manage the database. You access it via the "database administration" link in the ''edit'' page or directly:
+一旦模型被定义，如果没有错误，web2py创建一个应用管理界面来管理数据库。你可以通过edit页面中的"database administration"链接来访问它，或者直接访问：
 ``
 http://127.0.0.1:8000/images/appadmin
 ``:code
 
-Here is a screenshot of the **appadmin** interface:
+下面是appadmin界面的截图：
 
 [[image @///image/en2100.png center 480px]]
 
-This interface is coded in the controller called "appadmin.py" and the corresponding view "appadmin.html". From now on, we will refer to this interface simply as **appadmin**. It allows the administrator to insert new database records, edit and delete existing records, browse tables, and perform database joins.
+此界面在控制器"appadmin.py"和相应的视图"appadmin.html"中编码。从现在起，我们将把这一界面简单的称作**appadmin**。它允许管理员插入新的数据库记录、编辑和删除现有记录、浏览表和进行数据库连接。
 
-The first time **appadmin** is accessed, the model is executed and the tables are created. The web2py DAL translates Python code into SQL statements that are specific to the selected database back-end (SQLite in this example). You can see the generated SQL from the ''edit'' page by clicking on the "sql.log" link under "models". Notice that the link is not present until the tables have been created.
+**appadmin**第一次被访问时，执行模型并创建表。web2pyDAL将Python代码翻译成针对选定数据库后台（本例中是SQLite）的SQL语句。通过点击"models"下的"sql.log"链接，你可以从edit页面看到生成的SQL。注意在表被创建之前链接是不存在的。
 
 [[image @///image/en2200.png center 480px]]
 
-If you were to edit the model and access **appadmin** again, web2py would generate SQL to alter the existing tables. The generated SQL is logged into "sql.log".
+如果你要编辑模型，并再次访问**appadmin**，web2py会生成SQL来修改现有的表。生成的SQL被记录在“sql.log”中。
 
-Now go back to **appadmin** and try to insert a new image record:
+现在回到 **appadmin** ，并尝试插入一个新的图片记录：
 
 [[image @///image/en2300.png center 480px]]
 
-web2py has translated the ``db.image.file`` "upload" field into an upload form for the file. When the form is submitted and an image file is uploaded, the file is renamed in a secure way that preserves the extension, it is saved with the new name under the application "uploads" folder, and the new name is stored in the ``db.image.file`` field. This process is designed to prevent directory traversal attacks.
+web2py翻译``db.image.file``的"upload"字段为文件的上传表单。当表单被提交并且图像文件被上传时，将以安全的保留扩展名的方式重命名文件，将用新文件名存储该文件到应用"uploads"文件夹中，新文件名将被保存在``db.image.file``字段中。该过程被设计来防止目录遍历攻击。
 
-Notice that each field type is rendered by a ''widget''. Default widgets can be overridden.
+请注意，每个字段类型由一个部件(widget)呈现。默认部件可能被重写。
 
-When you click on a table name in **appadmin**, web2py performs a select of all records on the current table, identified by the DAL query
+当你在**appadmin**中点击表名时，web2py在当前表中执行选择所有记录，并由DAL查询确定
 ``
 db.image.id > 0
 ``:code
 
-and renders the result.
+且呈现结果如下。
 
 [[image @///image/en2400.png center 480px]]
 
-You can select a different set of records by editing the SQL query and pressing [Submit].
+通过编辑SQL查询并按[Submit]，你可以选择不同的记录集。
 
-To edit or delete a single record, click on the record id number.
+若要编辑或删除单个记录，可以点击记录的id号。
 
-Because of the ``IS_IN_DB`` validator, the reference field "image_id" is rendered by a drop-down menu. The items in the drop-down are stored as keys (``db.image.id``), but are represented by their ``db.image.title``, as specified by the validator.
+由于``IS_IN_DB``验证，引用字段“image_id”将被下拉菜单呈现。下拉项目将被存储为键(``db.image.id``)，但由``db.image.title``表示，正如验证指定的一样。
 
-Validators are powerful objects that know how to represent fields, filter field values, generate errors, and format values extracted from the field.
+验证器是功能强大的对象，它知道如何表示字段、过滤字段值、生成错误和格式化从字段中提取的值。
 
-The following figure shows what happens when you submit a form that does not pass validation:
+当你提交一个表单但未通过验证时，下图显示了发生的情况：
 
 [[image @///image/en2500.png center 480px]]
 
-The same forms that are automatically generated by **appadmin** can also be generated programmatically via the ``SQLFORM`` helper and embedded in user applications. These forms are CSS-friendly, and can be customized.
+由**appadmin**自动生成的相同表单，也可以通过``SQLFORM``帮助对象编程产生并嵌入用户应用中。这些表单都是CSS友好的并且可定制。
 
-Every application has its own **appadmin**; therefore, **appadmin** itself can be modified without affecting other applications.
+每个应用都有自己的**appadmin**；因此，**appadmin**本身可以被修改而不影响其它应用。
 
-So far, the application knows how to store data, and we have seen how to access the database via **appadmin**. Access to **appadmin** is restricted to the administrator, and it is not intended as a production web interface for the application; hence the next part of this walk-through. Specifically we want to create:
-- An "index" page that lists all available images sorted by title and links to detail pages for the images.
-- A "show/[id]" page that shows the visitor the requested image and allows the visitor to view and post comments.
-- A "download/[name]" action to download uploaded images.
+到目前为止，应用知道如何存储数据，并且我们已经看到如何通过**appadmin**访问数据库。仅限管理员访问**appadmin**appadmin，它的目的不是作为一个应用的生产网络接口；故下一部分逐步解说。具体来说，我们要创建：
+-一个"index"页面，按页面的标题排序，列出所有可用的图像以及图像详细信息页面的链接。
+- 一个"show/[id]"页面，显示访问者请求的图像并允许访问者查看和发表评论。
+- 一个"download/[name]"动作，下载上传的图片。
 
-This is represented schematically here:
+用示意图表示如下：
 
 [[yUML diagram @///image/en2600.png center 480px]]
 
-Go back to the ''edit'' page and edit the "default.py" controller, replacing its contents with the following:
+返回到 ''edit''页面，编辑的"default.py"控制器，取代其内容如下：
 
 ``select``:inxx
 ``
@@ -537,18 +592,18 @@ def index():
     return dict(images=images)
 ``:code
 
-This action returns a dictionary. The keys of the items in the dictionary are interpreted as variables passed to the view associated to the action. When developing, if there is no view, the action is rendered by the "generic.html" view that is provided with every web2py application.
+此动作返回一个字典。字典中的项目的键被解释为变量，传递给与动作相关的视图。开发时，如果有没有视图，动作被"generic.html"视图呈现，每个web2py应用都提供该视图。
 
-The index action performs a select of all fields (``db.image.ALL``) from table image, ordered by ``db.image.title``. The result of the select is a ``Rows`` object containing the records. Assign it to a local variable called ``images`` returned by the action to the view. ``images`` is iterable and its elements are the selected rows. For each row the columns can be accessed as dictionaries:
-``images[0]['title']`` or equivalently as ``images[0].title``.
+index动作执行对表image中所有字段(``db.image.ALL``)的选择，按照``db.image.title``排序。选择的结果是一个``Rows``对象，其中包含选中的记录。将它赋值给一个局部变量，该局部变量叫做``images``，由动作返回给视图。``images``是迭代的，它的元素是选定的行。每行的列可以作为字典访问：
+``images[0]['title']`` 或等价为 ``images[0].title``.
 
-If you do not write a view, the dictionary is rendered by "views/generic.html" and a call to the index action would look like this:
+如果你没有写视图,字典将被"views/generic.html"呈现并且对index动作的调用看起来将是这样的：
 
 [[image @///image/en2700.png center 480px]]
 
-You have not created a view for this action yet, so web2py renders the set of records in plain tabular form.
+你还没有为该动作创建视图，因此web2py用普通表格形式呈现记录组。
 
-Proceed to create a view for the index action. Return to admin, edit "default/index.html" and replace its content with the following:
+着手为index动作建立一个视图。返回admin，编辑"default/index.html"并将其内容替换如下：
 ``
 {{extend 'layout.html'}}
 <h1>Current Images</h1>
@@ -559,50 +614,55 @@ Proceed to create a view for the index action. Return to admin, edit "default/in
 </ul>
 ``:code
 
-The first thing to notice is that a view is pure HTML with special {{...}} tags. The code embedded in {{...}} is pure Python code with one caveat: indentation is irrelevant. Blocks of code start with lines ending in colon (:) and end in lines beginning with the keyword ``pass``. In some cases the end of a block is obvious from context and the use of ``pass`` is not required.
+T首先要注意的是，视图是有特殊标签{{...}}的纯HTML。嵌入{{...}}中的代码是纯Python代码，一点需要注意：缩进是无关紧要的。代码块开始于以冒号(:)结束的行并终止于以关键词``pass``结尾的行。在某些情况下，块的结尾从上下文看是很明显的，不需要使用``pass``。
 
-Lines 5-7 loop over the image rows and for each row image display:
+5-7行循环image的行，并为每行显示：
 ``
 LI(A(image.title, _href=URL('show', args=image.id))
 ``:code
 
-This is a ``<li>...</li>`` tag that contains an ``<a href="...">...</a>`` tag which contains the ``image.title``. The value of the hypertext reference (href attribute) is:
+这是一个 ``<li>...</li>`` 标签，其中包含``<a href="...">...</a>`` 标签，该标
+签中包含``image.title``。超文本引用（href属性）的值是：
 ``
 URL('show', args=image.id)
 ``:code
 
-i.e., the URL within the same application and controller as the current request that calls the function called "show", passing a single argument to the function, ``args=image.id``.
-``LI``, ``A``, etc. are web2py helpers that map to the corresponding HTML tags. Their unnamed arguments are interpreted as objects to be serialized and inserted in the tag's innerHTML. Named arguments starting with an underscore (for example ``_href``) are interpreted as tag attributes but without the underscore. For example ``_href`` is the ``href`` attribute, ``_class`` is the ``class`` attribute, etc.
+即同一应用中的URL和控制器，该控制器作为当前请求调用函数"show"，传递一个参数给函数``args=image.id``。
+``LI``, ``A``等是web2py帮助对象，它们映射到相应的HTML标签。 它们的未命名参数被解释为需要序列化的对象并被插入标签内的HTML。。以下划线开始的命名参数被解释为不带下划线的标记属性。(例
+如，``_href`` 是 ``href`` 属性， ``_class`` 是``class`` 属性等。
 
-As an example, the following statement:
+作为一个例子，下面的语句：
 ``
 {{=LI(A('something', _href=URL('show', args=123))}}
 ``:code
 
-is rendered as:
+被呈现为：
 ``
 <li><a href="/images/default/show/123">something</a></li>
 ``:code
 
-A handful of helpers (``INPUT``, ``TEXTAREA``, ``OPTION`` and ``SELECT``) also support some special named attributes not starting with underscore (``value``, and ``requires``). They are important for building custom forms and will be discussed later.
+少数帮助对象(``INPUT``， ``TEXTAREA``， ``OPTION`` 和 ``SELECT``SELECT)也支持一些特殊的不以
+下划线开始的命名属性(``value``和``requires``)。对于构建自定义表单它们是重要的
+并将在稍后讨论。
 
-Go back to the ''edit'' page. It now indicates that "default.py exposes index". By clicking on "index", you can visit the newly created page:
+返回 ''edit''页面。它现在表明"default.py exposes（暴露） index"。通过点
+击"index"，你可以访问新建的页面：
 ``
 http://127.0.0.1:8000/images/default/index
 ``:code
 
-which looks like:
+它看起来像：
 
 [[image @///image/en2800.png center 480px]]
 
-If you click on the image name link, you are directed to:
+如果你点击图片名链接，你将被定向到：
 ``
 http://127.0.0.1:8000/images/default/show/1
 ``:code
 
-and this results in an error, since you have not yet created an action called "show" in controller "default.py".
+这将导致错误，因为你还没有在控制器"default.py"中创建名为"show"的动作。
 
-Let's edit the "default.py" controller and replace its content with:
+让我们编辑"default.py"控制器并将其内容替换如下：
 
 ``SQLFORM``:inxx ``accepts``:inxx ``response.flash``:inxx ``request.args``:inxx
 ``response.download``:inxx
@@ -624,34 +684,33 @@ def download():
     return response.download(request, db)
 ``:code
 
-The controller contains two actions: "show" and "download".
-The "show" action selects the image with the ``id`` parsed from the request args and all comments related to the image. "show" then passes everything to the view "default/show.html".
+控制器包含两个动作："show"和"download"。
+。"show"动作用从请求args中解析得到的``id``，选择图片和与其相关的所有评论。之后"show"将一切传递给视图"default/show.html"。
 
-The image id referenced by:
+引用的图片id：
 ``
 URL('show', args=image.id)
 ``:code
 
-in "default/index.html", can be accessed as:
-``request.args(0)``
-from the "show" action.
+在"default/index.html"中，可以作为："show"动作中的``request.args(0)``被访问。
 
-The "download" action expects a filename in ``request.args(0)``, builds a path to the location where that file is supposed to be, and sends it back to the client. If the file is too large, it streams the file without incurring any memory overhead.
 
-Notice the following statements:
-- Line 7 creates an insert form SQLFORM for the ``db.comment`` table using only the specified fields.
-- Line 8 sets the value for the reference field, which is not part of the input form because it is not in the list of fields specified above.
-- Line 9 processes the submitted form (the submitted form variables are in ``request.vars``) within the current session (the session is used to prevent double submissions, and to enforce navigation). If the submitted form variables are validated, the new comment is inserted in the ``db.comment`` table; otherwise the form is modified to include error messages (for example, if the author's email address is invalid). This is all done in line 9!.
-- Line 10 is only executed if the form is accepted, after the record is inserted into the database table. ``response.flash`` is a web2py variable that is displayed in the views and used to notify the visitor that something happened.
-- Line 11 selects all comments that reference the current image.
+"download"动作期待``request.args(0)``中的文件名，建立一个路径到文件应该存在的位置，并把它发送回客户端。如果文件过大，它流式传输该文件，而不产生任何内存开销。
+
+请注意以下语句：
+-第7行仅使用指定字段，为表 ``db.comment`` 创建一个插入表单SQLFORM。
+-第8行设定引用字段的值，它不是输入表单的一部分，因为它不在上面指定的字段列表中。              
+-第9行在当前会话（会话用来防止重复提交，强制执行导航）中处理提交的表单（提交的表单变量在``request.vars``中）。如果提交的表单变量经过验证，在表``db.comment``中插入新评论；否则的话，表单被修改以包括错误消息（例如，如果作者的电子邮件地址无效）。这一切都是在第9行中完成的！
+- 表单被接受第10行才会被执行，在记录被插入数据库表之后。``response.flash`` 是一个web2py变量，它被显示在视图中并被用来通知访问者发生了一些事情。
+- 第11行选择所有引用当前图片的评论。
 
 -------
-The "download" action is already defined in the "default.py" controller of the scaffolding application.
+在基本构建应用的"default.py"控制器中，已经定义了"download"动作。
 -------
 
-The "download" action does not return a dictionary, so it does not need a view. The "show" action, though, should have a view, so return to **admin** and create a new view called "default/show.html".
+"download"动作不返回字典，因此它不需要视图。不过，"show"动作应该有视图，因此返回 **admin** 并创建一个新的视图叫做"default/show.html"。
 
-Edit this new file and replace its content with the following:
+编辑这个新文件，并替换为以下内容：
 ``
 {{extend 'layout.html'}}
 <h1>Image: {{=image.title}}</h1>
@@ -671,18 +730,18 @@ Edit this new file and replace its content with the following:
 {{=form}}
 ``:code
 
-This view displays the **image.file** by calling the "download" action inside an ``<img ... />`` tag.
-If there are comments, it loops over them and displays each one.
+该视图通过调用<img ... /> 标签内的"download"动作显示**image.file**。如果有评
+论，对它们循环，并显示每一个。
 
-Here is how everything will appear to a visitor.
+下面是显示给访问者的效果：
 
 [[image @///image/en2900.png center 480px]]
 
-When a visitor submits a comment via this page, the comment is stored in the database and appended at the bottom of the page.
+当访问者通过此页提交评论，评论将被存储在数据库中并附加在页面底部。
 
-### Adding CRUD
+### 添加CRUD
 
-web2py also provides a CRUD (Create/Read/Update/Delete) API that simplifies forms even more. To use CRUD it is necessary to define it somewhere, such as in file "db.py":
+web2py还提供CRUD(Create/Read/Update/Delete)API，更加简化表单。使用CRUD，有必要在某处定义它，例如在文件"db.py"中：
 ``
 from gluon.tools import Crud
 crud = Crud(db)
@@ -692,12 +751,12 @@ crud = Crud(db)
 These two lines are already in the scaffolding application.
 -------
 
-The ``crud`` object provides high-level methods, for example:
+``crud`` 对象提供高层次的方法，例如：
 ``
 form = crud.create(table)
 ``:code
 
-that can be used to replace the programming pattern:
+可以用来取代编程模式：
 ``
 form = SQLFORM(table)
 if form.process().accepted:
@@ -705,7 +764,7 @@ if form.process().accepted:
     redirect('...')
 ``:code
 
-Here, we rewrite the previous "show" action using crud and making some more improvements:
+这里，我们使用crud对象改写以前的"show" 动作，并做更多的改进：
 
 ``
 def show():
@@ -718,38 +777,40 @@ def show():
     return dict(image=image, comments=comments, form=form)
 ``:code
 
-First of all notice we have used the syntax
+首先，注意我们使用如下语法
 
 ``
 db.image(request.args(0)) or redirect(...)
 ``:code
 
-to fetch the required record. Since ```table(id)`` returns None if the record is not found, we can use ``or redirect(...)`` in this case in one line.
+来获取所需的记录。因为如果记录未找到，```table(id)`` 返回None，这种情况下
+我们可以在一行代码中使用``or redirect(...)`` 。
 
-The ``next`` argument of ``crud.create`` is the URL to redirect to after the form is accepted. The ``message`` argument is the one to be displayed upon acceptance. You can read more about CRUD in Chapter 7.
+``crud.create``的``next``（下一个）参数是表单被接受之后重定向的URL。
+``message`` 参数在验收后显示。你可以阅读第7章中有关CRUD的内容。
 
-### Adding Authentication
+### 添加认证
 
-The web2py API for Role-Based Access Control is quite sophisticated, but for now we will limit ourselves to restricting access to the show action to authenticated users, deferring a more detailed discussion to Chapter 9.
+web2py基于角色的访问控制API是相当复杂的，但是现在我们会限制自己，限制通过身份验证的用户访问show动作，更详细的讨论推迟到第9章。
 
-To limit access to authenticated users, we need to complete three steps. In a model, for example "db.py", we need to add:
+为了限制通过身份验证的用户访问，我们需要完成三个步骤。在一个模型中例如"db.py"，我们需要添加：
 ``
 from gluon.tools import Auth
 auth = Auth(db)
 auth.define_tables()
 ``:code
 
-In our controller, we need to add one action:
+在我们的控制器中，我们需要添加一个动作：
 ``
 def user():
     return dict(form=auth())
 ``:code
 
-This is sufficient to enable login, register, logout, etc. pages. The default layout will also show options to the corresponding pages in the top right corner.
+这足以启用登录，注册，注销网页等。默认布局也将在右上角显示相应页面的选项。
 
 [[image @///image/en3000.png center 300px]]
 
-We can now decorate the functions that we want to restrict, for example:
+现在我们可以修饰要限制的函数，例如：
 ``
 @auth.requires_login()
 def show():
@@ -761,19 +822,19 @@ def show():
     return dict(image=image, comments=comments, form=form)
 ``:code
 
-Any attempt to access
+任何企图访问
 ``
 http://127.0.0.1:8000/images/default/show/[image_id]
 ``:code
 
-will require login. If the user is not logged it, the user will be redirected to
+都需要登录。如果用户没有登录，用户将被重定向到
 ``
 http://127.0.0.1:8000/images/default/user/login
 ``:code
 
 [[image @///image/en3100.png center 480px]]
 
-The ``user`` function also exposes, among others, the following actions:
+``user``函数也会暴露，其中包括下列动作：
 ``
 http://127.0.0.1:8000/images/default/user/logout
 http://127.0.0.1:8000/images/default/user/register
@@ -787,15 +848,15 @@ http://127.0.0.1:8000/images/default/user/impersonate
 http://127.0.0.1:8000/images/default/user/not_authorized
 ``:code
 
-Now, a first-time user needs to register in order to be able to log in and read or post comments.
+现在，为了能够登录并阅读或发表评论，初次使用者需要注册。
 
 -------
-Both the ``auth`` object and the ``user`` function are already defined in the scaffolding application. The ``auth`` object is highly customizable and can deal with email verification, registration approvals, CAPTCHA, and alternate login methods via plugins.
+``auth``对象和``user``函数都已经定义在基本构建应用中。``auth``对象高度可定制并且可以处理电子邮件验证，注册审批，CAPTCHA和通过插件的替代登录方法。
 -------
 
-#### Adding grids
+#### 添加网格
 
-We can improve this further using the ``SQLFORM.grid`` and ``SQLFORM.smartgrid`` gadgets to create a management interface for our application:
+使用``SQLFORM.grid``和``SQLFORM.smartgrid``小工具我们可以进一步改善，为我们的应用创建一个管理界面：
 
 ``
 @auth.requires_membership('manager')
@@ -804,7 +865,7 @@ def manage():
     return dict(grid=grid)
 ``:code
 
-with associated "views/default/manage.html"
+带有相关的"views/default/manage.html"
 
 ``
 {{extend 'layout.html'}}
@@ -812,23 +873,23 @@ with associated "views/default/manage.html"
 {{=grid}}
 ``
 
-Using appadmin create a group "manager" and make some users members of the group. They will not be able to access
+使用appadmin创建组"manager"并使一些用户成为该组的成员。他们将不能访问
 
 ``
 http://127.0.0.1:8000/images/default/manage
 ``
 
-and browse, search:
+和浏览，搜索：
 
 [[image @///image/en3200.png center 480px]]
 
-create, update and delete images and their comments:
+创建，更新和删除图像以及它们的评论：
 
 [[image @///image/en3300.png center 480px]]
 
-### Configuring the layout
+### 配置布局
 
-You can configure the default layout by editing "views/layout.html" but you can also configure it without editing the HTML. In fact, the "static/base.css" stylesheet is well documented and described in Chapter 5. You can change color, columns, size, borders and background without editing the HTML. If you want to edit the menu, the title or the subtitle, you can do so in any model file. The scaffolding app, sets default values of these parameters in the file "models/menu.py":
+你可以通过编辑"views/layout.html"来配置默认布局，但你也可以配置它而无需编辑HTML。实际上，"static/base.css"样式表在第5章中有详细描述。你可以改变颜色，列，大小，边界和背景而无需编辑HTML。如果你要编辑菜单，标题或副标题，你可以在任何模型文件中操作。基本构建应用，在文件"models/menu.py"中设置这些参数的默认值：
 
 ``
 response.title = request.application
@@ -839,19 +900,19 @@ response.meta.keywords = 'bla bla bla'
 response.menu = [ [ 'Index', False, URL('index') ] ]
 ``:code
 
-### A wiki
+### wiki 维基
 ``wiki``:inxx ``RSS``:inxx ``Ajax``:inxx ``XMLRPC``:inxx
-In this section, we build a wiki, from scratch and without using the extended functionality provided by plugin_wiki which is described in chapter 12. The visitor will be able to create pages, search them (by title), and edit them. The visitor will also be able to post comments (exactly as in the previous applications), and also post documents (as attachments to the pages) and link them from the pages. As a convention, we adopt the Markmin syntax for our wiki syntax. We will also implement a search page with Ajax, an RSS feed for the pages, and a handler to search the pages via XML-RPC``xmlrpc``:cite .
+在本节中，我们建立一个维基，从无到有，并且不使用第12章中介绍的plugin_wiki提供的扩展功能。访问者能够创建页面，搜索（按照标题）并编辑它们。访问者还能发表评论（与之前的应用完全相似），上传文件（作为网页的附件）并从网页链接。作为惯例，我们的维基语法采用Markmin语法。我们还将使用Ajax实现一个搜索页面，该页面的RSS 订阅，以及一个通过 XML-RPC``xmlrpc``搜索该页面的句柄。
 
-The following diagram lists the actions that we need to implement and the links we intend to build among them.
+以下图表列出我们需要实现的动作以及我们打算建立的它们之间的链接。
 
 [[yUML diagram @///image/en3400.png center 250px]]
 
-Start by creating a new scaffolding app, naming it "mywiki".
+开始创建一个新的基本构建应用，命名为"mywiki"。
 
-The model must contain three tables: page, comment, and document. Both comment and document reference page because they belong to page. A document contains a file field of type upload as in the previous images application.
+该模型必须包含三个表：page（页面），comment（评论）和document（文档）。评论和文档都引用页面因为它们属于页面。文档包含upload类型的字段file，正如以前的 images应用。
 
-Here is the complete model:
+下面是完整的模型：
 ``
 db = DAL('sqlite://storage.sqlite')
 
@@ -897,17 +958,17 @@ db.document.created_by.readable = db.document.created_by.writable = False
 db.document.created_on.readable = db.document.created_on.writable = False
 ``:code
 
-Edit the controller "default.py" and create the following actions:
-- index: list all wiki pages
-- create: post another wiki page
-- show: show a wiki page and its comments, and append comments
-- edit: edit an existing page
-- documents: manage the documents attached to a page
-- download: download a document (as in the images example)
-- search: display a search box and, via an Ajax callback, return all matching titles as the visitor types
-- callback: the Ajax callback function. It returns the HTML that gets embedded in the search page while the visitor types.
+编辑控制器"default.py" 并创建以下动作：
+- index: 列出所有的wiki页面
+- create: 发布其它wiki页面
+- show: 显示一个wiki页面以及它的评论，并追加评论
+- edit: 编辑已有页面
+- documents: 管理附加到一个页面的文件
+- download: 下载文件（如在images例子中）
+- search:显示一个搜索框并且，通过Ajax回调，在访问者输入的同时返回所有匹配的标题
+- callback: Ajax回调函数。它返回在访问者输入时被嵌入搜索页面的HTML。
 
-Here is the "default.py" controller:
+这里是"default.py"控制器：
 ``
 def index():
      """ this controller returns a dictionary rendered by the view
@@ -971,38 +1032,41 @@ def callback():
 ``:code
 
 
-Lines 2-6 provide a comment for the index action. Lines 4-5 inside the comment are interpreted by python as test code (doctest). Tests can be run via the admin interface. In this case the tests verify that the index action runs without errors.
+2-6行为index动作提供一个评论。评论中的4-5行由python解释成测试代码（doctest）。通过管理界面可以运行测试。在本例中，测试验证index动作运行没有错误。
 
-Lines 18, 27, and 35 try to fetch a ``page`` record with the id in ``request.args(0)``.
+第18,27和35行尝试用 ``request.args(0)``中的id获取一``page``记录。
 
-Lines 13, 20 define and process create forms for a new page and a new comment and.
+第13,20行，为新页面和新评论定义和处理创建表单。
 
-Line 28 defines and processes an update form for a wiki page.
+第28行定义和处理一个wiki页面的更新表单。
 
-Line 38 creates a ``grid`` object that allows to browser, add and update the comments linked to a page.
+  第38行创建一个``grid``对象来浏览，添加和更新链接到页面的评论。
 
-Some magic happens in line 51. The ``onkeyup`` attribute of the INPUT tag "keyword" is set. Every time the visitor releases a key, the JavaScript code inside the ``onkeyup`` attribute is executed, client-side. Here is the JavaScript code:
+一些奇妙的事情发生在第51行。INPUT标签"keyword"的onkeyup属性被设定。每次访问者放开按键，``onkeyup``属性中的JavaScript代码在客户端被执行。
+下面是JavaScript代码：
 ``
 ajax('callback', ['keyword'], 'target');
 ``:code
-``ajax`` is a JavaScript function defined in the file "web2py.js" which is included by the default "layout.html". It takes three parameters: the URL of the action that performs the synchronous callback, a list of the IDs of variables to be sent to the callback (["keyword"]), and the ID where the response has to be inserted ("target").
+``ajax``是一个JavaScript函数定义在文件"web2py.js"中，默认的"layout.html"包
+含该文件。它有三个参数：动作的URL，执行同步回调；列表中变量的ID，被
+发送到回调(["keyword"])；和响应要插入响应的ID("target")。
 
-As soon as you type something in the search box and release a key, the client calls the server and sends the content of the 'keyword' field, and, when the sever responds, the response is embedded in the page itself as the innerHTML of the 'target' tag.
+只要你在搜索框中键入内容，并放开按键，客户端调用服务器并发送'keyword'字段的内容，并且，服务器响应时，响应被作为'target'标签的内部HTML嵌入到页面中。
 
-The 'target' tag is a DIV defined in line 52. It could have been defined in the view as well.
+'target'标签是一个DIV定义在第52行中。也可以在视图中定义它。
 
-Here is the code for the view "default/create.html":
+这里是视图"default/create.html"的代码：
 ``
 {{extend 'layout.html'}}
 <h1>Create new wiki page</h1>
 {{=form}}
 ``:code
 
-If you visit the **create** page, you see the following:
+如果你访问**create**页面，你将看到以下内容：
 
 [[image @///image/en3500.png center 480px]]
 
-Here is the code for the view "default/index.html":
+这里是视图"default/index.html"的代码：
 ``
 {{extend 'layout.html'}}
 <h1>Available wiki pages</h1>
@@ -1013,11 +1077,11 @@ Here is the code for the view "default/index.html":
 [ {{=A('create page', _href=URL('create'))}} ]
 ``:code
 
-It generates the following page:
+它将生成以下页面：
 
 [[image @///image/en3600.png center 480px]]
 
-Here is the code for the view "default/show.html":
+这里是视图"default/show.html"的代码：
 
 ``markdown``:inxx ``MARKMIN``:inxx
 ``
@@ -1035,38 +1099,37 @@ Here is the code for the view "default/show.html":
 {{=form}}
 ``:code
 
-If you wish to use markdown syntax instead of markmin syntax:
+如果你想使用markdown语法取代markmin语法：
 
 ``
 from gluon.contrib.markdown import WIKI
 ``:code
 
-and use ``WIKI`` instead of the ``MARKMIN`` helper.
-Alternatively, you can choose to accept raw HTML instead of markmin syntax. In this case you would replace:
+并使用``WIKI``取代``MARKMIN``帮助对象。另外，你可以选择原始的HTML取代markmin句法。在本例中，你将取代：
 ``
 {{=MARKMIN(page.body)}}
 ``:code
 
-with:
+用：
 ``
 {{=XML(page.body)}}
 ``:code
 
 ``sanitize``:inxx
-(so that the XML does not get escaped, as by default web2py behavior).
+(这样XML没有得到转义，正如web2py默认行为）。
 
-This can be done better with:
+更好的做法如下：
 ``
 {{=XML(page.body, sanitize=True)}}
 ``:code
 
-By setting ``sanitize=True``, you tell web2py to escape unsafe XML tags such as "<script>", and thus prevent XSS vulnerabilities.
+通过设定``sanitize=True``，你告诉web2py转义不安全的XML标签例如"<script>"，这样防止XSS漏洞。
 
-Now if, from the index page, you click on a page title, you can see the page that you have created:
+现在如果，从index页面，你点击页面标题，你可以看到你创建的页面：
 
 [[image @///image/en3700.png center 480px]]
 
-Here is the code for the view "default/edit.html":
+下面是视图"default/edit.html"的代码：
 ``
 {{extend 'layout.html'}}
 <h1>Edit wiki page</h1>
@@ -1074,9 +1137,9 @@ Here is the code for the view "default/edit.html":
 {{=form}}
 ``:code
 
-It generates a page that looks almost identical to the create page.
+它产生一个看起来与create页面几乎相同的页面。
 
-Here is the code for the view "default/documents.html":
+这里是视图"default/documents.html"的代码：
 ``
 {{extend 'layout.html'}}
 <h1>Documents for page: {{=page.title}}</h1>
@@ -1085,11 +1148,11 @@ Here is the code for the view "default/documents.html":
 {{=grid}}
 ``:code
 
-If, from the "show" page, you click on documents, you can now manage the documents attached to the page.
+如果，从"show"页面，你点击文件，现在你可以管理附加到该页面的文件。
 
 [[image @///image/en3800.png center 480px]]
 
-Finally here is the code for the view "default/search.html":
+最后下面是视图"default/search.html"的代码：
 ``
 {{extend 'layout.html'}}
 <h1>Search wiki pages</h1>
@@ -1097,22 +1160,24 @@ Finally here is the code for the view "default/search.html":
 {{=form}}<br />{{=target_div}}
 ``:code
 
-which generates the following Ajax search form:
+它生成如下Ajax搜索表单：
 
 [[image @///image/en3900.png center 480px]]
 
-You can also try to call the callback action directly by visiting, for example, the following URL:
+你还可以尝试直接调用callback动作，例如通过访问如下URL：
 ``
 http://127.0.0.1:8000/mywiki/default/callback?keyword=wiki
 ``:code
 
-If you look at the page source you see the HTML returned by the callback:
+如果你看页面源代码，你会看到callback返回的 HTML：
 ``
 <ul><li><a href="/mywiki/default/show/4">I made a Wiki</a></li></ul>
 ``:code
 
 ``rss``:inxx
-Generating an RSS feed from the stored pages using web2py is easy because web2py includes ``gluon.contrib.rss2``. Just append the following action to the default controller:
+使用web2py从存储的页面生成RSS订阅很容易因为web2py
+包含``gluon.contrib.rss2``。
+只需在默认控制器中追加如下动作：
 ``
 def news():
     "generates rss feed form the wiki pages"
@@ -1131,19 +1196,20 @@ def news():
                ) for row in pages])
 ``:code
 
-and when you visit the page
+当你访问如下页面
 ``
 http://127.0.0.1:8000/mywiki/default/news.rss
 ``:code
 
-you see the feed (the exact output depends on the feed reader). Notice that the dict is automatically converted to RSS, thanks to the .rss extension in the URL.
+你会看到订阅（确定的输出取决于订阅的读者）。注意字典被自动转换成RSS，得益于
+URL中的.rss扩展。
 
 [[image @///image/en4000.png center 480px]]
 
-web2py also includes feedparser to read third-party feeds.
+web2py中包含feedparser以读取第三方订阅。
 
 ``XMLRPC``:inxx
-Finally, let's add an XML-RPC handler that allows searching the wiki programmatically:
+最后，让我们添加一个XML-RPC句柄，它允许以编程方式搜索wiki：
 ``
 service = Service()
 
@@ -1157,10 +1223,10 @@ def call():
     return service()
 ``:code
 
-Here, the handler action simply publishes (via XML-RPC), the functions specified in the list. In this case, ``find_by``. ``find_by`` is not an action (because it takes an argument). It queries the database with ``.select()`` and then extracts the records as a list with ``.response`` and returns the list.
+这里，handler动作只是发布（通过XML-RPC）列表中指定的函数。
+本例中，``find_by``.``find_by``不是一个动作（因为它需要一个参数）。它使用``.select()`` 查询数据库，使用``.response``提取记录作为一个列表并返回该列表。
 
-Here is an example of how to access the XML-RPC handler from an external
-Python program.
+下面是从外部Python程序访问XML-RPC句柄的一个例子。
 ``
 >>> import xmlrpclib
 >>> server = xmlrpclib.ServerProxy(
@@ -1169,35 +1235,37 @@ Python program.
         print item['created_on'], item['title']
 ``:code
 
-The handler can be accessed from many other programming languages that understand XML-RPC, including C, C++, C# and Java.
+可以从许多其它理解XML-RPC 的编程语言访问句柄，包括C, C++, C#和Java。
 
-#### On ``date``, ``datetime`` and ``time`` format
+#### 关于date, datetime和time属性格式
 
-There are three different representation for each of the field types ``date``, ``datetime`` and ``time``:
-- the database representation
-- the internal web2py prepresentation
-- the string representation in forms and tables
+每个字段类型的 ``date``，``datetime`` 和``time有三种不同的表示：
+- 数据库表示
+- 内部web2py表示
+- 表单和表中的字符串表示
 
-The database representation is an internal issue and does not affect the code. Internally, at the web2py level, they are stored as ``datetime.date``, ``datetime.datetime`` and ``datetime.time`` object respectively and they can be manipulated as such:
+数据库表示是一个内部问题并且不会影响代码。内部，在web2py层面，它们分别被作为``datetime.date``，``datetime.datetime``以及``datetime.time``对象存储，可以如下操纵它们：
 
 ``
 for page in db(db.page).select():
     print page.title, page.day, page.month, page.year
 ``
 
-When dates are converted to strings in forms they are converted using the ISO representation 
+使用ISO表示将日期转换成表单中的字符串
 ``
 %Y-%m-%d %H:%M:%S
 ``
 
-yet this representation in internationalized and you can use the admin stranslation page to change the format to an alternate one. For example:
+但这一表示是全局化的而且你可以使用admin翻译页面将格式改为备用。例如：
+%m/%b/%
 
 ``
 %m/%b/%Y %H:%M:%S
 ``
 
 ------
-Mind that by default English is not translated because web2py assumes the applications is already written in English. If you want internationalization to work for English you need to create the translation file (using admin) and you need declare that the application current language is something other than english, for example:
+注意按照默认英语是不翻译的，因为web2py假定应用已经用英文编写。 如果你想让全局化适用于英语，你需要创建翻译文件（使用admin）而且你需要
+声明应用的当前语言是英语以外的东西，例如：
 ``
 T.current_languages = ['null']
 ``
@@ -1206,106 +1274,131 @@ T.current_languages = ['null']
 
 
 
-### More on **admin**
+### 关于**admin**的更多内容
 ``admin``:inxx
 
-The administrative interface provides additional functionality that we briefly review here.
+管理界面提供了附加功能，我们这里简要回顾。
 
-#### ''site''
+#### ''site''页面
 ``site``:inxx
 
-This page lists all installed applications. There are two forms at the bottom.
+该页面列出所有安装的应用。底部有两个表单。
 
-The first of them allows creating a new application by specifying its name.
+其中第一个表单允许通过指定名字创建新应用。
 
 ``Instant Press``:inxx
-The second form allows uploading an existing application from either a local file or a remote URL. When you upload an application, you need to specify a name for it. This can be its original name, but does not need to be. This allows installing multiple copies of the same application. You can try, for example, to upload the the Instant Press CMS created by Martin Mulone from:
+第二个表单允许从本地文件后远程URL上传已有应用。当你上传一个应用，你需要为它指定一个名字。这可以是它的原始名字，但并不需要是。这样能允许安装同一个应用的多个副本。
+例如，你可以尝试从如下URL 上传由MartinMulone创建的Instant Press CMS：
 
 ``
 http://code.google.com/p/instant-press/
 ``:code
 
 ------
-Web2py files are packages as ``.w2p`` files. These ones are tar gzipped files. Web2py uses the ``.w2p`` extension instead of the ``.tgz`` extension to prevent the browser from unzipping on download. They can be uncompressed manually with ``tar zxvf [filename]`` although this is never necessary.
+Web2py文件打包成``.w2p`` 文件。这些是tar gzip压缩文件。Web2py使用``.w2p`` 扩展代替``.tgz``扩展来防止浏览器下载之后解压。可以使用``tarzxvf[filename]`` 手动解压它们，虽然从来没有必要这么做。
 ------
 
 [[image @///image/en4100.png center 444px]]
 
-Upon successful upload, web2py displays the MD5 checksum of the uploaded file. You can use it to verify that the file was not corrupted during upload. The InstantPress name will appear in the list of installed applications.
+成功上传之后，web2py显示上传文件的MD5校验。你可以用它验证文件在上传时没有被损坏。InstantPress会出现在已安装应用列表中。
 
-Click on the InstantPress name on admin to get it up and running.
+在admin中，点击名字InstantPress来使它启动并运行。
 
 [[image @///image/en4200.png center 480px]]
 
-You can read more about Instant Press at the following URL:
+你可以通过如下URL阅读更多关于Instant Press的内容：
 ``
 http://code.google.com/p/instant-press/
 ``
 
-For each application the ''site'' page allows you to:
-- Uninstall the application.
-- Jump to the ''about'' page (read below).
-- Jump to the ''edit'' page (read below).
-- Jump to the ''errors'' page (read below).
-- Clean up temporary files (sessions, errors, and cache.disk files).
-- Pack all. This returns a tar file containing a complete copy of the application. We suggest that you clean up temporary files before packing an application.
-- Compile the application. If there are no errors, this option will bytecode-compile all models, controllers and views. Because views can extend and include other views in a tree, before bytecode compilation, the view tree for every controller is collapsed into a single file. The net effect is that a bytecode-compiled application is faster, because there is no more parsing of templates or string substitutions occurring at runtime.
-- Pack compiled. This option is only present for bytecode-compiled applications. It allows packing the application without source code for distribution as closed source. Note that Python (as any other programming language) can technically be decompiled; therefore compilation does not provide complete protection of the source code. Nevertheless, decompilation can be difficult and can be illegal.
-- Remove compiled. It simply removes the byte-code compiled models, views and controllers from the application. If the application was packaged with source code or edited locally, there is no harm in removing the bytecode-compiled files, and the application will continue to work. If the application was installed form a packed compiled file, then this is not safe, because there is no source code to revert to, and the application will no longer work.
+对每个应用， ''site''页面允许你：
+- 卸载应用。
+- 跳转到''about'' 页面（阅读下面）。
+- 跳转到''edit''页面（阅读下面）。
+- 跳转到''errors''页面（阅读下面）。
+- 清理临时文件（会话、错误以及cache.disk文件）。
+- 打包全部。这返回一个包含完整应用副本的tar文件。我们建议你在打包应用
+之前清理临时文件。
+- 编译应用。如果没有错误，该选项将会bytecode编译所有模型，控制器和视
+图。因为视图可以在一个树中扩展和包含其它视图，在bytecode编译之前，
+每个控制器的视图树都被折叠成一个单一的文件。净效应是一个bytecode编
+译的应用速度更快，因为在运行时没有模版解析和字符串替换。
+- 包编译完成。该选项仅存在于bytecode编译完成的应用。它无需源代码即可
+打包应用作为封闭源代码用于发布。注意Python（与其它任何编程语言一
+样）可以从技术上反编译；因此编译不能提供对源代码的完整保护。不过，
+反编译可能是困难的并且可能是违法的。
+- 移除已编译。它简单的从应用中移除byte-code编译的模型，视图和控制器。
+如果应用打包带有源代码或者被本地编辑，移除bytecode编译文件没有任
+何坏处，并且应用会继续工作。如果应用是从打包的编译文件安装的，那么
+这是不是安全，因为不能恢复到源代码，并且应用将不再工作。
 
 ``admin.py``:inxx
 
 -------
-All the functionality available from the web2py admin site page is also accessible programmatically via the API defined in the module ``gluon/admin.py``. Simply open a python shell and import this module.
+web2py admin站点页面的所有功能都可以通过定义在 ``gluon/admin.py``模型
+中的API编程访问。只需打开一个Python shell（外壳）并导入该模型。
 -------
 
-#### ''about''
+#### ''about''页面
 ``about``:inxx ``license``:inxx
 
-The ''about'' tab allows editing the description of the application and its license. These are written respectively in the ABOUT and LICENSE files in the application folder.
+ ''about'' 允许编辑对应用的描述以及它的许可证。它们分别写入在应用文件夹
+中的ABOUT和LICENSE文件中。
 
 [[image @///image/en4300.png center 480px]]
 
-You can use ``MARKMIN``, or ``gluon.contrib.markdown.WIKI`` syntax for these files as described in ref.``markdown2``:cite .
+对这些文件，你可以使用 ``MARKMIN``，或``gluon.contrib.markdown.WIKI`` 语法，
+正如参考[``markdown2``中描述的一样。
 
-#### ''edit''
+#### ''edit''页面
 ``EDIT``:inxx
-You have used the ''edit'' page already in this chapter. Here we want to point out a few more functionalities of the ''edit'' page.
-- If you click on any file name, you can see the contents of the file with syntax highlighting.
-- If you click on edit, you can edit the file via a web interface.
-- If you click on delete, you can delete the file (permanently).
-- If you click on test, web2py will run tests. Tests are written by the developer using Python doctests, and each function should have its own tests.
-- You can add language files, scan the app to discover all strings, and edit string translations via the web interface.
-- If the static files are organized in folders and subfolders, the folder hierarchy can be toggled by clicking on a folder name.
+本章中你已经使用了 ''edit'' 页面。这里我们想指出''edit''页面的一些更多功能。
+- 如果你点击任意文件名，你可以看到语法高亮显示的文件内容。
+- 如果你点击edit（编辑），你可以通过web界面编辑文件。
+- 如果你点击delete（删除），你可以删除文件（永久性的）。
+- 如果你点击test（测试），web2py会运行测试。测试是开发人员使用Python
+doctests 编写的，每个函数应该有自己的测试。
+- 你可以添加语言文件，扫描应用来发现所有字符串，并通过web界面编辑
+字符串翻译。
+- 如果静态文件组织在文件夹和子文件夹中，可以通过点击文件夹名称切换
+文件夹层次结构。
 
-The image below shows the output of the test page for the welcome application.
+下图显示welcome应用测试页面的输出。
 
 [[image @///image/en4400.png center 480px]]
 
-The image below show the languages tab for the welcome application.
+下图显示welcome应用的语言选项卡。
 
 [[image @///image/en4500.png center 480px]]
 
-The image below shows how to edit a language file, in this case the "it" (Italian) language for the welcome application.
+下图显示如何编辑语言文件，本例中是welcome 应用的"it" (意大利语)语言。
 
 [[image @///image/en4600.png center 480px]]
 
 ##### ''shell''
 
-If you click on the "shell" link under the controllers tab in ''edit'', web2py will open a web based Python shell and will execute the models for the current application. This allows you to interactively talk to your application.
+如果你在''edit''页面中点击控制器选项卡下的"shell"链接，web2py会打开一
+个基于web的Python shell 并且会执行当前应用的模型。这使得你能交互的与你
+的应用对话。
 
 [[image @///image/en4700.png center 480px]]
 
 ##### ''crontab''
 
-Also under the controllers tab in ''edit'' there is a "crontab" link. By clicking on this link you will be able to edit the web2py crontab file. This follows the same syntax as the unix crontab but does not rely on unix. In fact, it only requires web2py, and it works on Windows. It allows you to register actions that need to be executed in background at scheduled times.
-For more information about this, see the next chapter.
+编辑页面中同样是在控制器选项卡下有一个"crontab"链接。通过点击该链接
+你将能够编辑web2py 的crontab 文件。它遵循的语法与unix crontab 相同，但不
+依赖于unix。实际上，它只需要web2py，并且它能在Windows上运行。它允许
+你注册需要在预定时间后台执行的动作。
+
+如需更多相关信息，请参见下一章。
 
 #### ''errors''
 ``errors``:inxx
-When programming web2py, you will inevitably make mistakes and introduce bugs. web2py helps in two ways: 1) it allows you to create tests for every function that can be run in the browser from the ''edit'' page; and 2) when an error manifests itself, a ticket is issued to the visitor and the error is logged.
+在编程web2py时，你难免会犯错误并引入漏洞。web2py提供两方面的帮助：
+1）它允许你为每个函数创建测试，可以在浏览器中从edit页面运行；2）当错
+误表现出来时，发出一张票据给访问者并且错误被记录。
 
-Intentionally introduce an error in the images application as shown below:
+如下，在images应用中故意引入错误：
 ``
 def index():
     images = db().select(db.image.ALL,orderby=db.image.title)
@@ -1313,21 +1406,24 @@ def index():
     return dict(images=images)
 ``:code
 
-When you access the index action, you get the following ticket:
+当你访问index动作时，你得到如下票据：
 
 [[image @///image/en4800.png center 480px]]
 
-Only the administrator can access the ticket:
+只有管理员才能访问票据：
 
 [[image @///image/en4900.png center 480px]]
 
-The ticket shows the traceback, and the content of the file that caused the problem, and the complete state of system (variables, request, session, etc.) If the error occurs in a view, web2py shows the view converted from HTML into Python code. This allows to easily identify the logical structure of the file.
+票据显示回溯，引起问题的文件的内容，以及系统的完整状态（变量，请求，会话等）。如果错误出现在视图中，web2py显示从HTML转换成Python代码的视图。这可以很容易地确定文件的逻辑结构。
 
-By default tickets are stored on filesystem and group by traceback. The administrative interface provides an aggregate views (type of traceback and number of occurrence) and a detailed view (all tickets are listed by ticket id). The administrator can switch between the two views.
+默认情况下，票据存储在文件系统中并按照回溯分组。管理界面提供聚合视图（回溯的类型和发生的次数）和一个详细视图（所有票据按照票据id列出）。
+管理员可以切换两个视图。
 
-Notice that everywhere **admin** shows syntax-highlighted code (for example, in error reports, web2py keywords are shown in orange). If you click on a web2py keyword, you are redirected to a documentation page about the keyword.
+注意 **admin** 处处显示语法高亮的代码（例如，在错误报告中，web2py关键字显
+示为黄色）。如果你点击web2py关键字，你会被重定向到有关该关键字的文档
+页面。
 
-If you fix the divide-by-zero bug in the index action and introduce one in the index view:
+如果你修复index动作中除以零的错误并在index视图中引入一个：
 ``
 {{extend 'layout.html'}}
 
@@ -1340,144 +1436,167 @@ If you fix the divide-by-zero bug in the index action and introduce one in the i
 </ul>
 ``:code
 
-you get the following ticket:
+你会得到如下票据：
 
 [[image @///image/en5000.png center 480px]]
 
-Note that web2py has converted the view from HTML into a Python file, and the error described in the ticket refers to the generated Python code and NOT to the original view file:
+注意web2py已经将视图从HTML转换成Python代码，并且票据中描述的错误指的是生成的Python代码而不是原始视图文件：
 
 [[image @///image/en5100.png center 480px]]
 
-This may seem confusing at first, but in practice it makes debugging easier, because the Python indentation highlights the logical structure of the code that you embedded in the views.
+最初这可能看起来令人困惑，但在实践中它使调试变得更容易，因为Python缩进突出显示嵌入视图中代码的逻辑结构。
 
-The code is shown at the bottom of the same page.
+代码显示在同一页面的底部。
 
-All tickets are listed under admin in the ''errors'' page for each application:
+所有票据都在admin中每个应用的errors页面列出：
 
 [[image @///image/en5200.png center 480px]]
 
 #### ''Mercurial''
 ``Mercurial``:inxx
 
-If you are running from source and you have the Mercurial version control libraries installed:
+如果你从源代码运行并且你安装有Mercurial版本的控制库：
 ``
 easy_install mercurial
 ``:code
 
-then the administrative interface shows one more menu item called "mercurial". It automatically creates a local Mercurial repository for the application. Pressing the "commit" button in the page will commit the current application. Mercurial creates and stores information about changes you make in your code into a hidden folder ".hg" in your app subfolder. Every app has its own ".hg" folder and its own ".hgignore" file (tells Mercurial which files to ignore).
+之后，管理界面显示一个称为"mercurial"的菜单项。它自动为应用创建一个
+本地Mercurial存储库。在页面中按下"commit"按钮将提交应用。Mercurial创建并
+存储关于你对代码所做改动的信息到应用子文件夹中的隐藏文件夹".hg"。每个
+应用都有自己的".hg"文件夹和".hgignore"文件（告诉Mercurial忽略哪些文件）。
 
-The Mercurial web interface does allow you to browse previous commit and diff files but we do recommend you use Mercurial directly from the shell or one of the may GUI-based Mercurial clients since they are more powerful. For example they will allow you sync your app with a remote source repository:
+Mercurial web界面允许你浏览以前的提交以及diff文件但我们强烈建议你
+直接从shell或许多基于GUI的 Mercurial客户端来使用Mercurial，因为它们功
+能更强大。例如它们允许你同步你的应用和远程资源存储库：
 
 [[images @///image/en5300.png center 480px]]
 
 
-You can read more about Mercurial here:
+你可以在如下地址阅读关于Mercurial的更多内容：
 ``
 http://mercurial.selenic.com/
 ``
 
-#### Admin wizard (experimental)
+#### Admin向导（实验性的）
 
-The **admin** interface includes a Wizard that can help you create a new applications.
-You can access the wizard from the "sites" page as shown in the image below.
+ **admin** 界面包含一个向导，它能帮助你创建新应用。
+ 你可以从"sites"页面访问向导，如下图所示：
 
 [[image @///image/en5400.png center 480px]]
 
-The wizard will guide you through a series of steps involved in creating a new application:
+向导将会指导你通过一系列创建新应用牵扯到的步骤：
 
-- Chose a name for the application
-- Configure the application and choose required plugins
-- Build required models (it will create CRUD pages for each model)
-- Allow you to edit the views of those pages using MARKMIN syntax
+- 为应用选择名称
+- 配置应用并选择需要的插件
+- 构建需要的模型（它将为每个模型创建CRUD页面）
+- 允许你使用MARKMIN语法编辑页面视图
 
-The image below shows the second step of the process.
+下图显示过程中的第2步。
 
 [[image @///image/en5500.png center 480px]]
 
-You can see a dropdown to select a layout plugin (from ``web2py.com/layouts``), a multiple choice dropdown to check other plugins (from ``web2py.com/plugins``) and a "login config" field where to put the Janrain "domain:key".
+你会看到一个下拉菜单来选择一个布局插件（从 ``web2py.com/layouts``），一
+个多选下拉菜单来检查其它插件（从 ``web2py.com/plugins``），还有一个"login
+config"字段在这里放置Janrain "domain:key"。
 
-The other steps are pretty much self-explanatory.
+其它步骤都非常不言自明。
 
-The Wizard works well for what it does but it is considered an ''experimental feature'' for two reasons:
+向导能很好地完成它的工作但它视为一种实验性功能，原因有两个：
 
-- Applications created with the wizard and edited manually, cannot later be modified by the wizard.
-- The interface of the wizard will change over time to include support for more features and easier visual development.
+- 使用向导创建和被手动修改过的应用，以后不能被向导修改。
+- 向导界面会随时间而改变，包括支持更多的功能和更容易的可视化开发。
 
-In any case the wizard is a handy tool for fast prototyping and it can be used to bootstrap a new application with an alternate layout and optional plugins.
+无论如何，向导是一个得心应手的工具用来快速制作原型，它可以用来引
+导带有备用布局和可选插件的新应用。
 
-#### Configuring **admin**
+#### 配置**admin**
 
-Normally there is no need to perform any configuration of admin but a few customizations are possible. After you login into admin you can edit the admin configuration file via the URL:
+通常无需进行任何admin配置，但一些自定义是可能的。在你登录admin之
+后，你可以通过如下URL编辑admin配置文件：
 ``
 http://127.0.0.1:8000/admin/default/edit/admin/models/0.py
 ``
-Notice that **admin** can be used to edit itself. In fact **admin** is an app as any other one.
+注意**admin**可以用来编辑本身。实际上admin是一个应用与其它任何应用一
+样。
 
-The file "0.py" is very much self documented and if you are opening probably you already know what you are looking for. Anyway there a few customizations that are more important than others:
+文件"0.py"很大程度上是自我记录，如果你正在打开也许你已经知道你寻找
+的是什么。还有，有一些自定义比其它的更重要：
 
 ``
 GAE_APPCFG = os.path.abspath(os.path.join('/usr/local/bin/appcfg.py'))
 ``
-This should point to the location of the "appcfg.py" file that comes with the Google App Engine SDK. If you have the SDK you may want to change this config parameters to the correct value. It will allow you to deploy to GAE from the admin interface.
+这应该指向"appcfg.py"文件的位置，该文件配备Google App Engine SDK。如
+果你有SDK你可能要将配置参数改为正确的值。这将允许你从admin界面部署
+到GAE。
 
 ``DEMO_MODE``:inxx
 
-You can also set web2py admin in demo mode:
+你还可以在演示模式下设置web2py admin：
 ``
 DEMO_MODE = True
 FILTER_APPS = ['welcome']
 ``
-And only the apps listed in filter apps will be accessible and they will be only accessible in read-only mode.
+只有列出在过滤应用中的应用才能访问，并且只能在只读模式下访问。
 
 ``MULTI_USER_MODE``:inxx
 ``virtual laboratory``:inxx
 
-If you are a teacher and want to expose the administrative interface to students so that students can share one administrative interface for their projects (think of a virtual lab), can do it by setting:
+如果你是一名教师，要公开管理界面给学生，使学生可以分享他们的项目
+管理界面（认为虚拟实验室），可以如下设置：
 ``
 MULTI_USER_MODE = True
 ``
-In this way students will be required to login and will only be able to access their own apps via admin. You, as first user/teacher, will be able to access them all.
+这样，学生将需要登录并且通过admin将只能访问自己的应用。你作为第一
+用户/老师，将能够访问全部应用。
 
-Mind that this mechanism still assumes all users are trusted. All the apps created under admin run under the same credentials on the same filesystem. It is possible for an app created by a student to access the data and the source of an app created by another student.
+注意这个机制仍然假定所有的用户都是可信的。admin下创建的所有应用运
+行在相同文件系统的相同凭据下。一名学生创建的应用有可能访问另一名学生
+创建的应用的数据和源代码。
 
-### More on **appadmin**
+### 更多关于**appadmin**
 
 ``appadmin``:inxx
 
-**appadmin** is not intended to be exposed to the public. It is designed to help you by providing an easy access to the database. It consists of only two files: a controller "appadmin.py" and a view "appadmin.html" which are used by all actions in the controller.
+**appadmin** 的目的不是被公开曝光。它旨在帮助你提供一个容易的数据库访问。
+它只包含两个文件：控制器"appadmin.py"和视图"appadmin.html"，它们被控制
+器中的所有行动使用。
 
-The **appadmin** controller is relatively small and readable; it provides an example of designing a database interface.
+**appadmin** 控制器相对较小并且可读，它提供了一个设计数据库接口的例子。
 
-**appadmin** shows which databases are available and which tables exist in each database. You can insert records and list all records for each table individually. **appadmin** paginates output 100 records at a time.
+**appadmin** 显示可用的数据库和每个数据库中存在的表。你可以插入记录并为
+每个表单独列出所有记录。 **appadmin** 分页输出，一次100条记录。
 
-Once a set of records is selected, the header of the pages changes, allowing you to update or delete the selected records.
+一旦一组记录被选中，页头就会变化，允许你你更新或删除选中的记录。
 
-To update the records, enter an SQL assignment in the Query string field:
+要更新记录，在查询字符串字段输入一个SQL任务：
 ``
 title = 'test'
 ``:code
 
-where string values must be enclosed in single quotes. Multiple fields can be separated by commas.
+字符串值必须括在单引号内。可以用逗号分隔的多个字段。
 
-To delete a record, click the corresponding checkbox to confirm that you are sure.
+要删除一条记录，单击相应的复选框以确认你肯定。
 
-**appadmin** can also perform joins if the SQL FILTER contains a SQL condition that involves two or more tables. For example, try:
+**appadmin**还可以进行连接如果SQL FILTER（过滤器）包含的SQL条件涉
+及两个或多个表。例如，尝试：
 ``
 db.image.id == db.comment.image_id
 ``:code
 
-web2py passes this along to the DAL, and it understands that the query links two tables; hence, both tables are selected with an INNER JOIN. Here is the output:
+web2py将它传递到DAL，并且DAL理解该查询链接两个表；因此，两个
+表都被INNER JOIN选中。下面是输出：
 
 [[image @///image/en5600.png center 480px]]
 
-If you click on the number of an id field, you get an edit page for the record with the corresponding id.
+如果你点击id字段的数字，你会得到相应ID记录的编辑页面。
 
-If you click on the number of a reference field, you get an edit page for the referenced record.
+如果您店家参考字段的数字，你会得到引用记录编辑页面。
 
-You cannot update or delete rows selected by a join, because they involve records from multiple tables and this would be ambiguous.
+你不能更新或删除由联合查询选定的行，因为它们涉及多个表中的记录并
+且这将是含糊不清的。
 
-In addition to its database administration capabilities, **appadmin** also enables you to view details about the contents of the application's ``cache`` (at ``/yourapp/appadmin/ccache``) as well as the contents of the current ``request``, ``response``, and ``session`` objects (at ``/yourapp/appadmin/state``).
+除了其数据库管理能力，**appadmin**还能使你要查看有关应用程序缓存``cache``（在``/yourapp/appadmin/ccache``中）内容的详细信息，以及当前``request``，``response``和``session``对象（在``/yourapp/appadmin/state``中）的内容。
 
 ------
-**appadmin** replaces ``response.menu`` with its own menu, which provides links to the application's **edit** page in **admin**, the **db** (database administration) page, the **state** page, and the **cache** page. If your application's layout does not generate a menu using ``response.menu``, then you will not see the **appadmin** menu. In that case, you can modify the appadmin.html file and add ``{{=MENU(response.menu)}}`` to display the menu.
+**appadmin**用自己的菜单取代``response.menu``，它提供了到**admin**中应用的**edit**界面、**db**db（数据库管理）界面、**state**界面和**cache**界面的链接。。如果你的应用布局不会使用``response.menu``生成菜单，那么你将不会看到**appadmin**菜单。在这种情况下，你可以修改appadmin.html文件并添加``{{=MENU(response.menu)}}`` 以显示菜单。
 ------
