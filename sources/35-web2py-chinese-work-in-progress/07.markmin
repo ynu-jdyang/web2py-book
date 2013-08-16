@@ -1,21 +1,15 @@
 ## 表单和验证器 Forms and validators
 
 在web2py中有四种独特的方法创建表单：
-- ``FORM`` 就HTML 帮助对象，提供低级别实现。``FORM`` 对象能序列化为
-HTML，并知道它包含的字段。``FORM``对象知道怎样验证所提交表单的值。
-- ``SQLFORM`` 提供创建的高级别API，从现存的数据库表 create（创建） 、
-update（更改）和delete（删除）表单。
-- ``SQLFORM.factory`` 是``SQLFORM``顶端的抽象层，即使没有数据库存在也能利用
-表单生成特性。它从表的描述生成与``SQLFORM``非常相似的表单，无需创建
+- ``FORM`` 就HTML 帮助对象，提供低级别实现。``FORM`` 对象能序列化为HTML，并知道它包含的字段。``FORM``对象知道怎样验证所提交表单的值。
+- ``SQLFORM`` 提供创建的高级别API，从现存的数据库表 create（创建） 、update（更改）和delete（删除）表单。
+- ``SQLFORM.factory`` 是``SQLFORM``顶端的抽象层，即使没有数据库存在也能利用表单生成特性。它从表的描述生成与``SQLFORM``非常相似的表单，无需创建
 数据库表。
-- ``CRUD`` 方法。这在功能上等同于SQLFORM，也基于SQLFORM，但提供更
-紧凑的符号。
+- ``CRUD`` 方法。这在功能上等同于SQLFORM，也基于SQLFORM，但提供更紧凑的符号。
 
-所以这些表单是自知的，如果输入不能通过验证，它们能自己修改并增加出错
-消息。有关验证的变量和验证生成的出错提示，表单能被查询。
+所以这些表单是自知的，如果输入不能通过验证，它们能自己修改并增加出错消息。有关验证的变量和验证生成的出错提示，表单能被查询。
 用帮助对象，任意的HTML代码，能被插入表单或从表单提出。
-``FORM`` 和``SQLFORM`` 是帮助对象，能象``DIV``相似的方法操作。例如，你能设置
-表单风格：
+``FORM`` 和``SQLFORM`` 是帮助对象，能象``DIV``相似的方法操作。例如，你能设置表单风格：
 
 ``
 form = SQLFORM(..)
@@ -45,11 +39,9 @@ Your name:
 {{=BEAUTIFY(request.vars)}}
 ``:code
 
-这是要求用户名的正则的HTML表单。当你填写表单，按了提交按钮，表单自己
-提交，变量 ``request.vars.name`` 和它的值显示在底部。
+这是要求用户名的正则的HTML表单。当你填写表单，按了提交按钮，表单自己提交，变量 ``request.vars.name`` 和它的值显示在底部。
 
-你能用帮助对象生成同样的表单。这能在视图或动作中完成。因为web2py在动作
-中处理表单，在动作中定义表单是可以的。
+你能用帮助对象生成同样的表单。这能在视图或动作中完成。因为web2py在动作中处理表单，在动作中定义表单是可以的。
 下面是新的控制器：
 ``
 def display_form():
@@ -125,8 +117,7 @@ form.accepts(vars, session=None, formname='default',
 
 可选参数的意思在下一小节阐述。
 
-第一个参数能是 ``request.vars`` 、 ``request.get_vars`` 、 ``request.post_vars`` 或简单 ``request``。后
-者等同与接受象输入的 ``request.post_vars``。
+第一个参数能是 ``request.vars`` 、 ``request.get_vars`` 、 ``request.post_vars`` 或简单 ``request``。后者等同与接受象输入的 ``request.post_vars``。
 
 如果表单被接受， ``accepts`` 函数返回 ``True`` ，否者返回``False`` 。如果出错或当它没有提交（例如，第一时间它只是显示），表单不被接受。
 
@@ -157,8 +148,7 @@ form.process(...).accepted
 
 process函数采用一些 ``accepts`` 没有用的额外的参数：
 - ``message_onsuccess``
-- ``onsuccess``: 如果等于‘flash’（默认）并且表单被接受了，
-它会闪现上面的``message_onsuccess``
+- ``onsuccess``: 如果等于‘flash’（默认）并且表单被接受了，它会闪现上面的``message_onsuccess``
 - ``message_onfailure``
 - ``onfailure``: 如果等于‘flash’（默认）并且表单验证失败，它会闪现上面的 ``message_onsuccess``
 - ``next`` 表单接受之后用户重定向
@@ -188,19 +178,15 @@ your name:
 ``:code
 
 注意出现两个隐藏字段：“_formkey”和“_formname”。它们的出现是调用 ``accepts`` 触发的，它们起到两个不同但很重要的作用：
-- 隐藏字段“_formkey”是一次性令牌，web2py用来阻止表单重复提交。当表
-单序列化并存在 ``session``中，这个字段值生成。当表单提交，这个值必须匹配
-否则``accepts``返回``False``不报错，好像表单根本没有被提交。这是因为web2py不
-能决定表单是否被正确提交。
-- 隐藏字段“_formname” web2py生成作为表单的名字，但名字可能被覆盖。
-这个字段是需要的，允许包含和处理多个表单的页。web2py用名字区别所提
+- 隐藏字段“_formkey”是一次性令牌，web2py用来阻止表单重复提交。当表单序列化并存在 ``session``中，这个字段值生成。当表单提交，这个值必须匹配
+否则``accepts``返回``False``不报错，好像表单根本没有被提交。这是因为web2py不能决定表单是否被正确提交。
+- 隐藏字段“_formname” web2py生成作为表单的名字，但名字可能被覆盖。这个字段是需要的，允许包含和处理多个表单的页。web2py用名字区别所提
 交的表单。
 - 可选隐藏字段指定为``FORM(..,hidden=dict(...))``。
 
 The role of these hidden fields and their usage in custom forms and pages with multiple forms is discussed in more detail later in the chapter.
 
-如果上面的表单用空的“name”字段提交，表单不能通过验证。当表单再次列化，
-它呈现如下：
+如果上面的表单用空的“name”字段提交，表单不能通过验证。当表单再次列化，它呈现如下：
 ``
 <form enctype="multipart/form-data" action="" method="post">
 your name:
@@ -212,19 +198,16 @@ your name:
 </form>
 ``:code
 
-注意在序列化的表单出现的“error”类DIV。web2py在表单中插入这个错误消息
-告知访问者不通过验证的字段。``accepts`` 方法就提交而言，决定表单提交，检查
+注意在序列化的表单出现的“error”类DIV。web2py在表单中插入这个错误消息告知访问者不通过验证的字段。``accepts`` 方法就提交而言，决定表单提交，检查
 “name”字段是否空，是否需要，最终从验证器插入错误消息到表单。
 
-基本“layout.html”视图期望用来处理“error”类DIV。默认布局采用jQuery效果显
-示和向下滑动错误并用红色背景。查看11章获取更多详细信息。
+基本“layout.html”视图期望用来处理“error”类DIV。默认布局采用jQuery效果显示和向下滑动错误并用红色背景。查看11章获取更多详细信息。
 
 #### ``keepvalues``参数
 
 ``keepvalues``:inxx
 
-可选参数 ``keepvalues`` ，在表单被接受和没有重定向时，告诉web2py做什么，因
-此同一个表单再次被显示。默认，表单清空。如果``keepvalues``设置为``True``，表单用之前插入的值预处理。当你有表单设想用来重复插入多条相似的记录，这很有用。如果 ``dbio`` 参数设置为``False``，web2py接受表单后不执行任何DB插入/更改
+可选参数 ``keepvalues`` ，在表单被接受和没有重定向时，告诉web2py做什么，因此同一个表单再次被显示。默认，表单清空。如果``keepvalues``设置为``True``，表单用之前插入的值预处理。当你有表单设想用来重复插入多条相似的记录，这很有用。如果 ``dbio`` 参数设置为``False``，web2py接受表单后不执行任何DB插入/更改
 操作。如果``hideerror``设置为``True``，表单又有错误，表单呈现时，这不会被显示（这取决于你从``form.errors`` 显示它们，不论怎样）。``onvalidation`` 参数下面介绍。
 
 #### ``onvalidation``参数
@@ -255,8 +238,7 @@ def insert_numbers():
 
 #### 检测记录修改
 
-填写表单修改记录，很小可能性，另外一个用户同时编辑这一条记录。因此，
-当我们保存记录时，我们想检查可能的冲突。如下实现：
+填写表单修改记录，很小可能性，另外一个用户同时编辑这一条记录。因此，当我们保存记录时，我们想检查可能的冲突。如下实现：
 
 ``
 db.define_table('dog',Field('name'))
@@ -276,8 +258,7 @@ def edit_dog():
 
 #### 表单和重定向
 
-最通常使用表单的方法是通过自提交，因为所提交字段变量被生成表单同样的
-工作处理。一旦表单接受了，再次显示当前的页面是不寻常的（这里我们所做
+最通常使用表单的方法是通过自提交，因为所提交字段变量被生成表单同样的工作处理。一旦表单接受了，再次显示当前的页面是不寻常的（这里我们所做
 的仅是保持简单）。更常见的是重定向访问者到“next”页面。
 
 下面是新例子的控制器：
@@ -304,10 +285,8 @@ def next():
 
 #### 多表单每页面
 
-这节内容应用到``FORM``和 ``SQLFORM`` 对象。多表单每页面是是可能的，但你必
-须允许web2py 区分它们。如果这些通过 ``SQLFORM`` 从不同表得到，那么
-web2py自动给它们不同的名字；否则你需要清晰地给它们不同的表单名字。下
-面是例子：
+这节内容应用到``FORM``和 ``SQLFORM`` 对象。多表单每页面是是可能的，但你必须允许web2py 区分它们。如果这些通过 ``SQLFORM`` 从不同表得到，那么
+web2py自动给它们不同的名字；否则你需要清晰地给它们不同的表单名字。下面是例子：
 ``
 def two_forms():
     form1 = FORM(INPUT(_name='name', requires=IS_NOT_EMPTY()),
@@ -325,17 +304,14 @@ def two_forms():
 
 [[image @///image/en6100.png center 300px]]
 
-当访问者提交空form1，仅form1 显示错误；如果访问者提交空form2，仅
-form1显示错误消息。
+当访问者提交空form1，仅form1 显示错误；如果访问者提交空form2，仅form1显示错误消息。
 
 #### 共享表单
 
-这节内容应用到 ``FORM`` 和 ``SQLFORM`` 对象。这里讨论的是可能性不是推荐，因
-而用表单自提交总是好的实践。但，有时，你没有选择，因为发送表单的动作
+这节内容应用到 ``FORM`` 和 ``SQLFORM`` 对象。这里讨论的是可能性不是推荐，因而用表单自提交总是好的实践。但，有时，你没有选择，因为发送表单的动作
 和接收表单的动作属不同的应用。
 
-能够生成表单提交给不同动作。这通过在``FORM`` 或 ``SQLFORM`` 对象属性中指定
-处理动作URL实现。例如：
+能够生成表单提交给不同动作。这通过在``FORM`` 或 ``SQLFORM`` 对象属性中指定处理动作URL实现。例如：
 ``
 form = FORM(INPUT(_name='name', requires=IS_NOT_EMPTY()),
         INPUT(_type='submit'), _action=URL('page_two'))
@@ -351,8 +327,7 @@ def page_two():
     return dict()
 ``:code
 
-注意因为“page_one”和“page_two”使用同样的 ``form``form，我们仅需定义一次，为
-了不重复我们自己，在所有动作之外替换它。控制器开头的公共部分代码每次
+注意因为“page_one”和“page_two”使用同样的 ``form``form，我们仅需定义一次，为了不重复我们自己，在所有动作之外替换它。控制器开头的公共部分代码每次
 在给调用动作控制前被执行。
 
 。因“page_one”不调用``process`` （不调用``accepts``）， 表单没有名字和键， 你必须在``process``传递 ``session=None`` 和设置``formname=None`` ，或者当“page_two”接收它，表单不验证。
@@ -380,8 +355,7 @@ def display_form():
 
 视图无需修改。
 
-新控制器中，你无需构建 ``FORM``，因为 ``SQLFORM`` 构造函数从定义在模型中的
-表``db.person`` 创建了一个。这个新表单，序列化呈现如下：
+新控制器中，你无需构建 ``FORM``，因为 ``SQLFORM`` 构造函数从定义在模型中的表``db.person`` 创建了一个。这个新表单，序列化呈现如下：
 ``
 <form enctype="multipart/form-data" action="" method="post">
   <table>
@@ -403,25 +377,18 @@ def display_form():
 </form>
 ``:code
 
-自动生成的表单比之前低级别表单要复杂得多。首先，它有若干行的表，每行
-有三列。第一列包含字段标签（从``db.person``决定的），第二列包含输入字段
-（最终错误消息），和第三列是可选的，因此空（它能用``SQLFORM``构造函数
-中的字段填充）。
+自动生成的表单比之前低级别表单要复杂得多。首先，它有若干行的表，每行有三列。第一列包含字段标签（从``db.person``决定的），第二列包含输入字段
+（最终错误消息），和第三列是可选的，因此空（它能用``SQLFORM``构造函数中的字段填充）。
 
-表单中的所有标签有从表和字段名继承的名字。这允许用CSS和JavaScript方便
-表单定制。这种能力在11章更详细讨论。
+表单中的所有标签有从表和字段名继承的名字。这允许用CSS和JavaScript方便表单定制。这种能力在11章更详细讨论。
 
-更重要的是，现在， ``accepts`` 方法为你做了更大量的工作。正如前面的例子，它
-执行输入验证，额外地，如果输入通过验证，它也执行数据库插入新的记录和
+更重要的是，现在， ``accepts`` 方法为你做了更大量的工作。正如前面的例子，它执行输入验证，额外地，如果输入通过验证，它也执行数据库插入新的记录和
 存储新记录唯一“id”在``form.vars.id`` 。
 
-``SQLFORM`` 对象，通过存储上传文件到“upload”文件夹，也自动处理“upload”
-字段（在重新安全地命名之后以避免冲突，并防止目录遍历攻击），存储它们
-的名字（它们的新名字）到数据库合适字段。
-在表单被处理后，新的文件名在``form.vars.fieldname`` （即在``request.vars.fieldname``里替换了  ``cgi.FieldStorage`` 对象）， 因而恰好上传后就可以容易地引用新名。
+``SQLFORM`` 对象，通过存储上传文件到“upload”文件夹，也自动处理“upload”字段（在重新安全地命名之后以避免冲突，并防止目录遍历攻击），存储它们
+的名字（它们的新名字）到数据库合适字段。在表单被处理后，新的文件名在``form.vars.fieldname`` （即在``request.vars.fieldname``里替换了  ``cgi.FieldStorage`` 对象）， 因而恰好上传后就可以容易地引用新名。
 
- ``SQLFORM`` 用复选框显示“boolean”值，文本框显示“text”值，值要在有限范围
-或下拉框，“upload”字段有允许用户下载已上传文件的链接。它隐藏了“blob”字段，因为它们设想是不同处理的，后面讨论。
+ ``SQLFORM`` 用复选框显示“boolean”值，文本框显示“text”值，值要在有限范围或下拉框，“upload”字段有允许用户下载已上传文件的链接。它隐藏了“blob”字段，因为它们设想是不同处理的，后面讨论。
 例如，考虑下面的模型：
 ``
 db.define_table('person',
@@ -436,8 +403,7 @@ db.define_table('person',
 
 [[image @///image/en6200.png center 300px]]
 
-``SQLFORM`` 构造函数允许各种定制，如仅显示字段子集，修改标签，添加值到
-可选第三列，或创建UPDATE和DELETE表单，相对于INSERT表单象当前这个。
+``SQLFORM`` 构造函数允许各种定制，如仅显示字段子集，修改标签，添加值到可选第三列，或创建UPDATE和DELETE表单，相对于INSERT表单象当前这个。
 ``SQLFORM`` 是web2py里单个最大的节省时间的对象。
 
 ``SQLFORM``类定义在“gluon/sqlhtml.py”中。它能通过超越它的``xml``方法容易地扩展，方法序列化对象，修改它的输出。
@@ -458,11 +424,8 @@ SQLFORM(table, record = None,
         **attributes)
 
 ``:code
-- 可选第二参数为指定的记录（参看下一节），把INSERT表单转换为
-UPDATE表单。 ``showid``:inxx ``delete_label``:inxx ``id_label``:inxx ``submit_button``:inxx
-- 如果 ``deletable`` 设置为 ``True``，
-UPDATE表单显示“Check to delete”复选框。
-这个字段的标签值通过``delete_label`` 参数设置。
+- 可选第二参数为指定的记录（参看下一节），把INSERT表单转换为UPDATE表单。 ``showid``:inxx ``delete_label``:inxx ``id_label``:inxx ``submit_button``:inxx
+- 如果 ``deletable`` 设置为 ``True``，UPDATE表单显示“Check to delete”复选框。这个字段的标签值通过``delete_label`` 参数设置。
 - ``submit_button`` 设置提交按钮的值。
 - ``id_label`` 设置记录“id”的标签。
 -  如``showid`` 设置为``False``，记录“id”不显示。
@@ -482,15 +445,12 @@ labels = {'name':'Your Full Name:'}
 col3 = {'name':A('what is this?',
       _href='http://www.google.com/search?q=define:name')}
 ``:code
-- ``linkto`` 和``upload`` 对用户定义控制器可选URL ，允许表单处理引用字段。这
-在本章后详细讨论。
+- ``linkto`` 和``upload`` 对用户定义控制器可选URL ，允许表单处理引用字段。这在本章后详细讨论。
 - ``readonly``。如果设置为True，只读显示表单
 - ``comments``。如果设置为False，不显示col3评论
 - ``ignore_rw``。
-正常情况，create/update表单，标示writable=True的字段才显示，
-对只读表单，标示readable=True的字段才显示。设定 ``ignore_rw=True`` 导致哪
-些限制被忽略，所有字段都显示。这大多数用在appadmin接口为每个表单显
-示所有字段，超过模型指示的。
+正常情况，create/update表单，标示writable=True的字段才显示，对只读表单，标示readable=True的字段才显示。设定 ``ignore_rw=True`` 导致哪
+些限制被忽略，所有字段都显示。这大多数用在appadmin接口为每个表单显示所有字段，超过模型指示的。
 -``formstyle``:inxx``formstyle``决定在html序列化表单所用的风格。
 它可以是“table3cols”（默认），“table2cols”（一行为标签和评论，一行做输出），“ul”（生成无
 序的输入字段列表），“divs”（表示使用css友好divs的表单，随意定制）。
@@ -510,8 +470,7 @@ form = SQLFORM(....,hidden=...)
 ``:code
 导致隐藏字段在提交时传递，不多不少。
 ``form.accepts(...)`` 不打算读取接收到的隐
-藏字段并把它们移到form.vars。原因是考虑安全。隐藏字段可能被篡改。因此，你
-需要明确地把隐藏字段从请求移到表单：
+藏字段并把它们移到form.vars。原因是考虑安全。隐藏字段可能被篡改。因此，你需要明确地把隐藏字段从请求移到表单：
 
 ``
 form.vars.a = request.vars.a
@@ -523,10 +482,8 @@ form = SQLFORM(..., hidden=dict(a='b'))
 表单接受时，``SQLFORM``创建一条新db记录。假设``form=SQLFORM(db.test)``:code，那么最后创建的记录的id能在``myform.vars.id``访问到。
 
 ``delete record``:inxx
-如果你把记录作为可选第二参数传递到``SQLFORM`` 构造函数，表单成为该记录
-UPDATE表单。这意味着当表单提交，现有记录更新，没有新记录插入。如果你设
-置参数``deletable=True``，UPDATE表单显示“check to delete”复选框。如果检
-查，记录被删除。
+如果你把记录作为可选第二参数传递到``SQLFORM`` 构造函数，表单成为该记录UPDATE表单。这意味着当表单提交，现有记录更新，没有新记录插入。如果你设
+置参数``deletable=True``，UPDATE表单显示“check to delete”复选框。如果检查，记录被删除。
 
 
 ------
@@ -553,12 +510,10 @@ def display_form():
 第二行找到记录，第三行产生UPDATE/DELETE表单。第4行做所有相应的表单处理。
 
 ------
-更新表单与创建表单非常相似，除了更新表单是用当前记录预填充的而且它预
-览图像。默认 ``deletable = True`` ，更新表单显示“delete record”选项。
+更新表单与创建表单非常相似，除了更新表单是用当前记录预填充的而且它预览图像。默认 ``deletable = True`` ，更新表单显示“delete record”选项。
 ------
 
-Edit表单也包含隐藏INPUT字段``name="id"`` ，用来识别记录。这个id为了更多的安
-全考虑也存储在服务器侧，如果访问者篡改了这个字段的值，UPDATE不执行，
+Edit表单也包含隐藏INPUT字段``name="id"`` ，用来识别记录。这个id为了更多的安全考虑也存储在服务器侧，如果访问者篡改了这个字段的值，UPDATE不执行，
 web2py产生语法错，“user is tampering with form”。
 
 当字段用 ``writable=False``标示，字段不在创建表单中显示，在更新表单只读显示。
@@ -579,8 +534,7 @@ form = SQLFORM(table,record_id,readonly=True)
 
 #### HTML中的``SQLFORM`` 
 
-有时，当你想用``SQLFORM``得益于它的生成和处理，但你需要在HTML中定制表单，
-你不能用``SQLFORM``对象参数获得，因此你不得不用HTML设计表单。
+有时，当你想用``SQLFORM``得益于它的生成和处理，但你需要在HTML中定制表单，你不能用``SQLFORM``对象参数获得，因此你不得不用HTML设计表单。
 现在，编辑之前的控制器并添加新动作：
 ``
 def display_manual_form():
@@ -607,13 +561,10 @@ def display_manual_form():
 </form>
 ``:code
 
-注意动作不返回表单，因为它不需要传递到视图。视图包含在HTML中手动创建
-的表单。表单包含隐藏字段“_formname”，必须是同样``formname``，指定为动作中``accepts`` 的参数。Web2py用表单名，如果在同一页面有多个表单，决定那一个
-是提交的。如果页面包含单个表单，你能设置``formname=None`` 并在视图中忽略隐
-藏字段。
+注意动作不返回表单，因为它不需要传递到视图。视图包含在HTML中手动创建的表单。表单包含隐藏字段“_formname”，必须是同样``formname``，指定为动作中``accepts`` 的参数。Web2py用表单名，如果在同一页面有多个表单，决定那一个
+是提交的。如果页面包含单个表单，你能设置``formname=None`` 并在视图中忽略隐藏字段。
 
-``form.accepts`` 在``response.vars`` 中查找数据，与数据库表``db.person``字段匹配。这些字
-段子在HTML以格式``<input name="field_name_goes_here" />``:code 声明。
+``form.accepts`` 在``response.vars`` 中查找数据，与数据库表``db.person``字段匹配。这些字段子在HTML以格式``<input name="field_name_goes_here" />``:code 声明。
 
 注意给定例子中，表单变量作为参数传递给URL。
 如果不需要，``POST``协议必须指定。
@@ -624,8 +575,7 @@ def display_manual_form():
 
 #### ``SQLFORM`` 和上传
 
-“upload”字段类型是特殊的。它们以``type="file"``INPUT字段呈现。除非另有指定，
-上传文件用缓冲流式传送，用一个自动指定的安全名字存储在应用的“upload”
+“upload”字段类型是特殊的。它们以``type="file"``INPUT字段呈现。除非另有指定，上传文件用缓冲流式传送，用一个自动指定的安全名字存储在应用的“upload”
 文件夹。这个文件的名字保存到上传类型的字段。
 
 作为例子，考虑下面的模型：
@@ -637,8 +587,7 @@ db.define_table('person',
 
 你能用同样的控制动作“display_form”显示上例。
 
-当你插入新的记录，表单允许你浏览文件。例如，选择jpg图像。如下，文件上传
-并存储：
+当你插入新的记录，表单允许你浏览文件。例如，选择jpg图像。如下，文件上传并存储：
 ``
 applications/test/uploads/person.image.XXXXX.jpg
 ``:code
@@ -648,21 +597,17 @@ applications/test/uploads/person.image.XXXXX.jpg
 ``content-disposition``:inxx
 
 -------
-注意，默认情况，上传文件源文件名b16编码，并为文件创建新文件名。这个名
-字通过默认“download”动作得到，用来设定到源文件名内容配置头。
+注意，默认情况，上传文件源文件名b16编码，并为文件创建新文件名。这个名字通过默认“download”动作得到，用来设定到源文件名内容配置头。
 
 -------
 
-仅它的扩展保留。 只是安全性要求，因为文件名包含特殊字符可能允许访问者
-执行目录遍历攻击或其它恶意操作。
+仅它的扩展保留。 只是安全性要求，因为文件名包含特殊字符可能允许访问者执行目录遍历攻击或其它恶意操作。
 
 新文件名存储在``form.vars.image``。
 
-当用UPDATE表单编辑记录，显示到现存上传文件的链接是很好的，web2py提
-供了方法实现。
+当用UPDATE表单编辑记录，显示到现存上传文件的链接是很好的，web2py提供了方法实现。
 
-如果你通过上传参数传递URL给``SQLFORM`` 构造函数，web2py用动作在那个
-URL下载文件。考虑下面的动作：
+如果你通过上传参数传递URL给``SQLFORM`` 构造函数，web2py用动作在那个URL下载文件。考虑下面的动作：
 ``
 def display_form():
    record = db.person(request.args(0)) or redirect(URL('index'))
@@ -703,17 +648,14 @@ http://127.0.0.1:8000/test/default/display_form/3
 class="delete" name="delete_this_record" /></td>
 ``:code
 
-包含允许下载上传文件的链接，复选框从数据库记录删除文件，如此存储
-NULL在“image”字段。
+包含允许下载上传文件的链接，复选框从数据库记录删除文件，如此存储NULL在“image”字段。
 
-为什么这种机制显露？为什么你需要写下载函数？因为你想在下载函数中强化
-一些授权机制。看第9章的例子。
+为什么这种机制显露？为什么你需要写下载函数？因为你想在下载函数中强化一些授权机制。看第9章的例子。
 正常上传文件存储在“app/uploads”，但你能指定另外位置：
 ``
 Field('image', 'upload', uploadfolder='...')
 ``
-大多数操作系统，当许多文件在同一个文件夹，访问文件系统会变慢。如果你
-打算上传超过1000个文件，你能要求web2py在子文件夹中组织上传：
+大多数操作系统，当许多文件在同一个文件夹，访问文件系统会变慢。如果你打算上传超过1000个文件，你能要求web2py在子文件夹中组织上传：
 ``
 Field('image', 'upload', uploadseparate=True)
 ``
@@ -721,10 +663,8 @@ Field('image', 'upload', uploadseparate=True)
 
 #### 存储源文件名
 
-Web2py自动存储源文件名在新UUID文件名，当文件下载时取到它。就下载，源
-文件名存储在HTTP响应内容处置报头。它全部透明完成无需编程。偶尔，你想
-把源文件名存储在数据库字段中。这种情况，你需要修改模型并增加字段来存
-储它：
+Web2py自动存储源文件名在新UUID文件名，当文件下载时取到它。就下载，源文件名存储在HTTP响应内容处置报头。它全部透明完成无需编程。偶尔，你想
+把源文件名存储在数据库字段中。这种情况，你需要修改模型并增加字段来存储它：
 ``
 db.define_table('person',
     Field('name', requires=IS_NOT_EMPTY()),
@@ -748,15 +688,13 @@ def display_form():
     return dict(form=form)
 ``:code
 
-注意 ``SQLFORM`` 不显示“image_filename”字段。“display_form”动作把 ``request.vars.image``
-的文件名移到 ``form.vars.image_filename``，以便被accepts处理，
+注意 ``SQLFORM`` 不显示“image_filename”字段。“display_form”动作把 ``request.vars.image``的文件名移到 ``form.vars.image_filename``，以便被accepts处理，
 并存储在数据库。下载函数，在服务文件前，在数据库中检查源文件名，在内容处置头中使用它。
 
 #### ``autodelete``属性（自动删除）
 ``autodelete``:inxx
 
- ``SQLFORM``，删除记录，不删除记录引用到的物理上传文件。原因是Web2py不
-知道该文件是否在用/链接其它表或用于其它目的。如果你知道党删除相应记录
+ ``SQLFORM``，删除记录，不删除记录引用到的物理上传文件。原因是Web2py不知道该文件是否在用/链接其它表或用于其它目的。如果你知道党删除相应记录
 时，删除文件是安全的，你可以如下操作：
 ``
 db.define_table('image',
@@ -783,8 +721,7 @@ db.dog.owner.requires = IS_IN_DB(db,db.person.id,'%(name)s')
 
 让我们用这个应用的**appadmin** 接口添加一些人和他们的狗。
 
-当编辑已有的人， **appadmin** UPDATE表单显示到页面的链接，列出属于这个人
-的狗。这个行动能用``SQLFORM``的参数``linkto`` 来复制。``linkto``指向从``SQLFORM`` 接收查询字符串新动作URL，并列出相应记录。下面是例子：
+当编辑已有的人， **appadmin** UPDATE表单显示到页面的链接，列出属于这个人的狗。这个行动能用``SQLFORM``的参数``linkto`` 来复制。``linkto``指向从``SQLFORM`` 接收查询字符串新动作URL，并列出相应记录。下面是例子：
 ``
 def display_form():
    record = db.person(request.args(0)) or redirect(URL('index'))
@@ -814,8 +751,7 @@ labels = {'dog.owner':"This person's dogs"}
 ``:code
 
 “list_records”是指定的动作，用``request.args(0)`` 设置引用表名字以及用 ``request.vars.query`` 设置SQL查询字符串。
-URL中的查询字符串包含值“dog.owner=5”，适当的url编码（当URL解析时，
-web2py自动解码）。
+URL中的查询字符串包含值“dog.owner=5”，适当的url编码（当URL解析时，web2py自动解码）。
 你能轻易地实现很一般的“list_records”动作如下：
 ``
 def list_records():
@@ -831,8 +767,7 @@ def list_records():
 {{=records}}
 ``:code
 
-当查询返回一组记录并序列化在视图中，一开始，它转化为SQLTABLE对象
-（不与Table一样），然后序列化到HTML表，此处每个字段相对应表的一列。
+当查询返回一组记录并序列化在视图中，一开始，它转化为SQLTABLE对象（不与Table一样），然后序列化到HTML表，此处每个字段相对应表的一列。
 
 #### 预填充表单
 使用下面语法总能预填充表单：
@@ -840,12 +775,10 @@ def list_records():
 form.vars.name = 'fieldvalue'
 ``:code
 
-如上语句必须在表单声明后和在表单被接受前插入，无论字段（例子中的
-“name”）是否在表单中显式可见。
+如上语句必须在表单声明后和在表单被接受前插入，无论字段（例子中的“name”）是否在表单中显式可见。
 
 #### 添加额外表单元素到``SQLFORM``
-有时，你希望在创建后添加额外的项目到你的表单。例如，你可能希望添加复
-选框用来确认用户同意你网站的条款和条件：
+有时，你希望在创建后添加额外的项目到你的表单。例如，你可能希望添加复选框用来确认用户同意你网站的条款和条件：
 ``
 form = SQLFORM(db.yourtable)
 my_extra_element = TR(LABEL('I agree to the terms and conditions'), \
@@ -859,10 +792,8 @@ form[0].insert(-1,my_extra_element)
 
 #### 无数据库IO的``SQLFORM`` 
 
-有时，当你想用``SQLFORM``从数据库表生成表单时，你也相应地想验证提交表
-单，但你不想任何数据库中自动的NSERT/UPDATE/DELETE命令。例如，下面
-是一个例子，当一个字段的值要从其它输入字段的值计算。当你需要对输入数
-据执行附加验证，不能通过标准验证器时，也是一种情况。
+有时，当你想用``SQLFORM``从数据库表生成表单时，你也相应地想验证提交表单，但你不想任何数据库中自动的NSERT/UPDATE/DELETE命令。例如，下面
+是一个例子，当一个字段的值要从其它输入字段的值计算。当你需要对输入数据执行附加验证，不能通过标准验证器时，也是一种情况。
 很轻松地把下面分解：
 ``
 form = SQLFORM(db.person)
@@ -906,10 +837,8 @@ form.vars.fieldname
 
 ### ``SQLFORM.factory``
 
-有些情况当你想生成表单，你有数据库表但你不想用数据库表。你简单地想利
-用 ``SQLFORM`` 能力生成CSS友好的漂亮的表单，并可能执行文件上传和重命名。
-这能通过``form_factory``完成。下面是例子，你生成表单，执行验证，上传一个文
-件，在 ``session`` 存储所有东西：
+有些情况当你想生成表单，你有数据库表但你不想用数据库表。你简单地想利用 ``SQLFORM`` 能力生成CSS友好的漂亮的表单，并可能执行文件上传和重命名。
+这能通过``form_factory``完成。下面是例子，你生成表单，执行验证，上传一个文件，在 ``session`` 存储所有东西：
 ``
 def form_from_factory():
     form = SQLFORM.factory(
@@ -931,8 +860,7 @@ def form_from_factory():
 ``:code
 
 你需要下划线而不是空格做字段标签，或显式传递``labels``字典到``form_factory``, 就像你为``SQLFORM``要做的。默认``SQLFORM.factory`` 用所生成的html“id” 属
-性生成表单，好像表单从叫做"“no_table”的表生成。要改变这个虚拟表名，
-用给制造厂的``table_name`` 属性
+性生成表单，好像表单从叫做"“no_table”的表生成。要改变这个虚拟表名，用给制造厂的``table_name`` 属性
 ``
 form = SQLFORM.factory(...,table_name='other_dummy_name')
 ``:code
@@ -941,8 +869,7 @@ form = SQLFORM.factory(...,table_name='other_dummy_name')
 
 #### 单个表单多表
 
-经常出现你有两个表（例如‘client’和‘address’ ），引用链接在一起， 你想
-创建单个表单允许掺入关于client和它的默认地址信息。下面是如何实现：模型：
+经常出现你有两个表（例如‘client’和‘address’ ），引用链接在一起， 你想创建单个表单允许掺入关于client和它的默认地址信息。下面是如何实现：模型：
 
 model:
 ``
@@ -975,12 +902,10 @@ def register():
 ### CRUD
 ``CRUD``:inxx ``crud.create``:inxx ``crud.update``:inxx ``crud.select``:inxx ``crud.search``:inxx ``crud.tables``:inxx ``crud.delete``:inxx
 
-最近添加到web2py的是Create/Read/Update/Delete (CRUD) API，在SQLFORM
-上面。CRUD创建SQLFORM，但它简化了编码，应为它包含了表单创建、表单
+最近添加到web2py的是Create/Read/Update/Delete (CRUD) API，在SQLFORM上面。CRUD创建SQLFORM，但它简化了编码，应为它包含了表单创建、表单
 处理、警告和重定向，所有功能到一个函数。
 
-第一件要注意的事，CRUD区别于目前我们用到的其它web2py API，因为它没
-有披露。它必须导入。也必须链接到指定数据库。例如：
+第一件要注意的事，CRUD区别于目前我们用到的其它web2py API，因为它没有披露。它必须导入。也必须链接到指定数据库。例如：
 ``
 from gluon.tools import Crud
 crud = Crud(db)
@@ -995,8 +920,7 @@ crud = Crud(db)
 - ``crud.update(db.tablename, id)``返回给tablename和记录id的更新表单。
 - ``crud.delete(db.tablename, id)`` 删除记录。
 - ``crud.select(db.tablename, query)`` 返回从表查询到的记录列表。
-- ``crud.search(db.tablename)`` 返回元组（表单，记录），表单是搜索表单，
-记录是基于提交的搜索表单的记录列表。
+- ``crud.search(db.tablename)`` 返回元组（表单，记录），表单是搜索表单，记录是基于提交的搜索表单的记录列表。
 - ``crud()`` 返回基于``request.args()``其中之一。
 
 例如，下面动作：
@@ -1043,8 +967,7 @@ http://.../[app]/[controller]/update_tablename/[id]
 
 等等。
 
-CRUD的行为能用两种方法定制：设定``crud`` 对象的一些属性或者传递额外参数
-到各自方法。
+CRUD的行为能用两种方法定制：设定``crud`` 对象的一些属性或者传递额外参数到各自方法。
 
 #### 设置
 
@@ -1091,8 +1014,7 @@ crud.settings.download_url = URL('download')
 crud.settings.create_onvalidation = StorageList()
 ``:code
 
-``StorageList`` 作为 ``Storage`` 对象是相同的，它们定义在文件“gluon/storage.py”，但
-默认 ``[]`` 相对于 ``None``。它允许下面的语法：
+``StorageList`` 作为 ``Storage`` 对象是相同的，它们定义在文件“gluon/storage.py”，但默认 ``[]`` 相对于 ``None``。它允许下面的语法：
 
 ``
 crud.settings.create_onvalidation.mytablename.append(lambda form:....)
@@ -1146,8 +1068,7 @@ crud.settings.showid = False
 crud.settings.keepvalues = False
 ``:code
 
-Crud总是检测正在编辑的记录，介于表单显示和提交的时间区间，是否被第三
-方修改，这个动作等同于：
+Crud总是检测正在编辑的记录，介于表单显示和提交的时间区间，是否被第三方修改，这个动作等同于：
 ``
 form.process(detect_record_change=True)``
 
@@ -1248,8 +1169,7 @@ crud.search(table, query, queries, query_labels, fields, field_labels, zero, sho
 ``:code
 - ``table`` 是方法要作用于的DAL表或表名。
 - ``record``和 ``record_id`` 是方法要作用于的记录的id。
-- ``next`` 是成功后重定向的URL。如果URL包含子串“[id]”，当前创建/更新记
-录的id会被替换。
+- ``next`` 是成功后重定向的URL。如果URL包含子串“[id]”，当前创建/更新记录的id会被替换。
 - ``onvalidation`` 有同SQLFORM(..., onvalidation)一样的功能。
 - ``onaccept`` 是表单提交接受后并作用于调用的函数，但在重定向以前。
 - ``log`` 是日志消息。CRUD内的日志消息是 ``form.vars`` 字典中形如“%(id)s”的变量。
@@ -1266,8 +1186,7 @@ crud.search(table, query, queries, query_labels, fields, field_labels, zero, sho
 - ``fields`` 在搜索widget中列出的字段列表。
 - ``field_labels`` 字典，把字段名映射到标签。
 - ``zero`` 默认“choose one”用作默认选项在搜索widget下拉。
-- ``showall`` 设定为True如果你想第一次调用每次查询rows被返回（1.98.2版后添
-加）。
+- ``showall`` 设定为True如果你想第一次调用每次查询rows被返回（1.98.2版后添加）。
 - ``chkall`` 设定为True打开搜索表单中所有复选框（1.98.2版后添加）。
 
 下面是单个控制器函数的用法例子：
@@ -1281,8 +1200,7 @@ def people():
     return dict(form=form, persons=persons)
 ``:code
 
-下面是一个非常通用的控制函数，让你搜索、创建和编辑从表名传递自
-request.args(0)的任意表的任何记录：
+下面是一个非常通用的控制函数，让你搜索、创建和编辑从表名传递自request.args(0)的任意表的任何记录：
 ``
 def manage():
     table=db[request.args(0)]
@@ -1293,8 +1211,7 @@ def manage():
     return dict(form=form,search=search,rows=rows)
 ``:code
 
-注意``table.id.represent=...`` 行告诉web2py改变id字段标识，显示链接而不是页面本
-身，以request.args(1)传递 id，它把创建页转换为更新页。
+注意``table.id.represent=...`` 行告诉web2py改变id字段标识，显示链接而不是页面本身，以request.args(1)传递 id，它把创建页转换为更新页。
 
 #### 记录版本
 
@@ -1332,8 +1249,7 @@ db.define_table('mytable',
           default=auth.user_id, update=auth.user_id, writable=False),
 ``:code
 
-这些字段没什么提别的，你可以给它们任何你想叫的名字。记录存档之前，它
-们被填充，并用记录的每个拷贝存档。文档属性表的名字或参考字段名能象如
+这些字段没什么提别的，你可以给它们任何你想叫的名字。记录存档之前，它们被填充，并用记录的每个拷贝存档。文档属性表的名字或参考字段名能象如
 下修改：
 
 ``
@@ -1349,8 +1265,7 @@ form.process(onsuccess = lambda form:auth.archive(form,
 
 ### 定制表单Custom forms
 
-如果表单用SQLFORM, SQLFORM.factory或CRUD创建，有多个办法把它嵌入
-视图允许多种程度定制。思考下面模型例子：
+如果表单用SQLFORM, SQLFORM.factory或CRUD创建，有多个办法把它嵌入视图允许多种程度定制。思考下面模型例子：
 ``
 db.define_table('image',
     Field('name'),
@@ -1377,8 +1292,7 @@ Click here to upload: {{=form.custom.submit}}
 {{=form.custom.end}}
 ``:code
 
-对字段``form.custom.widget[fieldname]`` 序列化到合适的widget。如果表单提交，它
-包含错误，它们也一样追加在下面的widget。
+对字段``form.custom.widget[fieldname]`` 序列化到合适的widget。如果表单提交，它包含错误，它们也一样追加在下面的widget。
 上面的例子表单显示为下面的图像。
 
 [[image @///image/en6500.png center 300px]]
@@ -1389,22 +1303,18 @@ Click here to upload: {{=form.custom.submit}}
 crud.settings.formstyle='table2cols'
 ``:code
 
-无需使用定制表单。其它可能的``formstyle``s 是“table3col”（默认）、“divs”和
-“ul”。
+无需使用定制表单。其它可能的``formstyle``s 是“table3col”（默认）、“divs”和“ul”。
 
-如果你不想用web2py序列化的widget，你能用HTML替换它们。有些变量可用
-来完成这个：
+如果你不想用web2py序列化的widget，你能用HTML替换它们。有些变量可用来完成这个：
 - ``form.custom.label[fieldname]``包含给字段的标签。
 - ``form.custom.comment[fieldname]`` 包含给字段的评论。
 - ``form.custom.dspval[fieldname]`` 表单类型和字段类型相关显示字段的表示。
-- ``form.custom.inpval[fieldname]`` 表单类型和字段类型相关值用在字段编码。
-遵循下面规定是重要的。
+- ``form.custom.inpval[fieldname]`` 表单类型和字段类型相关值用在字段编码。遵循下面规定是重要的。
 
 
 #### CSS规定 CSS conventions
 
-由SQLFORM, SQLFORM.factory或CRUD生成的表单中的标签，遵循严格
-的CSS命名习惯，可以用来更深入地定制表单。
+由SQLFORM, SQLFORM.factory或CRUD生成的表单中的标签，遵循严格的CSS命名习惯，可以用来更深入地定制表单。
 给定表“mytable”，和“string”类型字段“myfield”，默认被下面语句呈现
 ``
 SQLFORM.widgets.string.widget
@@ -1417,20 +1327,16 @@ SQLFORM.widgets.string.widget
 ``:code
 
 注意：
-- INPUT标签类与字段类型是一样的。这对jQuery代码在“web2py_ajax.html”
-中工作是非常重要的。要确保你只能有数字在“integer”和“double”字段，
-“time”、“date”和“datetime”字段显示弹出日历/日期拾取
-calendar/datepicker。
-- id是类的名字加上字段名，用下划线连接。这允许你唯一地引用到字段，通
-过，例如``jQuery('#mytable_myfield')`` ，操作字段的stylesheet或绑定关联字段
+- INPUT标签类与字段类型是一样的。这对jQuery代码在“web2py_ajax.html”中工作是非常重要的。要确保你只能有数字在“integer”和“double”字段，
+“time”、“date”和“datetime”字段显示弹出日历/日期拾取calendar/datepicker。
+- id是类的名字加上字段名，用下划线连接。这允许你唯一地引用到字段，通过，例如``jQuery('#mytable_myfield')`` ，操作字段的stylesheet或绑定关联字段
 事件的动作（focus, blur, keyup等）。
 - name是，正如你想的，字段名。
 
 #### 隐藏错误 Hide errors
 ``hideerror``:inxx
 
-偶尔，你想在除了默认的一些地方禁用自动错误放置和显示表单错误消息。这
-能简单地被实现：
+偶尔，你想在除了默认的一些地方禁用自动错误放置和显示表单错误消息。这能简单地被实现：
 
 - FORM或SQLFORM的情况，传递``hideerror=True`` 给``accepts`` 方法。
 - CRUD的情况，设置``crud.settings.hideerror=True``。
@@ -1472,15 +1378,13 @@ db.define_table('person', Field('name'))
 db.person.name.requires = IS_NOT_EMPTY()
 ``:code
 
-总是用字段``requires`` 属性指定验证器。字段有单个或多个验证器。多验证器由列
-表：
+总是用字段``requires`` 属性指定验证器。字段有单个或多个验证器。多验证器由列表：
 ``
 db.person.name.requires = [IS_NOT_EMPTY(),
                            IS_NOT_IN_DB(db, 'person.name')]
 ``:code
 
-通常验证器由函数``accepts``自动调用``FORM``的 ``process`` 或其它包含表单的HTML
-帮助对象。它们以列表中的顺序依次调用。
+通常验证器由函数``accepts``自动调用``FORM``的 ``process`` 或其它包含表单的HTML帮助对象。它们以列表中的顺序依次调用。
 也可以对字段显式调用验证器。
 
 ``
@@ -1526,8 +1430,7 @@ requires = IS_ALPHANUMERIC(error_message='must be alphanumeric!')
 ##### ``IS_DATE``
 ``IS_DATE``:inxx
 
-这个验证器检查字段值包含指定格式的合法日期。用翻译运算符指定格式是好
-的实践，以便不同的地方支持不同的格式。
+这个验证器检查字段值包含指定格式的合法日期。用翻译运算符指定格式是好的实践，以便不同的地方支持不同的格式。
 ``
 requires = IS_DATE(format=T('%Y-%m-%d'),
                    error_message='must be YYYY-MM-DD!')
@@ -1551,8 +1454,7 @@ requires = IS_DATE_IN_RANGE(format=T('%Y-%m-%d'),
 ##### ``IS_DATETIME``
 ``IS_DATETIME``:inxx
 
-这个验证器检查字段值包含合法的指定格式的日期时间。用翻译运算符指定格
-式是好的实践，以便不同的地方支持不同的格式。
+这个验证器检查字段值包含合法的指定格式的日期时间。用翻译运算符指定格式是好的实践，以便不同的地方支持不同的格式。
 ``
 requires = IS_DATETIME(format=T('%Y-%m-%d %H:%M:%S'),
                        error_message='must be YYYY-MM-DD HH:MM:SS!')
@@ -1593,10 +1495,8 @@ requires = IS_DATETIME_IN_RANGE(format=T('%Y-%m-%d %H:%M:%S'),
 INPUT(_type='text', _name='name', requires=IS_DECIMAL_IN_RANGE(0, 10, dot="."))
 ``:code
 
-它把输入转化为Python十进制，如果十进制数不在指定范围内生成错误。与
-Python Decimal算术做了比较。
-最小和最大限制可以是None，意味着没有下或上界。
-``dot``参数可选，允许你全局化用来分隔十进制数。
+它把输入转化为Python十进制，如果十进制数不在指定范围内生成错误。与Python Decimal算术做了比较。
+最小和最大限制可以是None，意味着没有下或上界。``dot``参数可选，允许你全局化用来分隔十进制数。
 
 
 
@@ -1620,8 +1520,7 @@ requires = IS_EQUAL_TO(request.vars.password,
 ##### ``IS_EXPR``
 ``IS_EXPR``:inxx
 
-它的第一个参数是字符串包含逻辑表达式也就是一个变量值。如果表达式的值
-为``True``，它验证字段值。例如：
+它的第一个参数是字符串包含逻辑表达式也就是一个变量值。如果表达式的值为``True``，它验证字段值。例如：
 ``
 requires = IS_EXPR('int(value)%3==0',
                    error_message='not divisible by 3')
@@ -1664,14 +1563,11 @@ requires = IS_IN_SET(['a', 'b', 'c'],zero=T('choose one'),
          error_message='must be a or b or c')
 ``:code
 
-零个参数是可选的，它决定默认文本选项，这个选项不会被``IS_IN_SET``验证器
-自己接受。如果你不想“”选项，设置  ``zero=None``。
+零个参数是可选的，它决定默认文本选项，这个选项不会被``IS_IN_SET``验证器自己接受。如果你不想“”选项，设置  ``zero=None``。
 
- ``zero``选项在修改版中介绍引入（1.67.1）。它不破快后向兼容，这个意义上它不
-影响应用，但之后它不改变它们的行为，之前没有``zero``选项。
+ ``zero``选项在修改版中介绍引入（1.67.1）。它不破快后向兼容，这个意义上它不影响应用，但之后它不改变它们的行为，之前没有``zero``选项。
 
-集合的元素必须总是字符串，除了这个验证器以 ``IS_INT_IN_RANGE`` 开始（值
-转换为整型）或 ``IS_FLOAT_IN_RANGE`` （值转换为浮点型）。例如：
+集合的元素必须总是字符串，除了这个验证器以 ``IS_INT_IN_RANGE`` 开始（值转换为整型）或 ``IS_FLOAT_IN_RANGE`` （值转换为浮点型）。例如：
 ``
 requires = [IS_INT_IN_RANGE(0, 8), IS_IN_SET([2, 3, 5, 7],
           error_message='must be prime and less than 10')]
@@ -1688,12 +1584,10 @@ requires = IS_IN_SET([('A','Apple'),('B','Banana'),('C','Cherry')])
 
 ##### ``IS_IN_SET``和 Tagging
 
-``IS_IN_SET`` 验证器有可选属性 ``multiple=False``。如果设置为True，多个值可存在一
-个字段中。字段类型必须是``list:integer`` 或 ``list:string``。 创建和更新表单的``multiple`` 应用是自动处理的，但对DAL时透明的。我们强烈建议用jQuery multiselect插件呈现多字段。
+``IS_IN_SET`` 验证器有可选属性 ``multiple=False``。如果设置为True，多个值可存在一个字段中。字段类型必须是``list:integer`` 或 ``list:string``。 创建和更新表单的``multiple`` 应用是自动处理的，但对DAL时透明的。我们强烈建议用jQuery multiselect插件呈现多字段。
 
 ------
-注意 ``multiple=True``， ``IS_IN_SET``会接受``zero`` o或更多值，即当没有任何选择，它接
-受字段。 ``multiple`` 也能是表单 ``(a,b)`` 元组， ``a``和 ``b`` 是分别是能被查询的最小和（互斥）最大项目数
+注意 ``multiple=True``， ``IS_IN_SET``会接受``zero`` o或更多值，即当没有任何选择，它接受字段。 ``multiple`` 也能是表单 ``(a,b)`` 元组， ``a``和 ``b`` 是分别是能被查询的最小和（互斥）最大项目数
 ------
 
 ##### ``IS_LENGTH``
@@ -1724,10 +1618,8 @@ INPUT(_type='file', _name='name', requires=IS_LENGTH(1048576, 1024))
 ##### ``IS_LIST_OF``
 ``IS_LIST_OF``:inxx
 
-这不是合适的验证器。它用来允许字段验证返回多个值。它用在那些罕见的情况
-当表单包含多个同名字段或多个选择框（复选框）。它仅有的参数是另一个验
-证器，它所做的是应用其它验证器到列表中的每个元素。例如，下面的表达式
-检查列表中的每个项是否0-10范围的整数：
+这不是合适的验证器。它用来允许字段验证返回多个值。它用在那些罕见的情况当表单包含多个同名字段或多个选择框（复选框）。它仅有的参数是另一个验
+证器，它所做的是应用其它验证器到列表中的每个元素。例如，下面的表达式检查列表中的每个项是否0-10范围的整数：
 ``
 requires = IS_LIST_OF(IS_INT_IN_RANGE(0, 10))
 ``:code
@@ -1745,8 +1637,7 @@ requires = IS_LOWER()
 ##### ``IS_MATCH``
 ``IS_MATCH``:inxx
 
-这个验证器用来匹配值与正则表达式，如果不匹配返回错误。下面是验证US邮
-政编码用法的例子：
+这个验证器用来匹配值与正则表达式，如果不匹配返回错误。下面是验证US邮政编码用法的例子：
 ``
 requires = IS_MATCH('^\d{5}(-\d{4})?$',
          error_message='not a zip code')
@@ -1804,30 +1695,23 @@ requires = IS_TIME(error_message='must be HH:MM:SS!')
 
 （这些规则基于``RFC2616``:cite）
 
-这个函数仅检查URL的语法。例如，它不检查URL指向真实的文档， 亦或它仅
-为语法上。在简写的URL的情况（例如，‘google.ca’），这个函数自动在URL
+这个函数仅检查URL的语法。例如，它不检查URL指向真实的文档， 亦或它仅为语法上。在简写的URL的情况（例如，‘google.ca’），这个函数自动在URL
 前添加‘http://’。
-如果用到参数mode=’generic’，那这个函数功能的行为改变了。如果下面任何为
-真，它拒绝URL字符串：
+如果用到参数mode=’generic’，那这个函数功能的行为改变了。如果下面任何为真，它拒绝URL字符串：
 - 字符串为空或None
 - 字符串使用了在URL中不允许的字符
 - 方案指定的URL（如果指定了）不是合法的
 
 （这些规则基于``RFC2396``:cite ）
 
-允许的方案列表用许可的allowed_schemes参数定制。如果你从列表剔除了
-None，则缩写URL（缺少方案比如‘http’）被拒绝。
+允许的方案列表用许可的allowed_schemes参数定制。如果你从列表剔除了None，则缩写URL（缺少方案比如‘http’）被拒绝。
 
-默认预先添加方案用prepend_scheme定制。如果你设置prepend_scheme为None，
-那么添加方案无效。URL要求预添加的解析仍被接受，但它的返回值不会被修
+默认预先添加方案用prepend_scheme定制。如果你设置prepend_scheme为None，那么添加方案无效。URL要求预添加的解析仍被接受，但它的返回值不会被修
 改。
 
-IS_URL兼容``RFC3490``:cite 国际域名命名（IDN）标准。因此，URL可以是常规字
-符串或unicode字符串。如果URL域名组成部分（比如，google.ca）包含非USASCII
-字母，那域名会转换成Punycode（``RFC3492``:cite )。IS_URL有点点超
-越了标准，允许非US-ASCII字符在路径出现以及URL组成的查询。这些非USASCII
-字符将采用编码。例如，空格编码为‘%20’ 。unicode字符用十六进制码
-0x4e86会编成‘% 4e%86’。
+IS_URL兼容``RFC3490``:cite 国际域名命名（IDN）标准。因此，URL可以是常规字符串或unicode字符串。如果URL域名组成部分（比如，google.ca）包含非USASCII
+字母，那域名会转换成Punycode（``RFC3492``:cite )。IS_URL有点点超越了标准，允许非US-ASCII字符在路径出现以及URL组成的查询。这些非USASCII
+字符将采用编码。例如，空格编码为‘%20’ 。unicode字符用十六进制码0x4e86会编成‘% 4e%86’。
 例如：
 ``
 requires = IS_URL())
@@ -1860,17 +1744,14 @@ requires = IS_STRONG(min=10, special=2, upper=2)
 
 这里
 - min是值的最小长度
-- special是要求的特殊符号的最小个数，特殊符号是下列中
-的任何一个``!@#$%^&*(){}[]-+``
+- special是要求的特殊符号的最小个数，特殊符号是下列中的任何一个``!@#$%^&*(){}[]-+``
 - upper是大写字母的最小个数
 
 ##### ``IS_IMAGE``
 ``IS_IMAGE``:inxx
 
-这个验证器检查通过文件输入上传的文件是否用所选图像格式中的一保存种，
-有给定限制范围的尺寸（宽和高）。
-它不检查文件最大尺寸（用IS_LENGTH实现）。如果没有数据上传，它返回验
-证失败。它支持文件格式BMP、GIF、JPEG、PNG，它不要求Python图像库。
+这个验证器检查通过文件输入上传的文件是否用所选图像格式中的一保存种，有给定限制范围的尺寸（宽和高）。
+它不检查文件最大尺寸（用IS_LENGTH实现）。如果没有数据上传，它返回验证失败。它支持文件格式BMP、GIF、JPEG、PNG，它不要求Python图像库。
 代码部分取自参看文献``source1``:cite
 
 它用下面参数：
@@ -1894,8 +1775,7 @@ requires = IS_IMAGE(extensions=('jpeg', 'png'))
 requires = IS_IMAGE(extensions=('png'), maxsize=(200, 200))
 ``:code
 
-- 注意：就给包含 ``requires = IS_IMAGE()``表显示编辑表单， ``delete`` 复选框不出现，
-因为删除文件将导致验证失败。要显示``delete`` 复选框用下面的验证：
+- 注意：就给包含 ``requires = IS_IMAGE()``表显示编辑表单， ``delete`` 复选框不出现，因为删除文件将导致验证失败。要显示``delete`` 复选框用下面的验证：
 ``
 requires = IS_EMPTY_OR(IS_IMAGE())
 ``:code
@@ -1909,11 +1789,9 @@ requires = IS_EMPTY_OR(IS_IMAGE())
 它的参数是：
 - filename: 文件名（.前）正则表达式
 - extension: 扩展名（.后）正则表达式
-- lastdot: 点用做文件名/扩展名的分隔符。``True``指明最后的点（例如，“file.tar.gz
-”分解为“file.tar”+“gz”），如果``False``则表明第一个点（“file.tar.gz”分解为
+- lastdot: 点用做文件名/扩展名的分隔符。``True``指明最后的点（例如，“file.tar.gz”分解为“file.tar”+“gz”），如果``False``则表明第一个点（“file.tar.gz”分解为
 “file”+“tar. gz”）
-- case: 0意思保持不变；1意思把字符串转换为小写（默认）；2意味把字符
-串转换为大写。
+- case: 0意思保持不变；1意思把字符串转换为小写（默认）；2意味把字符串转换为大写。
 
 如果没有点存在，扩展名检查将针对空字符串开展，文件名检查将针对整个字
 符串值。
@@ -2013,11 +1891,10 @@ HMAC密钥包含前缀确定算法，例如SHA512：
 requires = CRYPT(key='sha512:thisisthekey')
 ``:code
 
-这是推荐的语法。密钥必须是关联使用数据库唯一的字符串。密钥不能再修改。
-如果你丢失了之前哈希密钥，值变得无用。
-CRYPT验证器哈希散列输入，这使它有些特殊。如果你需要散列之前，验证密
-码字段，你能用验证器列表中的CRYPT，必须确定它是列表最后，以便最后调
-用。例如：
+这是推荐的语法。密钥必须是关联使用数据库唯一的字符串。密钥不能再修改。如果你丢失了之前哈希密钥，值变得无用。
+CRYPT验证器哈希散列输入，这使它有些特殊。如果你需要散列之前，验证密码字段，你能用验证器列表中的CRYPT，必须确定它是列表最后，以便最后调
+用。
+例如：
 
 ``
 requires = [IS_STRONG(),CRYPT(key='sha512:thisisthekey')]
@@ -2037,19 +1914,16 @@ db.person.name.requires = IS_NOT_IN_DB(db, 'person.name')
 ``:code
 
 它要求，当你插入新的person记录，他/她的名字不能已存在数据库， ``db``，字段``person.name``。与其它所有的验证器，这个要求在表单处理级是强制的，不是数
-据库级。这意味着，有很小的概率，如果两个访问者试图同时插入相同的
-person.name记录，这导致了竞争情况，两个记录都被接受了。因此，安全起见
+据库级。这意味着，有很小的概率，如果两个访问者试图同时插入相同的person.name记录，这导致了竞争情况，两个记录都被接受了。因此，安全起见
 告知数据库这个字段应该有唯一的值。
 ``
 db.define_table('person', Field('name', unique=True))
 db.person.name.requires = IS_NOT_IN_DB(db, 'person.name')
 ``:code
 
-现在如果竞争情况出现，数据库产生OperationalError，两条插入记录之一被拒
-绝。
+现在如果竞争情况出现，数据库产生OperationalError，两条插入记录之一被拒绝。
 
-``IS_NOT_IN_DB`` 的第一个参数是数据库连接或Set（集合）。后者情况，你仅需
-检查用Set定义的set对象。
+``IS_NOT_IN_DB`` 的第一个参数是数据库连接或Set（集合）。后者情况，你仅需检查用Set定义的set对象。
 下面的代码，例如，不允许同名的两个人彼此在10天之内注册：
 ``
 import datetime
@@ -2073,13 +1947,10 @@ db.dog.owner.requires = IS_IN_DB(db, 'person.id', '%(name)s',
                                  zero=T('choose one'))
 ``:code
 
-它在dog INSERT/UPDATE/DELETE表单层级强制实施。它要求``dog.owner``在数据
-库``db``的字段 ``person.id``有合法id。因为这个验证器，``dog.owner`` 字段呈现为下拉框。
-该验证器的第三个参数是字符串，描述下拉框里的元素。例子中，你想看到
-person``%(name)s`` 而不是person ``%(id)s``. ``%(...)s`` 被每条记录圆括号内的字段值替换。
+它在dog INSERT/UPDATE/DELETE表单层级强制实施。它要求``dog.owner``在数据库``db``的字段 ``person.id``有合法id。因为这个验证器，``dog.owner`` 字段呈现为下拉框。
+该验证器的第三个参数是字符串，描述下拉框里的元素。例子中，你想看到person``%(name)s`` 而不是person ``%(id)s``. ``%(...)s`` 被每条记录圆括号内的字段值替换。
 
-该校验器的``zero``参数可能是数据库连接或DAL Set，如同``IS_NOT_IN_DB``。当想要
-限制下拉框记录数，这对于例子会有用。这个例子，每次控制器调用，我们用
+该校验器的``zero``参数可能是数据库连接或DAL Set，如同``IS_NOT_IN_DB``。当想要限制下拉框记录数，这对于例子会有用。这个例子，每次控制器调用，我们用
 控制器中``IS_IN_SET`` 动态限制记录数：
 
 
@@ -2100,8 +1971,7 @@ db.dog.owner.requires = [IS_IN_DB(db, 'person.id', '%(name)s')]
 ``:code
 
 ``_and``:inxx
-偶尔，你想用下拉框（而你不想用上面的列表语法），想用附加的验证器。为
-了这个目的，``IS_IN_DB``验证器用额外参数``_and``，指向其它验证器列表，如果应用了验证值传递给``IS_IN_DB`` 进行验证。例如验证所有数据库中狗主人不在下面
+偶尔，你想用下拉框（而你不想用上面的列表语法），想用附加的验证器。为了这个目的，``IS_IN_DB``验证器用额外参数``_and``，指向其它验证器列表，如果应用了验证值传递给``IS_IN_DB`` 进行验证。例如验证所有数据库中狗主人不在下面
 的子集：
 ``
 subset=db(db.person.id>100)
@@ -2134,8 +2004,7 @@ class sample_validator:
         return format(value)
 ``:code
 
-即当调用验证一个值时，校验器返回元组``(x, y)``。如果 ``y`` 是 ``None``，那么传递
-给校验器的值和``x`` 包含解析值。例如，当验证器要求值是整数， ``x`` 转换为``int(value)``。如果值没有通过验证，那么``x`` 包含输入值而 ``y`` 包含错误消息解释验证失
+即当调用验证一个值时，校验器返回元组``(x, y)``。如果 ``y`` 是 ``None``，那么传递给校验器的值和``x`` 包含解析值。例如，当验证器要求值是整数， ``x`` 转换为``int(value)``。如果值没有通过验证，那么``x`` 包含输入值而 ``y`` 包含错误消息解释验证失
 败。这个错误消息用来报告表单中的不合法的错误。
 
 验证器也包含 ``formatter`` 方法。它必须执行与``__call__`` 调用正好相反的转换。例如，考虑``IS_DATE``源代码：
@@ -2155,8 +2024,7 @@ class IS_DATE(object):
         return value.strftime(str(self.format))
 ``:code
 
-成功，``__call__`` 方法从表单读取日期字符串，并用构造函数指定的格式字符串把
-它转换成datetime.date对象。``formatter``对象用datetime.date对象，用同样的格式把它转换为字符串表示。在表单``formatter``自动调用，但你能显式调用它，把对象转换为适当的表示。例如：
+成功，``__call__`` 方法从表单读取日期字符串，并用构造函数指定的格式字符串把它转换成datetime.date对象。``formatter``对象用datetime.date对象，用同样的格式把它转换为字符串表示。在表单``formatter``自动调用，但你能显式调用它，把对象转换为适当的表示。例如：
 ``
 >>> db = DAL()
 >>> db.define_table('atable',
@@ -2167,8 +2035,7 @@ class IS_DATE(object):
 01/01/2008
 ``:code
 
-当需要多个验证器的时候（存储在列表），它们顺序运行，通过输出作为下一
-个输入。当其中一个验证器失败，链式运行终止。
+当需要多个验证器的时候（存储在列表），它们顺序运行，通过输出作为下一个输入。当其中一个验证器失败，链式运行终止。
 
 反之，当我们调用字段``formatter``方法，相关验证器的formatter也链接起来，但恰好相反的顺序。
 
@@ -2181,11 +2048,9 @@ class IS_DATE(object):
 
 通常模型中验证器一次为全部设置。
 
-偶尔，你需要验证字段，而验证器依赖于另外字段的值。这能用各种方法实现。
-它能在模型中或控制器中实现。
+偶尔，你需要验证字段，而验证器依赖于另外字段的值。这能用各种方法实现。它能在模型中或控制器中实现。
 
-例如，如下页生成注册表单，要求用户名和密码两次。没有字段可以是空，两
-次密码必须一致：
+例如，如下页生成注册表单，要求用户名和密码两次。没有字段可以是空，两次密码必须一致：
 ``
 def index():
     form = SQLFORM.factory(
@@ -2258,14 +2123,12 @@ def my_string_widget(field, value):
 Field('comment', 'string', widget=my_string_widget)
 ``:code
 
-id和类的值必须遵守这一章后面描述的习惯。Widget包含自己的校验器，但好
-的实践是关联字段“requires”属性的校验器，并使widget从那儿得到。
+id和类的值必须遵守这一章后面描述的习惯。Widget包含自己的校验器，但好的实践是关联字段“requires”属性的校验器，并使widget从那儿得到。
 
 #### 自动完成widget Autocomplete widget
 ``autocomplete``:inxx
 
-对autocomplete widget有两种可能的用法：从列表自动完成一个字段或自动完
-成引用字段（自动完成的字符串是引用的表示，用id实现）。
+对autocomplete widget有两种可能的用法：从列表自动完成一个字段或自动完成引用字段（自动完成的字符串是引用的表示，用id实现）。
 第一种情况容易：
 ``
 db.define_table('category',Field('name'))
@@ -2274,8 +2137,7 @@ db.product.category.widget = SQLFORM.widgets.autocomplete(
      request, db.category.name, limitby=(0,10), min_length=2)
 ``:code
 
-``limitby`` 指示widget 一次显示不超过10 条建议， ``min_length`` 指示widget 执行
-Ajax回调得到建议，仅当用户在搜索框敲入至少两个字符。
+``limitby`` 指示widget 一次显示不超过10 条建议， ``min_length`` 指示widget 执行Ajax回调得到建议，仅当用户在搜索框敲入至少两个字符。
 第二种情况复杂地多：
 ``
 db.define_table('category',Field('name'))
@@ -2286,17 +2148,13 @@ db.product.category.widget = SQLFORM.widgets.autocomplete(
 
 这种情况下， ``id_field`` 的值告诉widget，即使自动完成的值是``db.category.name``, 存储的值也是相应``db.category.id``。可选参数是``orderby``，指示widget如何对建议排序（默认字母顺序）。
 
-Widget通过Ajax工作。Ajax在哪回调？这个widget有些神奇。回调是widget对象自
-己的方法。它如何显露？web2py任何代码生成响应引发HTTP异常。Widget用下
-面的方式利用这种可能性：widge给Ajaxt发送调用，对同一个URL，第一个位
-置生成widge，把特殊令牌放在request.vars。widge再次实例化，它发现令牌，并
+Widget通过Ajax工作。Ajax在哪回调？这个widget有些神奇。回调是widget对象自己的方法。它如何显露？web2py任何代码生成响应引发HTTP异常。Widget用下
+面的方式利用这种可能性：widge给Ajaxt发送调用，对同一个URL，第一个位置生成widge，把特殊令牌放在request.vars。widge再次实例化，它发现令牌，并
 引发HTTP异常以响应请求。所有这些在后台完成，对编程者隐藏。
 
 ### ``SQLFORM.grid``和 ``SQLFORM.smartgrid`` （实验性的）
 
-两个高级工具创建复杂CRUD控制。它们提供分页，以及从单个工具，浏览、
-搜索、排序、创建、更新和删除记录的能力
-两个中最简单是``SQLFORM.grid``。下面是使用的例子：
+两个高级工具创建复杂CRUD控制。它们提供分页，以及从单个工具，浏览、搜索、排序、创建、更新和删除记录的能力，两个中最简单是``SQLFORM.grid``。下面是使用的例子：
 
 ``
 @auth.requires_login()
@@ -2309,9 +2167,7 @@ def manage_users():
 
 [[image @///image/en6700.png center 480px]]
 
- ``SQLFORM.grid`` 的第一个参数是表或查询。网格工具提供匹配查询的记录访问。
-在我们开始网格工具参数长列表的参数之前，我们需要理解它如何工作。工具
-查看``request.args``决定做什么（浏览、搜索、创建、更新和删除等）。每个由工具所创建的按钮链接同样的函数（上面情况的``manage_users``），
+ ``SQLFORM.grid`` 的第一个参数是表或查询。网格工具提供匹配查询的记录访问。在我们开始网格工具参数长列表的参数之前，我们需要理解它如何工作。工具查看``request.args``决定做什么（浏览、搜索、创建、更新和删除等）。每个由工具所创建的按钮链接同样的函数（上面情况的``manage_users``），
 但传递不同的``request.args``。默认情况，网格生成所有的URL是数字签名并被验证的。这意味着不登录，不能执行某些动作（创建、更新、删除）。这些限制能象如下解除：
 
 ``
@@ -2323,12 +2179,10 @@ def manage_users():
 但我们不推荐使用。
 
 -----
-因为网格工作的方式，每人只能有一个网格每个控制器函数，除非通过``LOAD``
-作为组件嵌入。
+因为网格工作的方式，每人只能有一个网格每个控制器函数，除非通过``LOAD``作为组件嵌入。
 -----
 
-因为包含网格的函数能自己操作命令行参数，网格需要知道那个参数该被网格
-处理哪个不该。例如，下面是允许管理任何表的代码例子：
+因为包含网格的函数能自己操作命令行参数，网格需要知道那个参数该被网格处理哪个不该。例如，下面是允许管理任何表的代码例子：
 
 ``
 @auth.requires_login()
@@ -2386,8 +2240,7 @@ SQLFORM.grid(query,
 - ``csv`` 如果设置为true，允许以CSV格式下载grid。
 - ``paginate`` 设置每页最大的行数。
 - ``links`` 用来显示新列，链接到其它页面。``links``参数必须是dict 字典列表 ``dict(header='name',body=lambda row: A(...))`` ，``header`` 是新列的头，``body`` 是函数带row参数有返回值。例子中，值是 ``A(...)``帮助对象。
-- ``maxtextlength`` 设置在grid视图中，每个字段值显示的文本最大长度。对每个
-字段，这个值能用 ``maxtextlengths``覆盖，‘tablename.fieldname’的字典：
+- ``maxtextlength`` 设置在grid视图中，每个字段值显示的文本最大长度。对每个字段，这个值能用 ``maxtextlengths``覆盖，‘tablename.fieldname’的字典：
 length。
 - ``onvalidation``, ``oncreate``, ``onupdate`` 和``ondelete`` 是回调函数。除了``ondelete`` 所有函数用表单对象作为输入
 - ``sorter_icons`` 是两个字符串列表（或帮助对象），用来表示每个字段升和降
@@ -2413,8 +2266,7 @@ ui = dict(widget='',
           buttonview='icon magnifier')
 ``:code
 
-- ``search_widget`` 允许超越默认搜索工具，我们推荐读者参考
-“gluon/sqlhtml.py”中的源代码获得细节。
+- ``search_widget`` 允许超越默认搜索工具，我们推荐读者参考“gluon/sqlhtml.py”中的源代码获得细节。
 - ``showbutton`` 允许关闭所有按钮。
 - ``_class`` 是为grid容器的类。
 - ``formname``, ``ignore_rw`` 和 ``formstyle`` 传递给SQLFORM对象，被创建/更新表单grid使用。
@@ -2423,8 +2275,7 @@ ui = dict(widget='',
 ``deletable``, ``editable``和 ``details`` 通常是布尔值，但也可以是函数，用row对象参数，决定是否显示相应按钮。
 -----
 
-``SQLFORM.smartgrid`` 看起来很像 ``grid``，实际上它包含网格，但它设计用来作为输
-入而不是查询就只一张表格，以及浏览said（所述？）表并查询引用表格。
+``SQLFORM.smartgrid`` 看起来很像 ``grid``，实际上它包含网格，但它设计用来作为输入而不是查询就只一张表格，以及浏览said（所述？）表并查询引用表格。
 例如，考虑下表结构：
 
 ``
@@ -2461,10 +2312,8 @@ def manage():
 
 注意额外的“"children”链接。可用规则的``grid``创建额外的``links`` ，但它们指向不同的动作。用``smartgrid`` ，它们被同一个工具自动创建和处理。
 
-也注意，当点击给定父类的“children”链接，只能得到那个父类的子的列
-表（这是显然的），也注意如果试图添加新的子，父类的值为新的子自动设置
-为查询父类（显示在关联到工具的breadcrumbs）。这个字段的值能被覆盖。我们
-能通过设置它只读来防止：
+也注意，当点击给定父类的“children”链接，只能得到那个父类的子的列表（这是显然的），也注意如果试图添加新的子，父类的值为新的子自动设置
+为查询父类（显示在关联到工具的breadcrumbs）。这个字段的值能被覆盖。我们能通过设置它只读来防止：
 
 ``
 @auth.requires_login():
@@ -2474,8 +2323,7 @@ def manage():
     return locals()
 ``:code
 
-如果 ``linked_tables`` 参数没有指定，所有引用表自动链接。尽管这样，为了避免
-意外公开数据，我们推荐显示列出要链接的表格。
+如果 ``linked_tables`` 参数没有指定，所有引用表自动链接。尽管这样，为了避免意外公开数据，我们推荐显示列出要链接的表格。
 下面的代码为系统中的表创建非常有力的管理界面：
 
 ``
@@ -2490,18 +2338,14 @@ def manage():
 ``smartgrid`` 与 ``grid``用同样的参数，更多注意事项：
 
 - 第一个参数是表，不是查询。
-- 有额外参数 ``constraints`` ，包含‘tablename’字典：query，用于更多限制访问
-显示在‘tablename’grid的记录。
+- 有额外参数 ``constraints`` ，包含‘tablename’字典：query，用于更多限制访问显示在‘tablename’grid的记录。
 - 有额外参数``linked_tables`` ，通过smartgrid访问的表的表名的列表。
-- 所有的参数除了table, ``args``, ``linked_tables`` 和``user_signatures`` 都能是解释如下的字典。
-思考之前的grid：
+- 所有的参数除了table, ``args``, ``linked_tables`` 和``user_signatures`` 都能是解释如下的字典。思考之前的grid：
 ``
 grid = SQLFORM.smartgrid(db.parent,linked_tables=['child'])
 ``
-它允许访问``db.parent`` 和 ``db.child``除了为导航控制，对每个表，smarttable不是别
-的就是grid。这意味着，这种情况，smartgrid能给父创建grid，给子创建grid。我
-们想传递不同的参数及给这些grid。例如，不同的``searchable`` 参数集。
-而对grid，我们传递布尔值： 
+它允许访问``db.parent`` 和 ``db.child``除了为导航控制，对每个表，smarttable不是别的就是grid。这意味着，这种情况，smartgrid能给父创建grid，给子创建grid。我
+们想传递不同的参数及给这些grid。例如，不同的``searchable`` 参数集。而对grid，我们传递布尔值： 
 ``
 grid = SQLFORM.grid(db.parent,searchable=True)
 ``
@@ -2514,8 +2358,7 @@ grid = SQLFORM.smartgrid(db.parent,linked_tables=['child'],
 
 
 -------
-grid和smartgrid小工具就停留在这，但它们标识为实验阶段，因为它们返回实
-际的html布局以及能传递给他们的确切参数集，当新功能加入，可能会改变。
+grid和smartgrid小工具就停留在这，但它们标识为实验阶段，因为它们返回实际的html布局以及能传递给他们的确切参数集，当新功能加入，可能会改变。
 -------
 
 
@@ -2535,8 +2378,7 @@ grid = SQLFORM.grid(db.auth_user,
      deletable = auth.has_permission('delete','auth_user'))
 ``
 
-``smartgrid`` 是web2py仅有的小工具，显示表名，它需要单数和复数。例如，父能
-有单个“Child”或许多“Children”。因此表对象需要知道它自己单数和复数名。
+``smartgrid`` 是web2py仅有的小工具，显示表名，它需要单数和复数。例如，父能有单个“Child”或许多“Children”。因此表对象需要知道它自己单数和复数名。
 web2py一般猜测它们，但你能显式设置：
 
 ``
@@ -2552,5 +2394,4 @@ db.child._plural = "Children"
 ``:code
 
 它们也该用``T``
-
 然后复数和单数值被``smartgrid``用来为头和链接提供正确的名字。 
