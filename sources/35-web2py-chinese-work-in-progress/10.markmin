@@ -1,15 +1,11 @@
-
 ## 服务
 ``Web Services``:inxx ``API``:inxx
 
-W3C定义web服务“软件系统设计来通过网络支持互操作的机器到机器的
-交互”。这是一个宽泛的定义，它包含相当大量的协议，协议不是用来人机通
+W3C定义web服务“软件系统设计来通过网络支持互操作的机器到机器的交互”。这是一个宽泛的定义，它包含相当大量的协议，协议不是用来人机通
 信，而是机器到机器的通信，比如XML, JSON, RSS等。
 
-本章我们讨论如何用web2py实现web服务。如果你感兴趣消费第三方服
-务（Twitter,Dropbox等）的例子，你该查看第9章和第14章。web2py提供，即
-开即用，对许多协议的支持，包括XML, JSON,RSS, CSV, XMLRPC, JSONRPC,
-AMFRPC和SOAP。web2py也能够扩展支持更多的协议。
+本章我们讨论如何用web2py实现web服务。如果你感兴趣消费第三方服务（Twitter,Dropbox等）的例子，你该查看第9章和第14章。web2py提供，即
+开即用，对许多协议的支持，包括XML, JSON,RSS, CSV, XMLRPC, JSONRPC,AMFRPC和SOAP。web2py也能够扩展支持更多的协议。
 
 那些协议中的每一个都有多种方法支持，我们区分它们为：
 - 以给定格式呈现函数输出（例如XML, JSON,RSS, CSV）
@@ -27,16 +23,14 @@ def count():
     return dict(counter=session.counter, now=request.now)
 ``:code
 
-这个动作返回计数，当访问者重载页面时计数加1，以及当前页面请求的时间
-戳。
+这个动作返回计数，当访问者重载页面时计数加1，以及当前页面请求的时间戳。
 通常这个页面被请求，通过：
 
 ``
 http://127.0.0.1:8000/app/default/count
 ``:code
 
-以HTML 呈现。无需写哪怕一行代码，通过添加URL 的扩展，你能要求
-web2py用不同的协议呈现这个页面：
+以HTML 呈现。无需写哪怕一行代码，通过添加URL 的扩展，你能要求web2py用不同的协议呈现这个页面：
 
 ``
 http://127.0.0.1:8000/app/default/count.html
@@ -58,19 +52,15 @@ http://127.0.0.1:8000/app/default/count.json
 { 'counter':3, 'now':'2009-08-01 13:00:00' }
 ``:code
 
-注意日期、时间和日期时间对象用ISO格式以字符串呈现。这是不JSON标准的
-部分，而是web2py的规定。
+注意日期、时间和日期时间对象用ISO格式以字符串呈现。这是不JSON标准的部分，而是web2py的规定。
 
 #### 通用视图 Generic views
 
-例如， 当“.xml”扩展名调用了，web2py查找一个叫“default/count.xml”
-的模板文件，如果没有找到它，则查找叫“generic.xml”的模板。文件
-“generic.html”、“generic.xml”和“genericjson”都由当前基本构建应用提供。其
-它扩展能容易的被用户定义。
+例如， 当“.xml”扩展名调用了，web2py查找一个叫“default/count.xml”的模板文件，如果没有找到它，则查找叫“generic.xml”的模板。文件
+“generic.html”、“generic.xml”和“genericjson”都由当前基本构建应用提供。其它扩展能容易的被用户定义。
 
 ------
-为安全起见，通用视图只允许在本地主机上访问。要让远程客户能访问，
-你需要设置response.generic_patterns。
+为安全起见，通用视图只允许在本地主机上访问。要让远程客户能访问，你需要设置response.generic_patterns。
 ------
 假设你正在使用基本应用的拷贝在模型/db.py中编辑下面的代码行
 
@@ -90,16 +80,14 @@ response.generic_patterns = ['*']
 response.generic_patterns = ['*.json']
 ``:code
 
-generic_patterns是glob 全局模式，它意味着你能使用与你应用匹配的任何模式
-或传递模式列表。
+generic_patterns是glob 全局模式，它意味着你能使用与你应用匹配的任何模式或传递模式列表。
 
 ``
 response.generic_patterns = ['*.json','*.xml']
 ``:code
 
 
-为在旧版本web2py应用中使用它，你需要从后面的基本构建应用（v1.60后
-）复制“generic.*”文件。
+为在旧版本web2py应用中使用它，你需要从后面的基本构建应用（v1.60后）复制“generic.*”文件。
 下面是“generic.html”的代码
 ``
 {{extend 'layout.html'}}
@@ -141,17 +129,14 @@ except:
 }}
 ``:code
 
-任何字典能被呈现在HTML, XML 和 JSON，只要它只包含python原始类型
-（int, float, string, list, tuple, dictionary）。 ``response._vars`` 包含由这个动作返回的字典。
+任何字典能被呈现在HTML, XML 和 JSON，只要它只包含python原始类型（int, float, string, list, tuple, dictionary）。 ``response._vars`` 包含由这个动作返回的字典。
 
-如果字典包含其它用户自定义或web2py指定的对象，它们必须用自定义视
-图呈现。
+如果字典包含其它用户自定义或web2py指定的对象，它们必须用自定义视图呈现。
 
 #### 呈现 ``Rows``对象
 ``as_list``:inxx
 
-如果你需要呈现一组查询语句返回的Rows在XML或JSON里或用其它格
-式，首先用``as_list()``方法转换Rows对象为字典列表。
+如果你需要呈现一组查询语句返回的Rows在XML或JSON里或用其它格式，首先用``as_list()``方法转换Rows对象为字典列表。
 
 考虑下面模式例子：
 ``
@@ -190,20 +175,15 @@ response.write(cPickle.dumps(response._vars),escape=False)
 }}
 ``:code
 
-如果你想能够以pickled文件呈现任何动作，你只需用名字“generic.pickle”保存
-上面的文件。
+如果你想能够以pickled文件呈现任何动作，你只需用名字“generic.pickle”保存上面的文件。
 
-不是所有的对象是pickleable，不是所有的pickled对象能反pickled。坚持Python
-原始对象并组合它们是安全的。对象不包含到文件流或数据库连接的引用，通
+不是所有的对象是pickleable，不是所有的pickled对象能反pickled。坚持Python原始对象并组合它们是安全的。对象不包含到文件流或数据库连接的引用，通
 常pickleable，但它们只能在所有pickled对象的类已定义的环境un-pickled。
 
 #### RSS
 ``RSS``:inxx
 
-web2py包含“generic.rss”视图，能以RSS feed（RSS订阅）形式呈现动作返回的
-字典。
-因为RSS feed（RSS订阅）有固定的结构（标题、链接、描述、项目等），那么这
-要执行，动作返回的字典必须有合适的结构：
+web2py包含“generic.rss”视图，能以RSS feed（RSS订阅）形式呈现动作返回的字典。因为RSS feed（RSS订阅）有固定的结构（标题、链接、描述、项目等），那么这要执行，动作返回的字典必须有合适的结构：
 ``
 {'title'      : '',
  'link'       : '',
@@ -259,8 +239,7 @@ def feed():
                 entries=db().select(db.rss_entry.ALL).as_list())
 ``:code
 
-Rows对象的``as_list()`` 方法把行转换为字典列表。
-如果有没有显式列出键名的附加字典项，它们被忽略：
+Rows对象的``as_list()`` 方法把行转换为字典列表。如果有没有显式列出键名的附加字典项，它们被忽略：
 
 下面是web2py 提供的“generic.rss”视图：
 ``
@@ -274,8 +253,7 @@ except:
 }}
 ``:code
 
-再举RSS应用的一个例子，我们考虑RSS聚合对象，从“slashdot”feed收集数据
-并返回新的web2py rss feed（RSS订阅）。
+再举RSS应用的一个例子，我们考虑RSS聚合对象，从“slashdot”feed收集数据并返回新的web2py rss feed（RSS订阅）。
 ``
 def aggregator():
     import gluon.contrib.feedparser as feedparser
@@ -317,8 +295,7 @@ def animals():
     return dict(animals=animals)
 ``:code
 
-web2py不提供“generic.csv”；你必须定义自定义视图“default/animals.csv”序列
-化animals到CSV。下面是可能的实现：
+web2py不提供“generic.csv”；你必须定义自定义视图“default/animals.csv”序列化animals到CSV。下面是可能的实现：
 ``
 {{
 import cStringIO
@@ -329,19 +306,18 @@ response.write(stream.getvalue(), escape=False)
 }}
 ``:code
 
-注意也可能定义“generic.csv”文件，但必须指定要被序列化对象的名字（例子
-中的“animal”）。这就是我们为什么不提供“generic.csv”文件的原因。
+注意也可能定义“generic.csv”文件，但必须指定要被序列化对象的名字（例子中的“animal”）。这就是我们为什么不提供“generic.csv”文件的原因。
 
 ### 远程过程调用 Remote procedure calls
 ``RPC``:inxx
 
-web2py提供了把任何函数转换为web服务的机制。这里描述的机制与前面描述
-的不一样，因为：
+web2py提供了把任何函数转换为web服务的机制。这里描述的机制与前面描述的不一样，因为：
 - 函数可能有参数
 - 函数可能在模型或模块中定义而不是控制器
 - 你可能想指定细节支持RPC方法
 - 它采用了更严格的URL命名规则
 - 它比之前的方法聪明，因为它对固定的协议簇有用。同理，它不易于扩展。
+
 要用这功能：
 首先，你必须导入和实例化服务service对象。
 ``
@@ -361,12 +337,10 @@ def call():
 ``:code
 
 -------
-这已经在基本构建应用的“db.py”模型文件中实现。如果你打算使用服务会话
-cookie删除 ``session.forget()`` 。
+这已经在基本构建应用的“db.py”模型文件中实现。如果你打算使用服务会话cookie删除 ``session.forget()`` 。
 -------
 
-第三，你必须装饰那些你想公开为服务的函数。下面是当前支持的装饰器的列
-表：
+第三，你必须装饰那些你想公开为服务的函数。下面是当前支持的装饰器的列表：
 ``
 @service.run
 @service.xml
@@ -386,8 +360,7 @@ def concat(a,b):
     return a+b
 ``:code
 
-这个函数定义在模型或控制器，``call`` 动作定义的。这个函数现在能用两种方法远
-程调用：
+这个函数定义在模型或控制器，``call`` 动作定义的。这个函数现在能用两种方法远程调用：
 
 ``
 http://127.0.0.1:8000/app/default/call/run/concat?a=hello&b=world
@@ -412,8 +385,7 @@ http://127.0.0.1:8000/app/default/call/xml/concat/hello/world
 </document>
 ``:code
 
-它能序列化函数输出，即使这是一个DAL Rows对象。这种情况，事实上，它会
-自动调用 ``as_list()`` 。
+它能序列化函数输出，即使这是一个DAL Rows对象。这种情况，事实上，它会自动调用 ``as_list()`` 。
 
 如果``@service.json`` 装饰器使用了，函数被调用，通过：
 
@@ -424,8 +396,7 @@ http://127.0.0.1:8000/app/default/call/json/concat/hello/world
 
 输出以JSON返回。
 
-如果``@service.csv`` d装饰器使用了，服务句柄要求迭代对象之一作为返回值，比
-如list列表。下面是例子：
+如果``@service.csv`` d装饰器使用了，服务句柄要求迭代对象之一作为返回值，比如list列表。下面是例子：
 ``
 @service.csv
 def table1(a,b):
@@ -449,8 +420,7 @@ hello,world
 
 每个函数允许多个装饰器。
 
-目前为止，本章讨论的都只是前面章节描述方法的替代。服务对象的真正的力
-量，与XMLRPC, JSONRPC and AMFRPC一道，讨论如下。
+目前为止，本章讨论的都只是前面章节描述方法的替代。服务对象的真正的力量，与XMLRPC, JSONRPC and AMFRPC一道，讨论如下。
 
 #### XMLRPC
 ``XMLRPC``:inxx
@@ -483,17 +453,12 @@ ZeroDivisionError: integer division or modulo by zero
 
 Python xmlrpclib模块给XMLRPC协议提供客户。web2py做服务器。
 
-客户通过ServerProxy连接服务器，并能远程调用服务器上的装饰过的函数。
-data(a,b)传递给函数，不是通过GET/POST变量，而是用XMLRPC协议适当地编
-码在请求中，如此，它携带自身类型信息（整型或字符串，或其它）。返回值
-也是一样的。而且，任何服务器上引发的异常传回客户端。
+客户通过ServerProxy连接服务器，并能远程调用服务器上的装饰过的函数。data(a,b)传递给函数，不是通过GET/POST变量，而是用XMLRPC协议适当地编
+码在请求中，如此，它携带自身类型信息（整型或字符串，或其它）。返回值也是一样的。而且，任何服务器上引发的异常传回客户端。
 
-对许多编程语言（包括C,C++, Java, C#, Ruby和Perl）有XMLRPC库，它们之间
-能相互操作。这是最好的方法，创建能够彼此交谈的应用并独立于编程语言。
-XMLRPC客户也可以在web2py动作内被实现，以便一个动作能与另外一个
-web2py应用（即使在同一个安装当中）用对话XMLRPC。注意这种情况会话死
-锁。如果动作通过XMLRPC调用同一个应用的函数，调用者在调用前必须释放
-会话锁：
+对许多编程语言（包括C,C++, Java, C#, Ruby和Perl）有XMLRPC库，它们之间能相互操作。这是最好的方法，创建能够彼此交谈的应用并独立于编程语言。
+XMLRPC客户也可以在web2py动作内被实现，以便一个动作能与另外一个web2py应用（即使在同一个安装当中）用对话XMLRPC。注意这种情况会话死
+锁。如果动作通过XMLRPC调用同一个应用的函数，调用者在调用前必须释放会话锁：
 ``
 session.forget(response)
 ``:code
@@ -502,8 +467,7 @@ session.forget(response)
 
 ``JSONRPC``:inxx
 
-这一节，我们将使用和XMLRPC一样的代码例子，但我们会公开使用JSONRPC
-的服务：
+这一节，我们将使用和XMLRPC一样的代码例子，但我们会公开使用JSONRPC的服务：
 ``
 @service.jsonrpc
 def add(a,b):
@@ -513,10 +477,8 @@ def call():
     return service()
 ``:code
 
-JSONRPC与XMLRPC非常相似，但使用JSON而不是XML序列化协议。
-当然，我们能从任何语言的任何程序调用服务，但在这我们将用Python完成。
-web2py提供Mariano Reingart创建的模块“gluon/contrib/simplejsonrpc.py”。下面
-是如何使用它调用上面服务的例子：
+JSONRPC与XMLRPC非常相似，但使用JSON而不是XML序列化协议。当然，我们能从任何语言的任何程序调用服务，但在这我们将用Python完成。
+web2py提供Mariano Reingart创建的模块“gluon/contrib/simplejsonrpc.py”。下面是如何使用它调用上面服务的例子：
 
 ``
 >>> from gluon.contrib.simplejsonrpc import
@@ -528,15 +490,11 @@ web2py提供Mariano Reingart创建的模块“gluon/contrib/simplejsonrpc.py”�
 #### JSONRPC和Pyjamas
 ``JSONRPC``:inxx ``Pyjamas``:inxx
 
-JSONRPC与XMLRPC非常相似，但使用基于JSON的协议而不是XML编码数据。
-作为应用的一个例子，我们讨论它与Pyjamas的使用。Pyjamas是Google Web
-Toolkit（最初Java编写）的Python端口。Pyjamas允许使用Python写客户应用。
-Pyjamas把这段代码翻译为JavaScript。web2py服务JavaScript，通过源自客户并被
-用户动作出发AJAX请求与它通信。下面我们描述如何让Pyjamas与web2py一同工
-作。它不需要除了web2py与Pyjamas之外的任何额外的库。
+JSONRPC与XMLRPC非常相似，但使用基于JSON的协议而不是XML编码数据。作为应用的一个例子，我们讨论它与Pyjamas的使用。Pyjamas是Google Web
+Toolkit（最初Java编写）的Python端口。Pyjamas允许使用Python写客户应用。Pyjamas把这段代码翻译为JavaScript。web2py服务JavaScript，通过源自客户并被
+用户动作出发AJAX请求与它通信。下面我们描述如何让Pyjamas与web2py一同工作。它不需要除了web2py与Pyjamas之外的任何额外的库。
 
-我们将构建一个简单“todo”应用，有Pyjamas客户（全部JavaScript），只通过
-JSONRPC与服务器对话。
+我们将构建一个简单“todo”应用，有Pyjamas客户（全部JavaScript），只通过JSONRPC与服务器对话。
 
 首先，创建新应用叫“todo”：
 其次，在“models/db.py”文件，输入下列代码：
@@ -698,16 +656,13 @@ python /python/pyjamas-0.5p1/bin/pyjsbuild TodoApp.py
 http://127.0.0.1:8000/todo/default/todoApp
 ``:code
 
-这节由Chris Prinos撰写，得到了Luke Kenneth Casson Leighton（Pyjamas发明
-人）的帮助，由Alexei Vinidiktov更新。它已经使用Pyjamas 0.5p1测试过。这个例
-子
-受参考文献``blogspot1``:cite.页面的启发。
+这节由Chris Prinos撰写，得到了Luke Kenneth Casson Leighton（Pyjamas发明人）的帮助，由Alexei Vinidiktov更新。它已经使用Pyjamas 0.5p1测试过。这个例
+子受参考文献``blogspot1``:cite.页面的启发。
 
 #### Amfrpc
 ``PyAMF``:inxx ``Adobe Flash``:inxx
 
-AMFRPC是 Flash客服端与服务器通信使用的远程过程调用协议。web2py支持
-AMFRPC，但它要求你从源文件运行web2py，而且你预装了PyAMF库。这能从
+AMFRPC是 Flash客服端与服务器通信使用的远程过程调用协议。web2py支持AMFRPC，但它要求你从源文件运行web2py，而且你预装了PyAMF库。这能从
 Linux 或Windows shell键入下面命令安装：
 ``
 easy_install pyamf
@@ -715,11 +670,9 @@ easy_install pyamf
 
 （请咨询PyAMF文档获得更多细节）。
 本节我们假设你已经熟悉ActionScript编程。
-我们将创建简单服务，采用两个数值参数，把他们相加，返回求和结果。我们
-会调用我们的web2py应用“pyamf_test”，并且调用服务 ``addNumbers``。
+我们将创建简单服务，采用两个数值参数，把他们相加，返回求和结果。我们会调用我们的web2py应用“pyamf_test”，并且调用服务 ``addNumbers``。
 
-首先，用Adobe Flash（从MX 2004开始后的任何版本）通过开始新Flash FLA文
-件创建Flash客户端应用。在文件一开始的框架，添加下面的行：
+首先，用Adobe Flash（从MX 2004开始后的任何版本）通过开始新Flash FLA文件创建Flash客户端应用。在文件一开始的框架，添加下面的行：
 ``
 import mx.remoting.Service;
 import mx.rpc.RelayResponder;
@@ -749,19 +702,15 @@ function onFault(fault:FaultEvent):Void {
 stop();
 ``:code
 
-该代码允许Flash客户端连接到服务，在文件“/pyamf_test/default/gateway”中相
-应的叫“addNumbers”的函数。你也必须导入ActionScript 版本2 MX 远程类启用
-Flash的远程功能。添加路径到这些类在Adobe Flash IDE的classpath设置，或者就
-放置“mx”文件夹在新建文件的旁边。
+该代码允许Flash客户端连接到服务，在文件“/pyamf_test/default/gateway”中相应的叫“addNumbers”的函数。你也必须导入ActionScript 版本2 MX 远程类启用
+Flash的远程功能。添加路径到这些类在Adobe Flash IDE的classpath设置，或者就放置“mx”文件夹在新建文件的旁边。
 
-注意Service构造函数的参数。第一个参数是我们想创建的相应服务的URL。第三
-个参数是服务的域名。我们选择叫这个域名“mydomain”。
+注意Service构造函数的参数。第一个参数是我们想创建的相应服务的URL。第三个参数是服务的域名。我们选择叫这个域名“mydomain”。
 
 其次，创建动态叫“txt_result”的文本字段，把它放在stage。
 
 第三步，你需要设置web2py网关，能与上面定义的Flash客户端通信。
-继续创建一个新的web2py应用叫做 ``pyamf_test`` ，主持新的服务和给Flash客户端
-的AMF网关。编辑“default.py”控制器并确认它包含
+继续创建一个新的web2py应用叫做 ``pyamf_test`` ，主持新的服务和给Flash客户端的AMF网关。编辑“default.py”控制器并确认它包含
 ``
 @service.amfrpc3('mydomain')
 def addNumbers(val1, val2):
@@ -770,10 +719,8 @@ def addNumbers(val1, val2):
 def call(): return service()
 ``:code
 
-第四步，以pyamf_test.swf编译和导出/发布SWF flash客户，放置
-“pyamf_test.amf”、“pyamf_test.html”、“AC_RunActiveContent.js”和“crossdom
-ain.xml”文件在新创建应用的“static”文件夹，因为它是主持的网关，
-“pyamf_test”。
+第四步，以pyamf_test.swf编译和导出/发布SWF flash客户，放置“pyamf_test.amf”、“pyamf_test.html”、“AC_RunActiveContent.js”和“crossdom
+ain.xml”文件在新创建应用的“static”文件夹，因为它是主持的网关，“pyamf_test”。
 现在你可以测试客户端，通过访问：
 
 ``
@@ -800,8 +747,7 @@ http://127.0.0.1:8000/pyamf_test/default/call/amfrpc
 #### SOAP
 ``SOAP``:inxx
 
-web2py包括SOAP客户端和服务器，由Mariano Reingart创建。它能非常类似
-XML-RPC一样被使用。
+web2py包括SOAP客户端和服务器，由Mariano Reingart创建。它能非常类似XML-RPC一样被使用。
 考虑下面代码，例如，在“default.py”控制器：
 ``
 @service.soap('MyAdd',returns={'result':int},args={'a':int,'b':int,})
@@ -835,16 +781,13 @@ http://127.0.0.1:8000/app/default/call/soap
 #### simplejson
 ``JSON``:inxx ``simplejson``:inxx
 
-web2py包括gluon.contrib.simplejson，由Bob Ippolito开发。该模块提供大部分标
-准Python-JSON 编码-解码。
+web2py包括gluon.contrib.simplejson，由Bob Ippolito开发。该模块提供大部分标准Python-JSON 编码-解码。
 Simplejson由两个函数组成：
 - ``gluon.contrib.simplesjson.dumps(a)``把Python对象 ``a`` 编码成JSON。
 - ``gluon.contrib.simplejson.loads(b)`` 把JavaScript对象 ``b`` 解码成Python对象.
 
-对象类型包括原始类型、lists（列表）和dictionaries（字典）能被序列化。复合对
-象除用户定义的类能被序列化。
-下面是例程动作（例如，控制器” default.py”） 用低层的API序列化Python
-包含weekdays（星期）的list（列表）：
+对象类型包括原始类型、lists（列表）和dictionaries（字典）能被序列化。复合对象除用户定义的类能被序列化。
+下面是例程动作（例如，控制器” default.py”） 用低层的API序列化Python包含weekdays（星期）的list（列表）：
 ``
 def weekdays():
     names=['Sunday','Monday','Tuesday','Wednesday',
@@ -853,8 +796,7 @@ def weekdays():
     return gluon.contrib.simplejson.dumps(names)
 ``:code
 
-下面是HTML页的例子，发送Ajax请求到上面动作，接收JSON消息并存储list在
-相应JavaScript变量：
+下面是HTML页的例子，发送Ajax请求到上面动作，接收JSON消息并存储list在相应JavaScript变量：
 ``
 {{extend 'layout.html'}}
 <script>
@@ -863,20 +805,16 @@ $.getJSON('/application/default/weekdays',
 </script>
 ``:code
 
-该代码使用了jQuery 函数 ``$.getJSON``，它执行Ajax 调用，就响应，存储
-weekdays名字到本地JavaScript变量  ``data``并传递变量给回调函数。例子中，
+该代码使用了jQuery 函数 ``$.getJSON``，它执行Ajax 调用，就响应，存储weekdays名字到本地JavaScript变量  ``data``并传递变量给回调函数。例子中，
 回调函数只提示访问者该数据已被接收。 
 
 #### PyRTF
 ``PyRTF``:inxx ``RTF``:inxx
 
-另一个web站点常见的需求是生成词可读（Word-readable）文本文档。实现这个
-最简单的方法是使用丰富文档格式（RTF）文档格式。这个格式由Microsoft发明，
+另一个web站点常见的需求是生成词可读（Word-readable）文本文档。实现这个最简单的方法是使用丰富文档格式（RTF）文档格式。这个格式由Microsoft发明，
 并成为了标准。
-web2py包含gluon.contrib.pyrtf, 由Simon Cusack开发， Grant Edwards修定。该模
-块允许你编程生成RTF文档包括彩色格式的文本和图片。
-下面的例子，我们实例化两个基本RTF类，Document 和 Section，追加后者到
-前者，插入一些虚拟文本在后者：
+web2py包含gluon.contrib.pyrtf, 由Simon Cusack开发， Grant Edwards修定。该模块允许你编程生成RTF文档包括彩色格式的文本和图片。
+下面的例子，我们实例化两个基本RTF类，Document 和 Section，追加后者到前者，插入一些虚拟文本在后者：
 ``
 def makertf():
     import gluon.contrib.pyrtf as q
@@ -889,8 +827,7 @@ def makertf():
     return q.dumps(doc)
 ``:code
 
-最后，Document被 ``q.dumps(doc)``序列化。注意在返回RTF文档之前，需要在头部
-指定内容类型否则浏览器不知道如何处理文件。
+最后，Document被 ``q.dumps(doc)``序列化。注意在返回RTF文档之前，需要在头部指定内容类型否则浏览器不知道如何处理文件。
 
 依赖于配置，浏览器可能要求你要么存储这个文件要么使用文本编辑器打开它。
 
@@ -899,15 +836,13 @@ def makertf():
 
 web2py也能生成PDF文档，用叫做`ReportLab``:cite 额外库。
 
-如果你从源文件运行web2py，它足够安装了ReportLab。如果你运行Windows二
-进制发行版，你需要解压ReportLab到 “web2py/”文件夹。如果你运行Mac二进
+如果你从源文件运行web2py，它足够安装了ReportLab。如果你运行Windows二进制发行版，你需要解压ReportLab到 “web2py/”文件夹。如果你运行Mac二进
 制发行版，你需要解压ReportLab到下面的文件夹：
 ``
 web2py.app/Contents/Resources/
 ``:code
 
-从现在开始，我们假定ReportLab已经安装并且web2py能找到它。我们会创建一
-个叫做“get_me_a_pdf”的简单动作来生成PDF文档。
+从现在开始，我们假定ReportLab已经安装并且web2py能找到它。我们会创建一个叫做“get_me_a_pdf”的简单动作来生成PDF文档。
 ``
 from reportlab.platypus import *
 from reportlab.lib.styles import getSampleStyleSheet
@@ -939,34 +874,27 @@ def get_me_a_pdf():
     return data
 ``:code
 
-注意我们如何生成到PDF唯一临时文件，``tmpfilename``，我们从该文件读取生成
-的PDF，然后我们删除该文件。
+注意我们如何生成到PDF唯一临时文件，``tmpfilename``，我们从该文件读取生成的PDF，然后我们删除该文件。
 
-有关更多ReportLab API的信息，参考ReportLab文档。我们强烈推荐使用
-ReportLab的 Platypus API，比如``Paragraph``, ``Spacer``,等。
+有关更多ReportLab API的信息，参考ReportLab文档。我们强烈推荐使用ReportLab的 Platypus API，比如``Paragraph``, ``Spacer``,等。
 
 
 ### Restful Web 服务
 
 ``REST``:inxx
 
-REST代表“REpresentational State Transfer”（表示状态转移），它是web服
-务结构的一种类型，不是协议，如SOAP。事实上，REST没有标准。
+REST代表“REpresentational State Transfer”（表示状态转移），它是web服务结构的一种类型，不是协议，如SOAP。事实上，REST没有标准。
 
-粗略地说，REST指出服务能被考虑为资源的集合。每个资源用URI标识。每
-个资源有四种动作，它们是POST (create 创建), GET (read 读取), PUT(update更
-新)和 DELETE （删除），首字母缩略CRUD（create-read-update-delete 创建-读
-取-更新-删除）代表。客户与通过产生到标识资源的URL的HTTP请求的资源通
-信，使用HTTP方法给资源传递POST/PUT/GET/DELETE指令。URL可能有扩展
-名，例如``json``，指定协议如何编码数据。
+粗略地说，REST指出服务能被考虑为资源的集合。每个资源用URI标识。每个资源有四种动作，它们是POST (create 创建), GET (read 读取), PUT(update更
+新)和 DELETE （删除），首字母缩略CRUD（create-read-update-delete 创建-读取-更新-删除）代表。客户与通过产生到标识资源的URL的HTTP请求的资源通
+信，使用HTTP方法给资源传递POST/PUT/GET/DELETE指令。URL可能有扩展名，例如``json``，指定协议如何编码数据。
 因此，例如POST要求 
 
 ``
 http://127.0.0.1/myapp/default/api/person
 ``
 
-意味着你想创建新``person``。这种情况，``person`` 对象可以响应表``person``中的记
-录，但也可能是其它资源类型（例如文件）。
+意味着你想创建新``person``。这种情况，``person`` 对象可以响应表``person``中的记录，但也可能是其它资源类型（例如文件）。
 相似地，GET请求到
 
 ``
@@ -1007,8 +935,7 @@ http://127.0.0.1/api/person/1.json
 
 但这是个测试问题，我们已经在第四章详尽讨论了。
 
-我们的例子中，我们使用叫做``api`` 的动作，但这不是必须的。事实上我们可
-以给公开RESTful服务动作任何我们想取的名字，而且实际上我们可以创建不
+我们的例子中，我们使用叫做``api`` 的动作，但这不是必须的。事实上我们可以给公开RESTful服务动作任何我们想取的名字，而且实际上我们可以创建不
 止一个。同理对于参数也一样，我们将继续假定我们的RESTful动作叫做``api``。
 
 我们假定我们已经定义了下面两张表：
@@ -1054,8 +981,7 @@ http://127.0.0.1:8000/myapp/default/api/person/1.json
 - 扩展名存储在 ``request.extension`` ，内容类型自动设置。
 
 --------
-``@request.restful()`` 装饰器确认在路径信息里的扩展名存储在``request.extension``，映
-射请求方法为相应的函数在动作（POST, GET, PUT, DELETE）内，并传递``request.args`` 和 ``request.vars`` to给选择到的函数。
+``@request.restful()`` 装饰器确认在路径信息里的扩展名存储在``request.extension``，映射请求方法为相应的函数在动作（POST, GET, PUT, DELETE）内，并传递``request.args`` 和 ``request.vars`` to给选择到的函数。
 --------
 
 现在我们构建到POSP和GET个人记录的服务
@@ -1075,31 +1001,24 @@ def api():
 
 注意：
 - GET和POST用不同方法处理
-- 函数预期正确的参数（未命名参数被``request.args`` 解析，命名的参数来自
-``request.vars``）
+- 函数预期正确的参数（未命名参数被``request.args`` 解析，命名的参数来自``request.vars``）
 - 它们检查输入是否正确，否则引发异常
-- GET执行查询并返回记录 ``db.person(id)``。输出自动转换为JSON因为通用视图
-调用。
+- GET执行查询并返回记录 ``db.person(id)``。输出自动转换为JSON因为通用视图调用。
 - POST执行``validate_and_insert(..)`` 并返回新记录``id`` 或，另外，验证错误。POST变量，``**fields``是post变量。
 
 #### ``parse_as_rest`` 方法(实验性的)
 
-迄今解释的逻辑足够创建任何RESTful类型web服务但web2py能帮助我们更
-多。
+迄今解释的逻辑足够创建任何RESTful类型web服务但web2py能帮助我们更多。
 
-事实上，web2py提供语法描述哪一个数据库表我们想公开，及如何映射资
-源到URL，反之亦然。
+事实上，web2py提供语法描述哪一个数据库表我们想公开，及如何映射资源到URL，反之亦然。
 
 ``parse_as_rest``:inxx
 
-这用URL模式实现。模式是映射URL请求参数为数据库查询的字符串。有四种
-类型原子模式：
+这用URL模式实现。模式是映射URL请求参数为数据库查询的字符串。有四种类型原子模式：
 
 - 字符串常量比如“friend”。
-- 表相应的字符串常量。例如“friend[person]”匹配URL“friend”到
-“person”表。
-- 过滤器用的变量。例如“person.id” 会用到 ``db.person.name=={person.id}`` 过
-滤器。
+- 表相应的字符串常量。例如“friend[person]”匹配URL“friend”到“person”表。
+- 过滤器用的变量。例如“person.id” 会用到 ``db.person.name=={person.id}`` 过滤器。
 - 字段的名字，用“:field”表示的
 
 原子模式用“/”可以组合成复杂URL，比如
@@ -1114,8 +1033,7 @@ def api():
 http://..../friend/1/name
 ``
 
-查询返回人名的person.id。“friend[person]”匹配 “friend”并过滤表
-“person”。“{person.id}”匹配“1”并过滤“person.id==1”。“:field”匹配
+查询返回人名的person.id。“friend[person]”匹配 “friend”并过滤表“person”。“{person.id}”匹配“1”并过滤“person.id==1”。“:field”匹配
 “name”并返回：
 
 ``
@@ -1236,11 +1154,9 @@ http://..../friends/aa/uu
 
 模式中字段的合法属性是： ``contains``, ``startswith``, ``le``, ``ge``, ``lt``, ``gt``, ``eq`` (equal, default), ``ne`` (not equal)。。其它属性特别是日期和日期时间字段的是 ``day``, ``month``, ``year``, ``hour``, ``minute``, ``second``。
 
-注意该模式语法不是设计通用的。不是每个可能的查询能通过模式描述但
-是其中大量是。语法可能在将来扩展。
+注意该模式语法不是设计通用的。不是每个可能的查询能通过模式描述但是其中大量是。语法可能在将来扩展。
 
-你经常想公开一些RESTful URL，但你想限制可能的查询。这能通过传递额外参
-数``queries``给 ``parse_as_rest`` 方法实现。``queries``是``(tablename,query)``字典，query是DAL
+你经常想公开一些RESTful URL，但你想限制可能的查询。这能通过传递额外参数``queries``给 ``parse_as_rest`` 方法实现。``queries``是``(tablename,query)``字典，query是DAL
 查询限制到表``tablename``的访问。
 你也能用GET排序变量排序结果。
 
@@ -1257,8 +1173,7 @@ http://..../api/friends?offset=10&limit=1000
 ``
 它返回上限1000朋友（人），并跳过开始10条。``limit`` 默认到1000， ``offset``默认0。
 
-现在我们考虑极端情况。我们想给所有表（除``auth_`` 表）构建全部可能的模
-式。我们想能用任意文本字段、任意整型字段、任意浮点字段（范围）和任意日
+现在我们考虑极端情况。我们想给所有表（除``auth_`` 表）构建全部可能的模式。我们想能用任意文本字段、任意整型字段、任意浮点字段（范围）和任意日
 期（也是范围）进行搜索。我们也想能POST任意表：
 通常情况，我们需要许多模式。web2py让它变得简单：
 
@@ -1278,8 +1193,7 @@ def api():
     return locals()
 ``
 
-设置 ``patterns='auto'`` 让web2py给所有非auth表生成全部可能模式。甚至有查
-询有关模式的模式：
+设置 ``patterns='auto'`` 让web2py给所有非auth表生成全部可能模式。甚至有查询有关模式的模式：
 
 ``
 http://..../api/patterns.json
@@ -1350,8 +1264,7 @@ def api():
 
 方法``db.smart_query`` 用两个参数：
 - 字段或表的列表，在查询中允许的
-- 字符串，包含自然语言形式的查询
-它返回找到的包含记录的``db.set`` 对象。
+- 字符串，包含自然语言形式的查询它返回找到的包含记录的``db.set`` 对象。
 
 注意搜索字符串被解析，不是计算或者执行，因此它没有安全风险。
 
@@ -1388,18 +1301,15 @@ access granted, you said hello
 @auth.requires_permission(...)
 ``:code
 
-对通常的动作（不装饰为服务），这些装饰器可以使用，即使输出呈现为
-HTML以外的格式。
+对通常的动作（不装饰为服务），这些装饰器可以使用，即使输出呈现为HTML以外的格式。
 
-定义为服务并用 ``@service...`` decorators和 ``@auth...`` 装饰的函数，不该使用。两钟类型装饰器不
-能混用。如果认证不执行，正是``call``
+定义为服务并用 ``@service...`` decorators和 ``@auth...`` 装饰的函数，不该使用。两钟类型装饰器不能混用。如果认证不执行，正是``call``
 ``
 @auth.requires_login()
 def call(): return service()
 ``:code
 
-注意也可能实例化多服务对象，用它们注册相样不同的函数，用认证公开其中
-一些而有一些不公开。
+注意也可能实例化多服务对象，用它们注册相样不同的函数，用认证公开其中一些而有一些不公开。
 ``
 public_services=Service()
 private_services=Service()
@@ -1417,7 +1327,6 @@ def public_call(): return public_service()
 def private_call(): return private_service()
 ``:code
 
-这假定调用函数在HTTP报头传递凭据（合法绘画cookie或使用基本认证，如
-前一章讨论）。客户需要支持它；不是所有的客户都支持。
+这假定调用函数在HTTP报头传递凭据（合法绘画cookie或使用基本认证，如前一章讨论）。客户需要支持它；不是所有的客户都支持。
 
 
