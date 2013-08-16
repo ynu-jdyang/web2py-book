@@ -1,13 +1,10 @@
-
 ## 组件和插件Components and plugins
 ``component``:inxx
 ``plugin``:inxx
 
-组件和插件是web2py相对较新的功能，在开发者间关于它们是什么和它们应该是什
-么存在一些不同意见。大部分的困惑源于在其它软件项目对这些术语不同的使用，以及开发者继续完善技术要求的事实。
+组件和插件是web2py相对较新的功能，在开发者间关于它们是什么和它们应该是什么存在一些不同意见。大部分的困惑源于在其它软件项目对这些术语不同的使用，以及开发者继续完善技术要求的事实。
 
-但是，插件支持是重要特性而且我们需要提供一些定义。这些定义不意味着是最终的，
-而是与编程模式保持一致，我们将在本章讨论。
+但是，插件支持是重要特性而且我们需要提供一些定义。这些定义不意味着是最终的，而是与编程模式保持一致，我们将在本章讨论。
 
 
 - 我们如何能构建模块应用最小化服务器负荷并最大化代码重用？
@@ -24,19 +21,16 @@
 **component** 是web页面功能自治的部分。
 ------
 
-组件可以由模块、控制器和视图组成，没有严格的要求，除了嵌在web页面，它必须
-局部化在html标签（例如DIV、SPAN或IFRAME）范围内并且必须独立于页面其它部分执
+组件可以由模块、控制器和视图组成，没有严格的要求，除了嵌在web页面，它必须局部化在html标签（例如DIV、SPAN或IFRAME）范围内并且必须独立于页面其它部分执
 行任务。我们尤其关注加载在页面内并且通过Ajax和组件控制器通信的页面。
 
-组件的一个例子是“comments component”，包含在DIV并显示用户的评论以及粘贴
-新评论表单。当表单提交，它通过Ajax发送到服务器，列表更新并且评论存储在服务器的数据库。DIV内容无需重载页面的其余部分就得到刷新。
+组件的一个例子是“comments component”，包含在DIV并显示用户的评论以及粘贴新评论表单。当表单提交，它通过Ajax发送到服务器，列表更新并且评论存储在服务器的数据库。DIV内容无需重载页面的其余部分就得到刷新。
 
 web2py LOAD函数使它易于实现，不需要太多JavaScript/Ajax知识和编程。
 
 我们的目标是能通过装配组件到页面布局开发web应用。
 
-考虑简单web2py应用“test”用“models/db_comments.py”中自定义的模型扩展默认基
-本构建应用。
+考虑简单web2py应用“test”用“models/db_comments.py”中自定义的模型扩展默认基本构建应用。
 
 ``
 db.define_table('comment',
@@ -77,8 +71,7 @@ http://127.0.0.1:8000/test/comments/post
 
 [[image @///image/en7900.png center 480px]]
 
-到目前，该动作没有什么特殊的，但通过定义新视图带扩展名“.load”，我们把它转
-换为一个组件不扩展布局。
+到目前，该动作没有什么特殊的，但通过定义新视图带扩展名“.load”，我们把它转换为一个组件不扩展布局。
 
 因此，我们创建“views/comments/post.load”：
 
@@ -144,8 +137,7 @@ web2py_component("/test/comment/post.load","c282718984176")
 
 （实际生产的代码取决于传递给LOAD函数的选项）。
 
-``web2py_component(url,id)``函数定义在“web2py_ajax.html”，它执行所有的魔
-法：它通过Ajax调用 ``url`` 并依据相应的``id``把响应嵌到DIV；它陷阱每个表单提交
+``web2py_component(url,id)``函数定义在“web2py_ajax.html”，它执行所有的魔法：它通过Ajax调用 ``url`` 并依据相应的``id``把响应嵌到DIV；它陷阱每个表单提交
 到DIV并通过Ajax提交那些表单。Ajax目标总是DIV自己。
 
 完整的LOAD帮助对象的代码如下：
@@ -161,23 +153,18 @@ LOAD(c=None, f='index', args=[], vars={},
 此处：
 - 头两个参数``c`` 和 ``f``分别是控制器和我们想调用的函数。
 - ``args``和``vars``是我们想传递给函数的参数和变量。前者是列表，后者是字典。
-- ``extension`` 是可选的扩展。
-注意扩展名也能象在函数``f='index.load'``部分那样传递。
+- ``extension`` 是可选的扩展。注意扩展名也能象在函数``f='index.load'``部分那样传递。
 - ``target``是目标DIV的 ``id`` 。如果没有指定，生成随机的目标``id`` 。
 - 如果DIV没有通过``ajax`` 填充，``ajax``该设置为``True`` ，如果DIV在当前页面返回以前已被填充（如此避免Ajax调用），设置为 ``False`` 
-- ``ajax_trap=True`` 意味着DIV任何表单提交必须通过Ajax捕获和提交，响应必须呈现
-在DIV里。 ``ajax_trap=False`` 表明表单必须正常提交，如此重载整个页面。 ``ajax_trap``忽略，如果 ``ajax=True``，假定为``True``。 
-- ``url``，如果指定，则覆盖 ``c``, ``f``, ``args``, ``vars``, 和 ``extension`` 的值，在 ``url``载入组建。它用来
-象其它应用服务的组建页面那样载入（可能或也可不是用web2py创建的）。
-- ``user_signature`` 载入组建。它用来
-象其它应用服务的组建页面那样载入（可能或也可不是用web2py创建的）。
+- ``ajax_trap=True`` 意味着DIV任何表单提交必须通过Ajax捕获和提交，响应必须呈现在DIV里。 ``ajax_trap=False`` 表明表单必须正常提交，如此重载整个页面。 ``ajax_trap``忽略，如果 ``ajax=True``，假定为``True``。 
+- ``url``，如果指定，则覆盖 ``c``, ``f``, ``args``, ``vars``, 和 ``extension`` 的值，在 ``url``载入组建。它用来象其它应用服务的组建页面那样载入（可能或也可不是用web2py创建的）。
+- ``user_signature`` 载入组建。它用来象其它应用服务的组建页面那样载入（可能或也可不是用web2py创建的）。
 - ``content`` is the content to be displayed while performing the ajax call. It can be a helper as in ``content=IMG(..)``.
 - 可选 ``**attr`` （属性）能被传递给contained``DIV``。
 
 如果没有指定 ``.load``d视图，用``generic.load`` 呈现动作返回的字典没有布局。如果字典包含单个项它工作得更好。
 
-如果你LOAD有 ``.load`` 扩展名的组件并且相应的控制器函数重定向到另外一个动作（例
-如，登录表单）， ``.load`` 传播且新的url（也是重定向到的）也用``.load`` 扩展名载入。
+如果你LOAD有 ``.load`` 扩展名的组件并且相应的控制器函数重定向到另外一个动作（例如，登录表单）， ``.load`` 传播且新的url（也是重定向到的）也用``.load`` 扩展名载入。
 
 *Please note:*
 因为Ajax post不支持多部分表单，即文件上传、上传字段用LOAD组件不工作。
@@ -229,11 +216,9 @@ response.flash='...'
 response.js='...'
 ``:code
 
-前者包含关于响应你想flash显示的文本。后者包含关于响应你想要执行的JavaScript代
-码。它不包含新行。
+前者包含关于响应你想flash显示的文本。后者包含关于响应你想要执行的JavaScript代码。它不包含新行。
 
-作为例子，让我们定义联系表单组件在文件“controllers/contact/ask.py”允许用户提问
-题。组件用电子邮件发送问题给系统管理员，flash“thank you”消息，从页面移出组件：
+作为例子，让我们定义联系表单组件在文件“controllers/contact/ask.py”允许用户提问题。组件用电子邮件发送问题给系统管理员，flash“thank you”消息，从页面移出组件：
 
 ``
 def ask():
@@ -251,8 +236,7 @@ def ask():
     return dict(form=form)
 ``:code
 
-头四行定义表单并接受它。用来发送的mail对象定义在默认的基本构建应用中。最后四
-行通过从HTTP请求报头得到数据以及设置HTTP响应报头实现全部组件指定逻辑
+头四行定义表单并接受它。用来发送的mail对象定义在默认的基本构建应用中。最后四行通过从HTTP请求报头得到数据以及设置HTTP响应报头实现全部组件指定逻辑
 
 现在你可以嵌入这个联系表单到任意页面，通过
 
@@ -282,8 +266,7 @@ def ask(): ...
 ``A``:inxx
 ``Ajax links``:inxx
 
-通常链接不被捕获，点击组件内的链接，整个链接的页面载入。有时，你想链接的页面
-载入组件内。这能用``A`` 帮助对象实现：
+通常链接不被捕获，点击组件内的链接，整个链接的页面载入。有时，你想链接的页面载入组件内。这能用``A`` 帮助对象实现：
 
 ``
 {{=A('linked page',_href='http://example.com',cid=request.cid)}}
@@ -291,7 +274,8 @@ def ask(): ...
 
 如果``cid`` 指定，链接的页面通过Ajax载入。
 ``cid``是html元素的``id`` ，放置被载入页面的内容。
-。这个例子，我们设置它为``request.cid``，即组件的``id`` 生成链接。链接的页面可能是并通常
+
+这个例子，我们设置它为``request.cid``，即组件的``id`` 生成链接。链接的页面可能是并通常
 是使用URL命令生成的内部URL。
 
 ### 插件Plugins
@@ -302,19 +286,15 @@ def ask(): ...
 
 而且我们认为是 ''any'':
 
-- 插件不是模块，不是模型，它不是控制器不是视图，
-但它可能包含模块、模型、控制器和/或视图。
+- 插件不是模块，不是模型，它不是控制器不是视图，但它可能包含模块、模型、控制器和/或视图。
 - 插件不需要功能上是自治的，它可能依赖其它插件或特定用户代码。
-- plugin不是plugin system，因此没有注册概念也没有隔离，
-但是我们给规则尝试实现一些隔离。
+- plugin不是plugin system，因此没有注册概念也没有隔离，但是我们给规则尝试实现一些隔离。
 - 我们讨论你应用的插件，而不是web2py的插件。
 
-因此，为什么把它叫做plugin？因为它提供一种机制打包应用的子集并给另外应用拆
-包（即plug-in）。在这个定义下，你应用中的任何文件可以视为插件。
+因此，为什么把它叫做plugin？因为它提供一种机制打包应用的子集并给另外应用拆包（即plug-in）。在这个定义下，你应用中的任何文件可以视为插件。
 当应用程序发布时，它的插件是打包的并一同发布。
 
-实践中， **admin** 提供界面从你的应用分开地打包和拆包插件。你应用的文件和文件夹，
-有有前缀 ``plugin_``''name'' 名字的能被一起打包到一个文件，叫做：
+实践中， **admin** 提供界面从你的应用分开地打包和拆包插件。你应用的文件和文件夹，有前缀 ``plugin_``''name'' 名字的能被一起打包到一个文件，叫做：
 
 ``web2py.plugin.``''name''``.w2p``
 
@@ -330,10 +310,8 @@ web2py处理组成插件的文件与其它任何不同的文件没有什么区�
 
 在实践中我们仅关心两类插件：
 
-- ''Component Plugins''。这些是包含前面章所定义的组件。组件插件可以包含一个或更多组
-件。我们可以思考例子 ``plugin_comments`` ，包含上面建议的comments组件。另外一个例子是``plugin_tagging``，包含tagging组件和tag-cloud组件，共享一些被插件应以的数据库表。
-- ''Layout Plugins''。这些是包含布局视图及该视图所需静态文件的插件。当插件应用时，它
-给应用新面貌和感受。
+- ''Component Plugins''。这些是包含前面章所定义的组件。组件插件可以包含一个或更多组件。我们可以思考例子 ``plugin_comments`` ，包含上面建议的comments组件。另外一个例子是``plugin_tagging``，包含tagging组件和tag-cloud组件，共享一些被插件应以的数据库表。
+- ''Layout Plugins''。这些是包含布局视图及该视图所需静态文件的插件。当插件应用时，它给应用新面貌和感受。
 
 根据上面定义，之前章节生成的组件，例如“controllers/contact.py”也是插件。我们能移动它们从一个应用到另一个，以及使用它们定义的组件。
 但是，它们不被**admin**视为如此，因为没有把它们标识为插件的东西。因此，我们有两个问题需要解决：
@@ -531,12 +509,9 @@ plugins.name3.param5 = '...'
 #### 布局插件 Layout plugins
 ``layout plugin``:inxx
 
-布局插件比组件插件简单，因为经常地它不包含代码，仅含视图和静态文件。但你仍要遵
-从好的实践：
-首先，创建叫做“static/plugin_layout_name/”的文件夹（name是你布局的名字），放置你
-所有的静态文件在此。
-其次，创建布局文件叫做“views/plugin_layout_name/layout.html”，包含你的布局链接
-“static/plugin_layout_name/”图像、CSS和JavaScript files文件。
+布局插件比组件插件简单，因为经常地它不包含代码，仅含视图和静态文件。但你仍要遵从好的实践：
+首先，创建叫做“static/plugin_layout_name/”的文件夹（name是你布局的名字），放置你所有的静态文件在此。
+其次，创建布局文件叫做“views/plugin_layout_name/layout.html”，包含你的布局链接“static/plugin_layout_name/”图像、CSS和JavaScript files文件。
 再次，修改“views/layout.html”以便它仅是读取：
 
 ``
@@ -563,26 +538,20 @@ plugins.name3.param5 = '...'
 http://web2py.com/examples/static/web2py.plugin.wiki.w2p
 ``:code
 
-**plugin_wiki**背后的理念是大部分应用包括页面是半静态的。这些是不包含复杂自定义逻辑
-的页面。它们包含结构化的文本（想想帮助页面）、图像、音频、视频、crud表单或标准组件
+**plugin_wiki**背后的理念是大部分应用包括页面是半静态的。这些是不包含复杂自定义逻辑的页面。它们包含结构化的文本（想想帮助页面）、图像、音频、视频、crud表单或标准组件
 的集合（评论、标签、表和地图）等。这些页面可能是公开的，需要登录或有其它认证限制。
 这些页面可能用菜单链接或只有通过向导表单到达。**plugin_wiki**提供简便的方法增加页面适应这个类别到你的规则的web2py应用。
 
 特别是， **plugin_wiki** 提供：
 ``widget in plugin_wiki``:inxx
 
-- 类似wiki的界面允许添加页面到你的应用并通过slug引用它们。这些页（我们称它们
-为wiki页面）有版本并存储在数据库。
-- 公开和私有页面（需要登录）。如果页面要求登录，它可能需要用户有特定组成员资
-格。
-- 三个级别：1、2和3. 级别1，页面只包括文本、图像、音频和视频。级别2，页面也包括
-widget（小工具）（这些是之前章节定义能嵌在wiki页的组件）。级别3，页面也能
+- 类似wiki的界面允许添加页面到你的应用并通过slug引用它们。这些页（我们称它们为wiki页面）有版本并存储在数据库。
+- 公开和私有页面（需要登录）。如果页面要求登录，它可能需要用户有特定组成员资格。
+- 三个级别：1、2和3. 级别1，页面只包括文本、图像、音频和视频。级别2，页面也包括widget（小工具）（这些是之前章节定义能嵌在wiki页的组件）。级别3，页面也能
 包含web2py模板代码。
 - 用markin语法编辑页面选择或在HTML用WYSIWYG编辑器（编辑对象）
-- 一组widget（小工具）：以组件实现。它们是自己记录并作为规则组件嵌入通常
-web2py视图或，使用简化的语法，到wiki页面。
-- 一组特殊页面（``meta-code``,``meta-menu``等）
-能用来定制插件（例如，定义插件运行的代码，定制菜单等）
+- 一组widget（小工具）：以组件实现。它们是自己记录并作为规则组件嵌入通常web2py视图或，使用简化的语法，到wiki页面。
+- 一组特殊页面（``meta-code``,``meta-menu``等）能用来定制插件（例如，定义插件运行的代码，定制菜单等）
 
 ------
 **welcome** 应用加上 **plugin_wiki** 可以视为开发环境，这个环境下适于构建简单web应用比如博客。
@@ -729,17 +698,14 @@ attribute2: value2
 #### 页面权限Page permissions
 
 当编辑一个页面你将找到下列字段：
-- **active** (默认 ``True``)。如果页面不是活动的，
-它不能被访问者访问（即便是public）
+- **active** (默认 ``True``)。如果页面不是活动的，它不能被访问者访问（即便是public）
 - **public** (默认 ``True``)。如果页面是公开的，它能被访问者访问无需登录。
-- **role** (默认 None)。如果页面有角色，
-页面只能被登录用户有相应角色的组的成员访问。
+- **role** (默认 None)。如果页面有角色，页面只能被登录用户有相应角色的组的成员访问。
 
 #### 特殊页面Special pages
 ``menu in plugin_wiki``:inxx
 
-**meta-menu** 包含菜单。如果该页面不存在，
-web2py使用定义在“models/menu.py”的``response.menu``。meta-menu页面内容覆盖菜单。语法如下：
+**meta-menu** 包含菜单。如果该页面不存在，web2py使用定义在“models/menu.py”的``response.menu``。meta-menu页面内容覆盖菜单。语法如下：
 
 ``
 Item 1 Name http://link1.com
@@ -911,8 +877,7 @@ select(table,query_field='',query_value='',fields='')
 
 列出表中所有记录
 - ``table`` 表的名字
-- ``query_field`` 和 ``query_value`` 如果有，
-用查询``query_field == query_value``过滤记录
+- ``query_field`` 和 ``query_value`` 如果有，用查询``query_field == query_value``过滤记录
 - ``fields`` 是要显示的逗号分隔的字段列表
 
 **search**
@@ -1103,8 +1068,7 @@ load_action(action, controller='', ajax=True)
 
 #### 扩展widget
 
-plugin_wiki的widget能通过创建新模型文件“models/plugin_wiki_” name被添加，此
-处name是任意的也是包含下面类似内容的文件：
+plugin_wiki的widget能通过创建新模型文件“models/plugin_wiki_” name被添加，此处name是任意的也是包含下面类似内容的文件：
 
 ``
 class PluginWikiWidgets(PluginWikiWidgets):
@@ -1118,15 +1082,13 @@ class PluginWikiWidgets(PluginWikiWidgets):
 
 第一行说明你正扩展widget列表。类内，你能定义你需要的函数。每个静态函数使新的widget，除了以下划线开始的函数不是。函数带任意数量的参数，可以有或可以没有默认值。函数的docstring必须使用markin语法归档函数自己。
 
-当widget嵌到plugin_wiki页面，参数以字符串传递给widget。这意味着widget函数能
-够给每个参数接受字符串并最终把它们转换为所需要的表示。你能决定哪种字符串表示，就确认这在docstring中记录了。
+当widget嵌到plugin_wiki页面，参数以字符串传递给widget。这意味着widget函数能够给每个参数接受字符串并最终把它们转换为所需要的表示。你能决定哪种字符串表示，就确认这在docstring中记录了。
 
 Widget可以返回web2py帮助对象的字符串。后一种情况，它们会被使用 ``.xml()``序列化。
 
 注意新widget如何访问任何声明在全局名称空间内的变量。
 
-例如，我们打算创建一个新widget显示“contact/ask”表单，本章开头创建的。这能
-通过创建文件“models/plugin_wiki_contact”实现，该文件包含：
+例如，我们打算创建一个新widget显示“contact/ask”表单，本章开头创建的。这能通过创建文件“models/plugin_wiki_contact”实现，该文件包含：
 
 ``
 class PluginWikiWidgets(PluginWikiWidgets):
