@@ -3,8 +3,7 @@
 
 ### 设置电子邮件
 
-Web2py提供``gluon.tools.Mail``类使得用web2py发送电子邮件变得简单。可
-用下面语句定义邮件服务器：
+Web2py提供``gluon.tools.Mail``类使得用web2py发送电子邮件变得简单。可用下面语句定义邮件服务器：
 ``
 from gluon.tools import Mail
 mail = Mail()
@@ -13,8 +12,7 @@ mail.settings.sender = 'you@example.com'
 mail.settings.login = 'username:password'
 ``:code
 
-注意，如果你的应用使用``Auth`` （下一章讨论），``auth`` 对象包括它自己的邮
-件对象在``auth.settings.mailer``，因此你可以用它，如下面所示：
+注意，如果你的应用使用``Auth`` （下一章讨论），``auth`` 对象包括它自己的邮件对象在``auth.settings.mailer``，因此你可以用它，如下面所示：
 ``
 mail = auth.settings.mailer
 mail.settings.server = 'smtp.example.com:25'
@@ -22,8 +20,7 @@ mail.settings.sender = 'you@example.com'
 mail.settings.login = 'username:password'
 ``:code
 
-你需要用你的SMTP服务器合适的参数替换mail.settings。如果SMTP服务
-器不需要认证，设置 ``mail.settings.login = None`` 。
+你需要用你的SMTP服务器合适的参数替换mail.settings。如果SMTP服务器不需要认证，设置 ``mail.settings.login = None`` 。
 
 ``email logging``:inxx
 
@@ -158,11 +155,9 @@ mail.send('you@example.com',
 
 ### Se发送短信
 ``SMS``:inxx
-从web2py应用发送短消息需要第三方服务，传递消息到接收者。通常，这
-不是免费服务，而且国家与国家不同。我们尝试了很多的服务几乎都不成功。电
+从web2py应用发送短消息需要第三方服务，传递消息到接收者。通常，这不是免费服务，而且国家与国家不同。我们尝试了很多的服务几乎都不成功。电
 话公司封堵源自这些服务的电子邮件，因为它们最终用做垃圾邮件源。
-好点的方法是用电话公司自己来转发SMS。每个电话公司有电子邮件地址
-唯一关联每个移动电话号码，因此SMS消息能作为电子邮件发送到电话号码。
+好点的方法是用电话公司自己来转发SMS。每个电话公司有电子邮件地址唯一关联每个移动电话号码，因此SMS消息能作为电子邮件发送到电话号码。
 web2py提供模块帮助这个处理：
 ``
 from gluon.contrib.sms_utils import SMSCODES, sms_email
@@ -170,8 +165,7 @@ email = sms_email('1 (111) 111-1111','T-Mobile USA (tmail)')
 mail.sent(to=email, subject='test', message='test')
 ``:code
 
-SMSCODES是字典，映射主要电话公司名字到电子邮件地址前缀。``sms_email``函
-数用电话号码（作为字符串）和电话公司的名字，并返回电话的电子邮件地址。 
+SMSCODES是字典，映射主要电话公司名字到电子邮件地址前缀。``sms_email``函数用电话号码（作为字符串）和电话公司的名字，并返回电话的电子邮件地址。 
 
 ### 用模板系统生成消息
 ``emails``:inxx
@@ -202,13 +196,11 @@ for person in db(db.person).select():
 response.render('message.html', context)
 ``:code
 
-用定义在字典“context”的变量呈现了视图“message.html”，而且它用呈现
-的电子邮件文本返回字符串。context是字典包含对模板文件可视的变量。
+用定义在字典“context”的变量呈现了视图“message.html”，而且它用呈现的电子邮件文本返回字符串。context是字典包含对模板文件可视的变量。
 如果消息用 ``<html>``开始并以``</html>``结束，这个电子邮件是HTML电子邮件。
 
 
-注意，如果你想在你的HTML电子邮件中包含回到你的网站链接，你可以
-用``URL``函数。然而，默认情况，``URL``函数生成相对URL，从电子邮件不能用。
+注意，如果你想在你的HTML电子邮件中包含回到你的网站链接，你可以用``URL``函数。然而，默认情况，``URL``函数生成相对URL，从电子邮件不能用。
 要生成绝对URL，你需要指定URL函数的``scheme`` 和 ``host``参数。例如：
  
 ``
@@ -221,15 +213,12 @@ response.render('message.html', context)
 <a href="{{=URL(..., scheme='http', host='www.site.com')}}">Click here</a>
 ``:code
 
-用在生成电子邮件文本的同样的机制，也用来生成SMS消息或其它任何基于模
-板类型消息。
+用在生成电子邮件文本的同样的机制，也用来生成SMS消息或其它任何基于模板类型消息。
 
 ### 用后台任务发送消息
 
-发送电子邮件消息的操作可占用几秒，因为需要登录和通信可能的远端的
-SMTP服务器。为避免用户等待发送操作完成，有时希望通过后台任务让邮件排
-队稍后发送。正如第4章描述的，这能通过设置自制任务队列或用web2py调度
-器实现。下面我们提供了一个使用自制任务队列的例子。
+发送电子邮件消息的操作可占用几秒，因为需要登录和通信可能的远端的SMTP服务器。为避免用户等待发送操作完成，有时希望通过后台任务让邮件排
+队稍后发送。正如第4章描述的，这能通过设置自制任务队列或用web2py调度器实现。下面我们提供了一个使用自制任务队列的例子。
 首先，在我们应用模型文件里，我们设置数据库模型存储我们的电子邮件
 队列：
 ``
@@ -265,23 +254,19 @@ while True:
     time.sleep(60) # check every minute
 ``:code
 
-最后，如第四章描述的，我们需要运行mail_queue.py脚本，如同它在我们
-应用控制器中：
+最后，如第四章描述的，我们需要运行mail_queue.py脚本，如同它在我们应用控制器中：
 ``
 python web2py.py -S app -M -N -R applications/app/private/mail_queue.py
 ``:code
 
 ``-S app`` 告诉web2py以“app”运行“mail_queue.py”，``-M`` 告诉web2py执行模型，``-N`` 告诉web2py不要运行cron。
 
-这里我们假定在“mail_queue.py”引用的 ``mail`` 对象定义在我们应用的模型文
-件，因此是在“mail_queue.py”脚本中可用的，因为 ``-M`` 选项。也要注意，为了对
+这里我们假定在“mail_queue.py”引用的 ``mail`` 对象定义在我们应用的模型文件，因此是在“mail_queue.py”脚本中可用的，因为 ``-M`` 选项。也要注意，为了对
 其它并发的处理不锁定数据库，尽可能快地提交任何改变是重要的。
 
 如第四章记述的，这种后台进程的类型不能通过cron（可能cron@reboot
 除外）执行，因为你需要确认在同一个时间仅有一个实例在运行。
 
-注意，通过后台处理发送电子邮件的一个缺点是，它使得在电子邮件失败的情
-况给用户提供反馈困难。如果电子邮件从控制器动作直接发送，你能捕捉到任
-何错误，并立即返回错误消息给用户。可是用后台进程，电子邮件异步发送，
-在控制器动作已经返回了它的响应以后，因此它告知用户失败变得更加复杂。
+注意，通过后台处理发送电子邮件的一个缺点是，它使得在电子邮件失败的情况给用户提供反馈困难。如果电子邮件从控制器动作直接发送，你能捕捉到任
+何错误，并立即返回错误消息给用户。可是用后台进程，电子邮件异步发送，在控制器动作已经返回了它的响应以后，因此它告知用户失败变得更加复杂。
 
