@@ -1,17 +1,13 @@
-
 ## 概述
 
 ### 启动
 
 ``Linux``:inxx ``Mac``:inxx ``Windows``:inxx
 
-wweb2py 提供用于Windows 和Mac OS X 的二进制包。二进制版本包含了
-Python 解释器， 因此用户不需要预先安装。源代码版本能在
-Windows、Mac、Linux和其它Unix系统上运行。Windows和OS X上的二进制版
-本包括必要的Python解释器。源代码包版本假定计算机安装了Python。
+wweb2py 提供用于Windows 和Mac OS X 的二进制包。二进制版本包含了Python 解释器， 因此用户不需要预先安装。源代码版本能在
+Windows、Mac、Linux和其它Unix系统上运行。Windows和OS X上的二进制版本包括必要的Python解释器。源代码包版本假定计算机安装了Python。
 
-web2py 不需要安装。启动时，针对特定的操作系统，解压下载的压缩
-（zip）文件，并运行相应的web2py文件。
+web2py 不需要安装。启动时，针对特定的操作系统，解压下载的压缩（zip）文件，并运行相应的web2py文件。
 
 在Windows上，运行:
 ``
@@ -28,8 +24,7 @@ open web2py.app
 python2.5 web2py.py
 ``:code
 
-为了在Windows 上从源代码运行web2py，需要先安装Mark Hammond's
-"Python for Windows extensions，之后运行:
+为了在Windows 上从源代码运行web2py，需要先安装Mark Hammond's "Python for Windows extensions，之后运行:
 ``
 python2.5 web2py.py
 ``:code
@@ -37,26 +32,18 @@ python2.5 web2py.py
 
 web2py程序接受各种命令行选项，这将在后面讨论。
 
-默认情况下，在启动时，web2py会显示一个启动窗口，然后显示一个GUI
-部件，要求您选择一个一次性管理员密码、网络接口的IP地址和端口号，其中
-IP 地址用于web 服务器， 端口号用于服务请求。web2py 默认情况下在
-127.0.0.1:8000（本地主机localhost上的8000端口）上运行它的Web 服务器，
-但它也能够在任何可用的IP地址和端口上运行。你可以查询网络接口的IP地址，
-方法是在Windows 下打开命令行、键入ipconfig 或在OS X 和Linux 下键入
-ifconfig。从现在开始，我们假定web2py在localhost（127.0.0.1:8000）上运行。
-使用0.0.0.0:80可以在任何网络接口上运行公开web2py
+默认情况下，在启动时，web2py会显示一个启动窗口，然后显示一个GUI部件，要求您选择一个一次性管理员密码、网络接口的IP地址和端口号，其中
+IP 地址用于web 服务器， 端口号用于服务请求。web2py 默认情况下在127.0.0.1:8000（本地主机localhost上的8000端口）上运行它的Web 服务器，
+但它也能够在任何可用的IP地址和端口上运行。你可以查询网络接口的IP地址，方法是在Windows 下打开命令行、键入ipconfig 或在OS X 和Linux 下键入
+ifconfig。从现在开始，我们假定web2py在localhost（127.0.0.1:8000）上运行。使用0.0.0.0:80可以在任何网络接口上运行公开web2py
 
 [[image @///image/en400.png center 306px]]
 
-如果你不提供管理员密码，管理界面是不可用的。这是为了防止暴露管理界
-面而采取的安全措施。
+如果你不提供管理员密码，管理界面是不可用的。这是为了防止暴露管理界面而采取的安全措施。
 
-管理界面， **admin**， 仅能通过localhost（本地主机）访问，除非你在后台使用
-带有mod_proxy的Apache服务器上运行web2py。 如果 **admin** 检测到代理， 会话
-cookie 被设为安全，**admin** 登录不起作用，除非客户端和代理之间的采用
-HTTPS通信；这是一项安全措施。客户端和 **admin** 之间的所有通信必须始终是
-本地的或加密的；否则，攻击者将能发动中间攻击或重放（replay）攻击，并
-在服务器端执行任意代码。
+管理界面， **admin**， 仅能通过localhost（本地主机）访问，除非你在后台使用带有mod_proxy的Apache服务器上运行web2py。 如果 **admin** 检测到代理， 会话
+cookie 被设为安全，**admin** 登录不起作用，除非客户端和代理之间的采用HTTPS通信；这是一项安全措施。客户端和 **admin** 之间的所有通信必须始终是
+本地的或加密的；否则，攻击者将能发动中间攻击或重放（replay）攻击，并在服务器端执行任意代码。
 
 设置管理密码后，web2py在如下页面启动web浏览器：
 ``
@@ -115,12 +102,10 @@ web2py中配备的 **wizard**，在本章后面介绍，基于网络上提供的
 ### 问好
 ``index``:inxx
 
-作为一个例子，我们现在创建一个简单的Web应用，它向用户显示"Hello
-from MyApp"。我们把这个应用称为“myapp”。我们还将增加一个统计用户访问
+作为一个例子，我们现在创建一个简单的Web应用，它向用户显示"Hello from MyApp"。我们把这个应用称为“myapp”。我们还将增加一个统计用户访问
 相同页面次数的计数器。
 
-通过在**admin**内**site** 页面右上角表单中键入应用的名称，你就可以创建一个
-新应用。
+通过在**admin**内**site** 页面右上角表单中键入应用的名称，你就可以创建一个新应用。
 
 [[image @///image/en800.png center 447px]]
 
@@ -137,8 +122,7 @@ http://127.0.0.1:8000/myapp
 
 为了编辑应用，可以点击新创建应用的 ''design'' 按钮。
 
-**Edit**页面告诉你应用内部有些什么。每个web2py应用包括一些特定文件，
-其中大部分可归纳为以下六类：
+**Edit**页面告诉你应用内部有些什么。每个web2py应用包括一些特定文件，其中大部分可归纳为以下六类：
 - **models**：描述数据表示。
 - **controllers**:描述了应用逻辑和工作流程。
 - **views**:描述数据表达。
@@ -147,8 +131,7 @@ http://127.0.0.1:8000/myapp
 -**staticfiles**:静态图像，CSS[css:w,css:o,css:school]文件，JavaScript[js:w,js:b]文件等等。 files``css-w,css-o,css-school``:cite , JavaScript files``js-w,js-b``:cite , etc.
 - **plugins**::用于设计协同工作的文件组。
  
-遵循MVC设计模式，应用设计井然有序。edit页面中的每个部分对应于应
-用文件夹的一个子文件夹。
+遵循MVC设计模式，应用设计井然有序。edit页面中的每个部分对应于应用文件夹的一个子文件夹。
 
 请注意，节标题将切换其内容。静态文件的文件夹名称也是可折叠的。
 
@@ -157,14 +140,11 @@ http://127.0.0.1:8000/myapp
 的任何操作（创建、编辑、删除），都可以使用您偏爱的编辑器直接从shell执行。
 -------
 
-该应用包含其它类型的文件（数据库、会话文件、错误文件等），但它们并
-没有在编辑页面中列出，因为它们不是由管理员创建或修改的;它们由应用本身
+该应用包含其它类型的文件（数据库、会话文件、错误文件等），但它们并没有在编辑页面中列出，因为它们不是由管理员创建或修改的;它们由应用本身
 创建和修改。
 
-控制器包含应用逻辑和工作流程。每个URL都被映射成控制器（action）中
-某个函数的调用。有两个默认控制器：："appadmin.py"和"default.py"。 **appadmin** 提
-供数据库管理界面；目前我们还不需要它。“default.py”是你需要编辑的控制器，
-当URL中没有指定控制器时，默认调用它。编辑"index"函数如下：
+控制器包含应用逻辑和工作流程。每个URL都被映射成控制器（action）中某个函数的调用。有两个默认控制器：："appadmin.py"和"default.py"。 **appadmin** 提
+供数据库管理界面；目前我们还不需要它。“default.py”是你需要编辑的控制器，当URL中没有指定控制器时，默认调用它。编辑"index"函数如下：
 ``
 def index():
     return "Hello from MyApp"
@@ -181,8 +161,7 @@ def index():
 http://127.0.0.1:8000/myapp/default/index
 ``:code
 
-myapp应用中的默认控制器的index行为将被调用。它返回一个在浏览器中
-显示的字符串。如下图所示：
+myapp应用中的默认控制器的index行为将被调用。它返回一个在浏览器中显示的字符串。如下图所示：
 
 [[image @///image/en1100.png center 480px]]
 
@@ -192,8 +171,7 @@ def index():
     return dict(message="Hello from MyApp")
 ``:code
 
-从edit页面，编辑视图"default/index.html"（视图文件与action有
-关），并且用如下内容完全替换该文件的当前内容：
+从edit页面，编辑视图"default/index.html"（视图文件与action有关），并且用如下内容完全替换该文件的当前内容：
 ``
 <html>
    <head></head>
@@ -207,10 +185,8 @@ def index():
 
 ``[controller]/[function].[extension]``:code
 
- 并执行它。这里[extension]是请求的扩展名。如果没有指定扩展名，默认
-为"html" ，这里我们也将这样假设。在这个假设下，视图是一个使用特殊标签{{
-}}并嵌入Python 代码的HTML 文件。特别是，在本例中 ``{{=message}}`` 指示
-web2py用action返回的``message`` 值取代标签代码。注意，这里 ``message`` 不是一
+ 并执行它。这里[extension]是请求的扩展名。如果没有指定扩展名，默认为"html" ，这里我们也将这样假设。在这个假设下，视图是一个使用特殊标签{{
+}}并嵌入Python 代码的HTML 文件。特别是，在本例中 ``{{=message}}`` 指示web2py用action返回的``message`` 值取代标签代码。注意，这里 ``message`` 不是一
 个web2py关键字，但被定义在action中。到目前为止我们没有使用任何web2py关键字。
 
 如果web2py没有找到请求的视图, 它将使用通用视图“generic.html”。
@@ -257,8 +233,7 @@ def index():
     return dict(message="Hello from MyApp", counter=session.counter)
 ``:code
 
-注意 ``counter`` 不是web2py关键字但 ``session`` 是。我们要求web2py检查会话
-中是否有计数器变量，如果没有创建一个并将其设为1。如果有计数器变量，我
+注意 ``counter`` 不是web2py关键字但 ``session`` 是。我们要求web2py检查会话中是否有计数器变量，如果没有创建一个并将其设为1。如果有计数器变量，我
 们要求web2py把计数器的值加1。最后，我们把计数器的值传递给视图。
 
 更紧凑的实现相同功能的代码如下：
@@ -369,8 +344,7 @@ What is your name?
 
 这种方法比较好，因为访问者的名字留在session中，并且应用中所有action和view都可以访问它而无需显式传递。
 
-注意，在访问者设定名字之前，如果"second" action 被调用，它将显
-示"Hello anonymous"，因为``session.visitor_name`` 返回``None``. 另外，我们可以在
+注意，在访问者设定名字之前，如果"second" action 被调用，它将显示"Hello anonymous"，因为``session.visitor_name`` 返回``None``. 另外，我们可以在
 控制器中添加下面的代码（在 ``second`` 函数内）：
 
 ``
@@ -426,8 +400,7 @@ What is your name?
 
 作为另一个例子，在这里我们希望创建一个Web应用，它允许管理员发布图片并给它们命名，同时允许网站访问者查看命名的图片并提交评论。
 
-像以前一样，从 **admin**中的**site** 页面创建一个命名为``images``的新应用，并
-导航到edit页面：
+像以前一样，从 **admin**中的**site** 页面创建一个命名为``images``的新应用，并导航到edit页面：
 
 [[image @///image/en1900.png center 480px]]
 
@@ -485,10 +458,8 @@ format=lambda row: row.title
 ``:code
 
 Lines 8-12 define another table called "comment".
-8-12 行定义另一个名为"comment" 的表。一条评论包
-含"author" 、"email"（我们打算存储评论者的电子邮件地址）、"text"类型
-的"body"（我们打算用它来存储作者发布的评论）和引用类型的通过"id"字段指
-向``db.image`` 的"image_id"字段。
+8-12 行定义另一个名为"comment" 的表。一条评论包含"author" 、"email"（我们打算存储评论者的电子邮件地址）、"text"类型
+的"body"（我们打算用它来存储作者发布的评论）和引用类型的通过"id"字段指向``db.image`` 的"image_id"字段。
 
 在第14行，``db.image.title`` 表示"image"表的"title" 字段。属性``requires`` 允许你设置web2py表单强制执行的规定/限制。这里我们要求"title"是唯一的：
 
@@ -496,15 +467,11 @@ Lines 8-12 define another table called "comment".
 
 ''注意这是可选的，因为 ``Field('title', unique=True)``它将被自动设置。''
 
-表示这些限制的对象被称为验证。多个验证可以组合在一个列表中，并且
-根据出现的顺序执行验证。
-``IS_NOT_IN_DB(a, b)`` 是一个特殊验证，它检查新纪
-录字段``b`` 的值是否已经在``a``中。
+表示这些限制的对象被称为验证。多个验证可以组合在一个列表中，并且根据出现的顺序执行验证。
+``IS_NOT_IN_DB(a, b)`` 是一个特殊验证，它检查新记录字段``b`` 的值是否已经在``a``中。
 
-第15行要求表"comment"的"image_id"字段在 ``db.image.id``中。就涉及的数据
-库而言，当定义表"comment"时我们已经声明了这一点。
-该条件应当由web2py强制执行，这样
-无效值就不会从输入表单传递到数据库。 我们还要求用相应记录的"title" ，即``'%(title)s'``来代表"image_id"。
+第15行要求表"comment"的"image_id"字段在 ``db.image.id``中。就涉及的数据库而言，当定义表"comment"时我们已经声明了这一点。
+该条件应当由web2py强制执行，这样无效值就不会从输入表单传递到数据库。 我们还要求用相应记录的"title" ，即``'%(title)s'``来代表"image_id"。
 
 第20 行表明"comment" 表的字段"image_id" 不应显示在表单中``writable=False`` ，甚至只读形式也不行``readable=False``。
 
@@ -621,8 +588,7 @@ T首先要注意的是，视图是有特殊标签{{...}}的纯HTML。嵌入{{...
 LI(A(image.title, _href=URL('show', args=image.id))
 ``:code
 
-这是一个 ``<li>...</li>`` 标签，其中包含``<a href="...">...</a>`` 标签，该标
-签中包含``image.title``。超文本引用（href属性）的值是：
+这是一个 ``<li>...</li>`` 标签，其中包含``<a href="...">...</a>`` 标签，该标签中包含``image.title``。超文本引用（href属性）的值是：
 ``
 URL('show', args=image.id)
 ``:code
@@ -641,12 +607,10 @@ URL('show', args=image.id)
 <li><a href="/images/default/show/123">something</a></li>
 ``:code
 
-少数帮助对象(``INPUT``， ``TEXTAREA``， ``OPTION`` 和 ``SELECT``SELECT)也支持一些特殊的不以
-下划线开始的命名属性(``value``和``requires``)。对于构建自定义表单它们是重要的
+少数帮助对象(``INPUT``， ``TEXTAREA``， ``OPTION`` 和 ``SELECT``SELECT)也支持一些特殊的不以下划线开始的命名属性(``value``和``requires``)。对于构建自定义表单它们是重要的
 并将在稍后讨论。
 
-返回 ''edit''页面。它现在表明"default.py exposes（暴露） index"。通过点
-击"index"，你可以访问新建的页面：
+返回 ''edit''页面。它现在表明"default.py exposes（暴露） index"。通过点击"index"，你可以访问新建的页面：
 ``
 http://127.0.0.1:8000/images/default/index
 ``:code
@@ -783,8 +747,7 @@ def show():
 db.image(request.args(0)) or redirect(...)
 ``:code
 
-来获取所需的记录。因为如果记录未找到，```table(id)`` 返回None，这种情况下
-我们可以在一行代码中使用``or redirect(...)`` 。
+来获取所需的记录。因为如果记录未找到，```table(id)`` 返回None，这种情况下我们可以在一行代码中使用``or redirect(...)`` 。
 
 ``crud.create``的``next``（下一个）参数是表单被接受之后重定向的URL。
 ``message`` 参数在验收后显示。你可以阅读第7章中有关CRUD的内容。
@@ -1040,7 +1003,7 @@ def callback():
 
 第28行定义和处理一个wiki页面的更新表单。
 
-  第38行创建一个``grid``对象来浏览，添加和更新链接到页面的评论。
+第38行创建一个``grid``对象来浏览，添加和更新链接到页面的评论。
 
 一些奇妙的事情发生在第51行。INPUT标签"keyword"的onkeyup属性被设定。每次访问者放开按键，``onkeyup``属性中的JavaScript代码在客户端被执行。
 下面是JavaScript代码：
@@ -1201,8 +1164,7 @@ def news():
 http://127.0.0.1:8000/mywiki/default/news.rss
 ``:code
 
-你会看到订阅（确定的输出取决于订阅的读者）。注意字典被自动转换成RSS，得益于
-URL中的.rss扩展。
+你会看到订阅（确定的输出取决于订阅的读者）。注意字典被自动转换成RSS，得益于URL中的.rss扩展。
 
 [[image @///image/en4000.png center 480px]]
 
@@ -1317,38 +1279,28 @@ http://code.google.com/p/instant-press/
 - 跳转到''edit''页面（阅读下面）。
 - 跳转到''errors''页面（阅读下面）。
 - 清理临时文件（会话、错误以及cache.disk文件）。
-- 打包全部。这返回一个包含完整应用副本的tar文件。我们建议你在打包应用
-之前清理临时文件。
-- 编译应用。如果没有错误，该选项将会bytecode编译所有模型，控制器和视
-图。因为视图可以在一个树中扩展和包含其它视图，在bytecode编译之前，
-每个控制器的视图树都被折叠成一个单一的文件。净效应是一个bytecode编
-译的应用速度更快，因为在运行时没有模版解析和字符串替换。
-- 包编译完成。该选项仅存在于bytecode编译完成的应用。它无需源代码即可
-打包应用作为封闭源代码用于发布。注意Python（与其它任何编程语言一
-样）可以从技术上反编译；因此编译不能提供对源代码的完整保护。不过，
-反编译可能是困难的并且可能是违法的。
-- 移除已编译。它简单的从应用中移除byte-code编译的模型，视图和控制器。
-如果应用打包带有源代码或者被本地编辑，移除bytecode编译文件没有任
-何坏处，并且应用会继续工作。如果应用是从打包的编译文件安装的，那么
-这是不是安全，因为不能恢复到源代码，并且应用将不再工作。
+- 打包全部。这返回一个包含完整应用副本的tar文件。我们建议你在打包应用之前清理临时文件。
+- 编译应用。如果没有错误，该选项将会bytecode编译所有模型，控制器和视图。因为视图可以在一个树中扩展和包含其它视图，在bytecode编译之前，
+每个控制器的视图树都被折叠成一个单一的文件。净效应是一个bytecode编译的应用速度更快，因为在运行时没有模版解析和字符串替换。
+- 包编译完成。该选项仅存在于bytecode编译完成的应用。它无需源代码即可打包应用作为封闭源代码用于发布。注意Python（与其它任何编程语言一
+样）可以从技术上反编译；因此编译不能提供对源代码的完整保护。不过，反编译可能是困难的并且可能是违法的。
+- 移除已编译。它简单的从应用中移除byte-code编译的模型，视图和控制器。如果应用打包带有源代码或者被本地编辑，移除bytecode编译文件没有任
+何坏处，并且应用会继续工作。如果应用是从打包的编译文件安装的，那么这是不是安全，因为不能恢复到源代码，并且应用将不再工作。
 
 ``admin.py``:inxx
 
 -------
-web2py admin站点页面的所有功能都可以通过定义在 ``gluon/admin.py``模型
-中的API编程访问。只需打开一个Python shell（外壳）并导入该模型。
+web2py admin站点页面的所有功能都可以通过定义在 ``gluon/admin.py``模型中的API编程访问。只需打开一个Python shell（外壳）并导入该模型。
 -------
 
 #### ''about''页面
 ``about``:inxx ``license``:inxx
 
- ''about'' 允许编辑对应用的描述以及它的许可证。它们分别写入在应用文件夹
-中的ABOUT和LICENSE文件中。
+ ''about'' 允许编辑对应用的描述以及它的许可证。它们分别写入在应用文件夹中的ABOUT和LICENSE文件中。
 
 [[image @///image/en4300.png center 480px]]
 
-对这些文件，你可以使用 ``MARKMIN``，或``gluon.contrib.markdown.WIKI`` 语法，
-正如参考[``markdown2``中描述的一样。
+对这些文件，你可以使用 ``MARKMIN``，或``gluon.contrib.markdown.WIKI`` 语法，正如参考[``markdown2``中描述的一样。
 
 #### ''edit''页面
 ``EDIT``:inxx
@@ -1356,12 +1308,9 @@ web2py admin站点页面的所有功能都可以通过定义在 ``gluon/admin.py
 - 如果你点击任意文件名，你可以看到语法高亮显示的文件内容。
 - 如果你点击edit（编辑），你可以通过web界面编辑文件。
 - 如果你点击delete（删除），你可以删除文件（永久性的）。
-- 如果你点击test（测试），web2py会运行测试。测试是开发人员使用Python
-doctests 编写的，每个函数应该有自己的测试。
-- 你可以添加语言文件，扫描应用来发现所有字符串，并通过web界面编辑
-字符串翻译。
-- 如果静态文件组织在文件夹和子文件夹中，可以通过点击文件夹名称切换
-文件夹层次结构。
+- 如果你点击test（测试），web2py会运行测试。测试是开发人员使用Pythondoctests 编写的，每个函数应该有自己的测试。
+- 你可以添加语言文件，扫描应用来发现所有字符串，并通过web界面编辑字符串翻译。
+- 如果静态文件组织在文件夹和子文件夹中，可以通过点击文件夹名称切换文件夹层次结构。
 
 下图显示welcome应用测试页面的输出。
 
@@ -1377,25 +1326,21 @@ doctests 编写的，每个函数应该有自己的测试。
 
 ##### ''shell''
 
-如果你在''edit''页面中点击控制器选项卡下的"shell"链接，web2py会打开一
-个基于web的Python shell 并且会执行当前应用的模型。这使得你能交互的与你
+如果你在''edit''页面中点击控制器选项卡下的"shell"链接，web2py会打开一个基于web的Python shell 并且会执行当前应用的模型。这使得你能交互的与你
 的应用对话。
 
 [[image @///image/en4700.png center 480px]]
 
 ##### ''crontab''
 
-编辑页面中同样是在控制器选项卡下有一个"crontab"链接。通过点击该链接
-你将能够编辑web2py 的crontab 文件。它遵循的语法与unix crontab 相同，但不
-依赖于unix。实际上，它只需要web2py，并且它能在Windows上运行。它允许
-你注册需要在预定时间后台执行的动作。
+编辑页面中同样是在控制器选项卡下有一个"crontab"链接。通过点击该链接你将能够编辑web2py 的crontab 文件。它遵循的语法与unix crontab 相同，但不
+依赖于unix。实际上，它只需要web2py，并且它能在Windows上运行。它允许你注册需要在预定时间后台执行的动作。
 
 如需更多相关信息，请参见下一章。
 
 #### ''errors''
 ``errors``:inxx
-在编程web2py时，你难免会犯错误并引入漏洞。web2py提供两方面的帮助：
-1）它允许你为每个函数创建测试，可以在浏览器中从edit页面运行；2）当错
+在编程web2py时，你难免会犯错误并引入漏洞。web2py提供两方面的帮助：1）它允许你为每个函数创建测试，可以在浏览器中从edit页面运行；2）当错
 误表现出来时，发出一张票据给访问者并且错误被记录。
 
 如下，在images应用中故意引入错误：
@@ -1460,13 +1405,10 @@ def index():
 easy_install mercurial
 ``:code
 
-之后，管理界面显示一个称为"mercurial"的菜单项。它自动为应用创建一个
-本地Mercurial存储库。在页面中按下"commit"按钮将提交应用。Mercurial创建并
-存储关于你对代码所做改动的信息到应用子文件夹中的隐藏文件夹".hg"。每个
-应用都有自己的".hg"文件夹和".hgignore"文件（告诉Mercurial忽略哪些文件）。
+之后，管理界面显示一个称为"mercurial"的菜单项。它自动为应用创建一个本地Mercurial存储库。在页面中按下"commit"按钮将提交应用。Mercurial创建并
+存储关于你对代码所做改动的信息到应用子文件夹中的隐藏文件夹".hg"。每个应用都有自己的".hg"文件夹和".hgignore"文件（告诉Mercurial忽略哪些文件）。
 
-Mercurial web界面允许你浏览以前的提交以及diff文件但我们强烈建议你
-直接从shell或许多基于GUI的 Mercurial客户端来使用Mercurial，因为它们功
+Mercurial web界面允许你浏览以前的提交以及diff文件但我们强烈建议你直接从shell或许多基于GUI的 Mercurial客户端来使用Mercurial，因为它们功
 能更强大。例如它们允许你同步你的应用和远程资源存储库：
 
 [[images @///image/en5300.png center 480px]]
@@ -1506,27 +1448,22 @@ config"字段在这里放置Janrain "domain:key"。
 - 使用向导创建和被手动修改过的应用，以后不能被向导修改。
 - 向导界面会随时间而改变，包括支持更多的功能和更容易的可视化开发。
 
-无论如何，向导是一个得心应手的工具用来快速制作原型，它可以用来引
-导带有备用布局和可选插件的新应用。
+无论如何，向导是一个得心应手的工具用来快速制作原型，它可以用来引导带有备用布局和可选插件的新应用。
 
 #### 配置**admin**
 
-通常无需进行任何admin配置，但一些自定义是可能的。在你登录admin之
-后，你可以通过如下URL编辑admin配置文件：
+通常无需进行任何admin配置，但一些自定义是可能的。在你登录admin之后，你可以通过如下URL编辑admin配置文件：
 ``
 http://127.0.0.1:8000/admin/default/edit/admin/models/0.py
 ``
-注意**admin**可以用来编辑本身。实际上admin是一个应用与其它任何应用一
-样。
+注意**admin**可以用来编辑本身。实际上admin是一个应用与其它任何应用一样。
 
-文件"0.py"很大程度上是自我记录，如果你正在打开也许你已经知道你寻找
-的是什么。还有，有一些自定义比其它的更重要：
+文件"0.py"很大程度上是自我记录，如果你正在打开也许你已经知道你寻找的是什么。还有，有一些自定义比其它的更重要：
 
 ``
 GAE_APPCFG = os.path.abspath(os.path.join('/usr/local/bin/appcfg.py'))
 ``
-这应该指向"appcfg.py"文件的位置，该文件配备Google App Engine SDK。如
-果你有SDK你可能要将配置参数改为正确的值。这将允许你从admin界面部署
+这应该指向"appcfg.py"文件的位置，该文件配备Google App Engine SDK。如果你有SDK你可能要将配置参数改为正确的值。这将允许你从admin界面部署
 到GAE。
 
 ``DEMO_MODE``:inxx
@@ -1541,16 +1478,13 @@ FILTER_APPS = ['welcome']
 ``MULTI_USER_MODE``:inxx
 ``virtual laboratory``:inxx
 
-如果你是一名教师，要公开管理界面给学生，使学生可以分享他们的项目
-管理界面（认为虚拟实验室），可以如下设置：
+如果你是一名教师，要公开管理界面给学生，使学生可以分享他们的项目管理界面（认为虚拟实验室），可以如下设置：
 ``
 MULTI_USER_MODE = True
 ``
-这样，学生将需要登录并且通过admin将只能访问自己的应用。你作为第一
-用户/老师，将能够访问全部应用。
+这样，学生将需要登录并且通过admin将只能访问自己的应用。你作为第一用户/老师，将能够访问全部应用。
 
-注意这个机制仍然假定所有的用户都是可信的。admin下创建的所有应用运
-行在相同文件系统的相同凭据下。一名学生创建的应用有可能访问另一名学生
+注意这个机制仍然假定所有的用户都是可信的。admin下创建的所有应用运行在相同文件系统的相同凭据下。一名学生创建的应用有可能访问另一名学生
 创建的应用的数据和源代码。
 
 ### 更多关于**appadmin**
@@ -1558,13 +1492,11 @@ MULTI_USER_MODE = True
 ``appadmin``:inxx
 
 **appadmin** 的目的不是被公开曝光。它旨在帮助你提供一个容易的数据库访问。
-它只包含两个文件：控制器"appadmin.py"和视图"appadmin.html"，它们被控制
-器中的所有行动使用。
+它只包含两个文件：控制器"appadmin.py"和视图"appadmin.html"，它们被控制器中的所有行动使用。
 
 **appadmin** 控制器相对较小并且可读，它提供了一个设计数据库接口的例子。
 
-**appadmin** 显示可用的数据库和每个数据库中存在的表。你可以插入记录并为
-每个表单独列出所有记录。 **appadmin** 分页输出，一次100条记录。
+**appadmin** 显示可用的数据库和每个数据库中存在的表。你可以插入记录并为每个表单独列出所有记录。 **appadmin** 分页输出，一次100条记录。
 
 一旦一组记录被选中，页头就会变化，允许你你更新或删除选中的记录。
 
@@ -1577,14 +1509,12 @@ title = 'test'
 
 要删除一条记录，单击相应的复选框以确认你肯定。
 
-**appadmin**还可以进行连接如果SQL FILTER（过滤器）包含的SQL条件涉
-及两个或多个表。例如，尝试：
+**appadmin**还可以进行连接如果SQL FILTER（过滤器）包含的SQL条件涉及两个或多个表。例如，尝试：
 ``
 db.image.id == db.comment.image_id
 ``:code
 
-web2py将它传递到DAL，并且DAL理解该查询链接两个表；因此，两个
-表都被INNER JOIN选中。下面是输出：
+web2py将它传递到DAL，并且DAL理解该查询链接两个表；因此，两个表都被INNER JOIN选中。下面是输出：
 
 [[image @///image/en5600.png center 480px]]
 
