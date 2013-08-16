@@ -4,8 +4,7 @@
 
 ``Linux``:inxx ``Mac``:inxx ``Windows``:inxx
 
-wweb2py 提供用于Windows 和Mac OS X 的二进制包。二进制版本包含了Python 解释器， 因此用户不需要预先安装。源代码版本能在
-Windows、Mac、Linux和其它Unix系统上运行。Windows和OS X上的二进制版本包括必要的Python解释器。源代码包版本假定计算机安装了Python。
+wweb2py 提供用于Windows 和Mac OS X 的二进制包。二进制版本包含了Python 解释器， 因此用户不需要预先安装。源代码版本能在Windows、Mac、Linux和其它Unix系统上运行。Windows和OS X上的二进制版本包括必要的Python解释器。源代码包版本假定计算机安装了Python。
 
 web2py 不需要安装。启动时，针对特定的操作系统，解压下载的压缩（zip）文件，并运行相应的web2py文件。
 
@@ -58,9 +57,7 @@ http://127.0.0.1:8000/
 
 [[image @///image/en600.png center 480px]]
 
-The administrator password is the password you chose at startup.
-管理员密码是您在启动时选择的密码。请注意，管理员只有一个，因此也只
-有一个管理员密码。出于安全原因，web2py每次启动时，开发人员都要选择一
+管理员密码是您在启动时选择的密码。请注意，管理员只有一个，因此也只有一个管理员密码。出于安全原因，web2py每次启动时，开发人员都要选择一
 个新密码，除非<recycle>选项被指定。这有别于web2py应用中的身份验证机制。
 
 管理员登录web2py之后，浏览器被定向到"site"页面。
@@ -68,6 +65,7 @@ The administrator password is the password you chose at startup.
 [[image @///image/en700.png center 480px]]
 
 该页面列出了全部已安装的web2py应用，并允许管理员管理它们。
+
 web2py带有3个应用：
 ``admin``:inxx ``examples``:inxx ``welcome``:inxx ``scaffolding``:inxx
 - **admin** 应用，即你正在使用的应用。
@@ -79,24 +77,20 @@ web2py带有3个应用：
 立即可用的web2py应用被称作 web2py “appliances”.  你可以在``appliances``下载许多免费提供的应用范例。鼓励web2py用户提交新的应用范例，无论是以开源还是闭源（编译和包装）的形式。
 
 从**admin** 应用的''site'' 页面，你可以执行以下操作：
-- 通过填写页面右下角的表单，**install** 应用。给应用命名，选择包含封装应用的
-文件夹或应用所处位置的URL，并点击“submit”。
+- 通过填写页面右下角的表单，**install** 应用。给应用命名，选择包含封装应用的文件夹或应用所处位置的URL，并点击“submit”。
 - 通过点击相应按钮，**uninstall** 应用。有一个确认页面。
 - 通过选择一个名称，并点击**create** 即可创建一个新应用。
-- 通过点击相应的按钮，**package** 应用发行。下载的应用是一个包括数据库的完整
-压缩（tar）文件。你不用解压这个文件；使用**admin**安装后web2py会自动
+- 通过点击相应的按钮，**package** 应用发行。下载的应用是一个包括数据库的完整压缩（tar）文件。你不用解压这个文件；使用**admin**安装后web2py会自动
 将它解压。
 - **clean up** 应用临时文件，例如会话、错误和缓存文件。
 - **EDIT**应用。
 
 -----
-在你用 **admin**创建新应用时， 它开始是作为带有一
-个"models/db.py"的"welcome"基本构建应用的克隆，"models/db.py"创建一个SQLite数据库，并连接到该数据库，实例化Auth、Crud和Service，并配置它们它还提供了一个"controller/default.py"，为用户管理暴露了动作"index"、"download"和"user"，为服务暴露了"call"。下面，我们假设这些文件已被删除；我们将从头开始创建应用。
+在你用 **admin**创建新应用时， 它开始是作为带有一个"models/db.py"的"welcome"基本构建应用的克隆，"models/db.py"创建一个SQLite数据库，并连接到该数据库，实例化Auth、Crud和Service，并配置它们它还提供了一个"controller/default.py"，为用户管理暴露了动作"index"、"download"和"user"，为服务暴露了"call"。下面，我们假设这些文件已被删除；我们将从头开始创建应用。
 -----
 
 -----
-web2py中配备的 **wizard**，在本章后面介绍，基于网络上提供的布局、插件和
-模型的高层次描述，向导能为用户编写替代框架代码。
+web2py中配备的 **wizard**，在本章后面介绍，基于网络上提供的布局、插件和模型的高层次描述，向导能为用户编写替代框架代码。
 -----
 
 ### 问好
@@ -128,7 +122,7 @@ http://127.0.0.1:8000/myapp
 - **views**:描述数据表达。
 - **languages**: 描述如何将应用表达翻译成其它语言。
 - **modules**: 属于应用的Python模块。
--**staticfiles**:静态图像，CSS[css:w,css:o,css:school]文件，JavaScript[js:w,js:b]文件等等。 files``css-w,css-o,css-school``:cite , JavaScript files``js-w,js-b``:cite , etc.
+- **staticfiles**:静态图像，CSS[css:w,css:o,css:school]文件，JavaScript[js:w,js:b]文件等等。 files``css-w,css-o,css-school``:cite , JavaScript files``js-w,js-b``:cite , etc.
 - **plugins**::用于设计协同工作的文件组。
  
 遵循MVC设计模式，应用设计井然有序。edit页面中的每个部分对应于应用文件夹的一个子文件夹。
@@ -136,8 +130,7 @@ http://127.0.0.1:8000/myapp
 请注意，节标题将切换其内容。静态文件的文件夹名称也是可折叠的。
 
 -------
-节中列出的每个文件对应于子文件夹中的实体文件。通过 **admin** 界面对文件
-的任何操作（创建、编辑、删除），都可以使用您偏爱的编辑器直接从shell执行。
+节中列出的每个文件对应于子文件夹中的实体文件。通过 **admin** 界面对文件的任何操作（创建、编辑、删除），都可以使用您偏爱的编辑器直接从shell执行。
 -------
 
 该应用包含其它类型的文件（数据库、会话文件、错误文件等），但它们并没有在编辑页面中列出，因为它们不是由管理员创建或修改的;它们由应用本身
@@ -440,16 +433,14 @@ db.comment.image_id.writable = db.comment.image_id.readable = False
 
 第1行定义一个表示数据库连接的称为``db``的全局变量。在本例中，它是一个到SQLit 数据库连接，该数据库存储在"applications/images/databases/storage.sqlite"文件中。在SQLite情况下，如果数据库不存在则创建它。你可以更改文件和全局变量``db``的名称，但给予它们相同的名称更便于记忆。
 
-第3-5行定义一个"image"表。``define_table`` 是 ``db`` 对象的一个方法。第一个参
-数"image"是我们定义的表的名称。其它参数都是属于该表的字段。该表有一个"title"字段，一个"file"字段，一个"id"字段，并且"id"字段作为表的主键（"id"没有显式声明，因为默认时所有表都有一个id字段）。"title"字段是一个字符串，字段"file"是"upload"类型。"upload"是一个特殊的字段类型，web2py数据抽象层（DAL）用它来存储上传文件的名称。web2py知道如何上传文件（如果文件大则用流媒体）、安全的重命名文件和存储文件。
+第3-5行定义一个"image"表。``define_table`` 是 ``db`` 对象的一个方法。第一个参数"image"是我们定义的表的名称。其它参数都是属于该表的字段。该表有一个"title"字段，一个"file"字段，一个"id"字段，并且"id"字段作为表的主键（"id"没有显式声明，因为默认时所有表都有一个id字段）。"title"字段是一个字符串，字段"file"是"upload"类型。"upload"是一个特殊的字段类型，web2py数据抽象层（DAL）用它来存储上传文件的名称。web2py知道如何上传文件（如果文件大则用流媒体）、安全的重命名文件和存储文件。
 
 当定义表时，web2py可能采取如下动作之一：
 - 如果表不存在则创建它;
--如果表存在但不符合定义，表将被相应的修改，如果字段有不同的类型，web2py会设法转换其内容；
+- 如果表存在但不符合定义，表将被相应的修改，如果字段有不同的类型，web2py会设法转换其内容；
 - 如果表存在并且符合定义，web2py不执行任何操作。
 
-这种行为被称为"migration"。在web2py中迁移（migration）是自动的，但
-通过传递``migrate=False``作为``define_table``的最后一个参数，可以禁用每个表的迁移。
+这种行为被称为"migration"。在web2py中迁移（migration）是自动的，但通过传递``migrate=False``作为``define_table``的最后一个参数，可以禁用每个表的迁移。
 
 第6行为表定义了一个格式字符串。它决定如何将记录表示为一个字符串。请注意，``format`` 参数也可以是一个函数，该函数需要一个记录并返回一个字符串。例如：
 
@@ -542,7 +533,7 @@ db.image.id > 0
 每个应用都有自己的**appadmin**；因此，**appadmin**本身可以被修改而不影响其它应用。
 
 到目前为止，应用知道如何存储数据，并且我们已经看到如何通过**appadmin**访问数据库。仅限管理员访问**appadmin**appadmin，它的目的不是作为一个应用的生产网络接口；故下一部分逐步解说。具体来说，我们要创建：
--一个"index"页面，按页面的标题排序，列出所有可用的图像以及图像详细信息页面的链接。
+- 一个"index"页面，按页面的标题排序，列出所有可用的图像以及图像详细信息页面的链接。
 - 一个"show/[id]"页面，显示访问者请求的图像并允许访问者查看和发表评论。
 - 一个"download/[name]"动作，下载上传的图片。
 
@@ -648,8 +639,7 @@ def download():
     return response.download(request, db)
 ``:code
 
-控制器包含两个动作："show"和"download"。
-。"show"动作用从请求args中解析得到的``id``，选择图片和与其相关的所有评论。之后"show"将一切传递给视图"default/show.html"。
+控制器包含两个动作："show"和"download"。"show"动作用从请求args中解析得到的``id``，选择图片和与其相关的所有评论。之后"show"将一切传递给视图"default/show.html"。
 
 引用的图片id：
 ``
@@ -662,9 +652,9 @@ URL('show', args=image.id)
 "download"动作期待``request.args(0)``中的文件名，建立一个路径到文件应该存在的位置，并把它发送回客户端。如果文件过大，它流式传输该文件，而不产生任何内存开销。
 
 请注意以下语句：
--第7行仅使用指定字段，为表 ``db.comment`` 创建一个插入表单SQLFORM。
--第8行设定引用字段的值，它不是输入表单的一部分，因为它不在上面指定的字段列表中。              
--第9行在当前会话（会话用来防止重复提交，强制执行导航）中处理提交的表单（提交的表单变量在``request.vars``中）。如果提交的表单变量经过验证，在表``db.comment``中插入新评论；否则的话，表单被修改以包括错误消息（例如，如果作者的电子邮件地址无效）。这一切都是在第9行中完成的！
+- 第7行仅使用指定字段，为表 ``db.comment`` 创建一个插入表单SQLFORM。
+- 第8行设定引用字段的值，它不是输入表单的一部分，因为它不在上面指定的字段列表中。              
+- 第9行在当前会话（会话用来防止重复提交，强制执行导航）中处理提交的表单（提交的表单变量在``request.vars``中）。如果提交的表单变量经过验证，在表``db.comment``中插入新评论；否则的话，表单被修改以包括错误消息（例如，如果作者的电子邮件地址无效）。这一切都是在第9行中完成的！
 - 表单被接受第10行才会被执行，在记录被插入数据库表之后。``response.flash`` 是一个web2py变量，它被显示在视图中并被用来通知访问者发生了一些事情。
 - 第11行选择所有引用当前图片的评论。
 
@@ -694,8 +684,7 @@ URL('show', args=image.id)
 {{=form}}
 ``:code
 
-该视图通过调用<img ... /> 标签内的"download"动作显示**image.file**。如果有评
-论，对它们循环，并显示每一个。
+该视图通过调用<img ... /> 标签内的"download"动作显示**image.file**。如果有评论，对它们循环，并显示每一个。
 
 下面是显示给访问者的效果：
 
@@ -1010,8 +999,7 @@ def callback():
 ``
 ajax('callback', ['keyword'], 'target');
 ``:code
-``ajax``是一个JavaScript函数定义在文件"web2py.js"中，默认的"layout.html"包
-含该文件。它有三个参数：动作的URL，执行同步回调；列表中变量的ID，被
+``ajax``是一个JavaScript函数定义在文件"web2py.js"中，默认的"layout.html"包含该文件。它有三个参数：动作的URL，执行同步回调；列表中变量的ID，被
 发送到回调(["keyword"])；和响应要插入响应的ID("target")。
 
 只要你在搜索框中键入内容，并放开按键，客户端调用服务器并发送'keyword'字段的内容，并且，服务器响应时，响应被作为'target'标签的内部HTML嵌入到页面中。
@@ -1138,8 +1126,7 @@ http://127.0.0.1:8000/mywiki/default/callback?keyword=wiki
 ``:code
 
 ``rss``:inxx
-使用web2py从存储的页面生成RSS订阅很容易因为web2py
-包含``gluon.contrib.rss2``。
+使用web2py从存储的页面生成RSS订阅很容易因为web2py包含``gluon.contrib.rss2``。
 只需在默认控制器中追加如下动作：
 ``
 def news():
@@ -1437,8 +1424,7 @@ http://mercurial.selenic.com/
 
 [[image @///image/en5500.png center 480px]]
 
-你会看到一个下拉菜单来选择一个布局插件（从 ``web2py.com/layouts``），一
-个多选下拉菜单来检查其它插件（从 ``web2py.com/plugins``），还有一个"login
+你会看到一个下拉菜单来选择一个布局插件（从 ``web2py.com/layouts``），一个多选下拉菜单来检查其它插件（从 ``web2py.com/plugins``），还有一个"login
 config"字段在这里放置Janrain "domain:key"。
 
 其它步骤都非常不言自明。
