@@ -2,8 +2,7 @@
 ``views``:inxx ``template language``:inxx ``HTML``:inxx
 
 web2py使用Python模型，控制器和视图，虽然在视图中它使用略作修改的Python语法使代码更具可读性，而不对适当的Python施加任何限制。
-视图的目的是在HTML文档中嵌入代码（Python）。在一般情况下，这带来了一
-些问题：
+视图的目的是在HTML文档中嵌入代码（Python）。在一般情况下，这带来了一些问题：
 
 - 如何转义嵌入的代码？
 - 缩进应根据Python还是HTML规则？
