@@ -4,65 +4,48 @@
 Web2py包含强大的并且可定制的基于角色的访问控制机制（RBAC）。
 下面是来自维基百科（Wikipedia）的定义：
 
-“基于角色的访问控制（RBAC）是给授权用户限制系统访问的途径。它是
-新的替代强制访问控制（MAC）和自主访问控制（DAC）的方案。RBAC有时
+“基于角色的访问控制（RBAC）是给授权用户限制系统访问的途径。它是新的替代强制访问控制（MAC）和自主访问控制（DAC）的方案。RBAC有时
 称为基于角色的安全。
 
-RBAC是一种策略中性和灵活的访问控制技术足够强大来模拟DAC和
-MAC。相反，如果角色图限制为树而不是部分排序集，MAC能模拟RBAC。
+RBAC是一种策略中性和灵活的访问控制技术足够强大来模拟DAC和MAC。相反，如果角色图限制为树而不是部分排序集，MAC能模拟RBAC。
 
-RBAC开发出来之前，MAC和DAC被视为仅知的访问控制模型：如果一个
-模型不是MAC，它被视为DAC模型，反之亦然。1990s后期研究表明RBAC不属
+RBAC开发出来之前，MAC和DAC被视为仅知的访问控制模型：如果一个模型不是MAC，它被视为DAC模型，反之亦然。1990s后期研究表明RBAC不属
 于任何一类。
 
-在一个组织中，角色为各种工作职能而创造。执行某些操作的权限派发给
-特定角色。成员（或其它系统用户）指派了特定角色，通过那些角色指派得到
-执行特定系统功能的权限。与基于内容的访问控制（CBAC）不同，RBAC不看
-消息内容（比如连接的源）。
+在一个组织中，角色为各种工作职能而创造。执行某些操作的权限派发给特定角色。成员（或其它系统用户）指派了特定角色，通过那些角色指派得到
+执行特定系统功能的权限。与基于内容的访问控制（CBAC）不同，RBAC不看消息内容（比如连接的源）。
 
-因为用户不被直接地分配权限，而仅通过他们的角色（或角色）获得，个
-别用户权利的管理变成简单地给用户指派合适角色的问题；这简化了公共操作，
+因为用户不被直接地分配权限，而仅通过他们的角色（或角色）获得，个别用户权利的管理变成简单地给用户指派合适角色的问题；这简化了公共操作，
 比如添加用户或改变用户部门。
 
-RBAC不用于访问控制表（ACLs），用在传统自主访问控制系统，该系统
-用组织中的意思分配权限给特定操作而不是低级别数据对象。例如，访问控制
-表可以用来准许或取消对特定系统文件写访问，但它没有规定那个文件如何被
-修改。
+RBAC不用于访问控制表（ACLs），用在传统自主访问控制系统，该系统用组织中的意思分配权限给特定操作而不是低级别数据对象。例如，访问控制
+表可以用来准许或取消对特定系统文件写访问，但它没有规定那个文件如何被修改。
 
 
 实现RBAC的web2py类叫做**Auth**。
 
 **Auth** 需要（定义）下面的表：
-- ``auth_user`` 存储用户名字、电子邮件地址、密码和状态（注册等候、接受、阻
-止）
-- ``auth_group`` 为用户在多对多结构中存储组或角色。默认情况，每个用户在它
-自己的组中，但一个用户可以在多个组，并且每个组可以包含多个用户。组
+- ``auth_user`` 存储用户名字、电子邮件地址、密码和状态（注册等候、接受、阻止）
+- ``auth_group`` 为用户在多对多结构中存储组或角色。默认情况，每个用户在它自己的组中，但一个用户可以在多个组，并且每个组可以包含多个用户。组
 用角色和描述定义。
 - ``auth_membership``在多对对结构中链接用户和组。
-- ``auth_permission`` 链接组合权限。权限用名字或可选表和记录来定义。例如，
-某个组的成员有“update”权限对指定表的指定记录。
+- ``auth_permission`` 链接组合权限。权限用名字或可选表和记录来定义。例如，某个组的成员有“update”权限对指定表的指定记录。
 - ``auth_event`` 日志在其它表中改变，通过RBAC控制的对象的CRUD成功访问。
 
-原理上，没有对角色名字和权限名字的限制；开发者可以创建它们固定组
-织中的角色和权限。一旦它们被创建，web2py提供API检查是否用户登录了，用
-户是否是所给出组的成员，或用户是否是任意一个组的用户，并得到了需要的
-权限。web2py也提装饰器来限制访问基于登录、成员资格和权限的任意功能。
-web2py也理解一些特定的权限，即那些具有与CRUD方法相应名字（create,
-read, update, delete)创建、读取、更新、删除），无需使用装饰器而强制自动使用
+原理上，没有对角色名字和权限名字的限制；开发者可以创建它们固定组织中的角色和权限。一旦它们被创建，web2py提供API检查是否用户登录了，用
+户是否是所给出组的成员，或用户是否是任意一个组的用户，并得到了需要的权限。web2py也提装饰器来限制访问基于登录、成员资格和权限的任意功能。
+web2py也理解一些特定的权限，即那些具有与CRUD方法相应名字（create,read, update, delete)创建、读取、更新、删除），无需使用装饰器而强制自动使用
 它们。
 本章，我们将逐个讨论RBAC不同的部分。
 
 ### 认证Authentication
 
-为了使用RBAC，用户需要被识别。这意味着他们需要注册（或被注册）并
-登录。
+为了使用RBAC，用户需要被识别。这意味着他们需要注册（或被注册）并登录。
 
-**Auth** 提供多种登录方法。默认的一种是由基于本地``auth_user``表识别用户。另
-外，能针对第三方认证系统登录用户，能对供应商单点登录，例如Google,
+**Auth** 提供多种登录方法。默认的一种是由基于本地``auth_user``表识别用户。另外，能针对第三方认证系统登录用户，能对供应商单点登录，例如Google,
 PAM, LDAP, Facebook, LinkedIn, Dropbox, OpenID, OAuth,等。
 
-要开始使用 ``Auth``，你至少需要在模型文件中有下面的代码，也由
-web2py“welcome”应用提供，并假定有 ``db`` 链接对象：
+要开始使用 ``Auth``，你至少需要在模型文件中有下面的代码，也由web2py“welcome”应用提供，并假定有 ``db`` 链接对象：
 ``
 from gluon.tools import Auth
 auth = Auth(db, hmac_key=Auth.get_or_create_key())
@@ -108,8 +91,7 @@ web2py也包括例子视图“welcome/views/default/user.html”合适地呈现�
 </div>
 ``:code
 
-注意，这个函数简单显示``form`` ，因此它能用常用定制表单语法定制。仅有的注意
-是表单用``form=auth()`` 显示依赖于 ``request.args(0)``；因此，如果你用定制登录表单
+注意，这个函数简单显示``form`` ，因此它能用常用定制表单语法定制。仅有的注意是表单用``form=auth()`` 显示依赖于 ``request.args(0)``；因此，如果你用定制登录表单
 替换默``auth()`` 登录表单，你需要下面视图中的``if``语句：
 ``
 {{if request.args(0)=='login':}}...custom login form...{{pass}}
@@ -131,19 +113,14 @@ http://.../[app]/default/user/groups
 http://.../[app]/default/user/not_authorized
 ``:code
 - **register** 允许用户注册。集成CAPTCHA ，但是默认禁用。
-- **login** 允许注册用户登录（如果注册确认了或不需要确认，如果批准或无
-需批准，且如果它没有被锁定）。
+- **login** 允许注册用户登录（如果注册确认了或不需要确认，如果批准或无需批准，且如果它没有被锁定）。
 - **logout** 做你期望做的，也作为其他方法，日志事件并用来触发一些事件。
-- **profile** a允许用户编辑他们的简介，即auth_user表的内容。注意该表没有固
-定的结构并能定制。
+- **profile** a允许用户编辑他们的简介，即auth_user表的内容。注意该表没有固定的结构并能定制。
 - **change_password** 允许用户以失败安全模式修改他们的密码。
-- **verify_email** 如果电子邮件确认打开，那么访问者，就注册，接收邮件链
-接确认他们的电子邮件信息。链接指向这个动作。
-- **retrieve_username**  默认情况，**Auth** 使用电子邮件和密码登录，但它，可选，
-用用户名而不是电子邮件。后面这种情况，如果用户忘记他/她的用户名， ``retrieve_username`` 方法允许用户输入电子邮件地址并通过电子邮件得到用户
+- **verify_email** 如果电子邮件确认打开，那么访问者，就注册，接收邮件链接确认他们的电子邮件信息。链接指向这个动作。
+- **retrieve_username**  默认情况，**Auth** 使用电子邮件和密码登录，但它，可选，用用户名而不是电子邮件。后面这种情况，如果用户忘记他/她的用户名， ``retrieve_username`` 方法允许用户输入电子邮件地址并通过电子邮件得到用户
 名。
-- **request_reset_password** 允许忘记他们密码的用户请求新密码。他们会得到确
-认电子邮件指向 **reset_password**.
+- **request_reset_password** 允许忘记他们密码的用户请求新密码。他们会得到确认电子邮件指向 **reset_password**.
 - **impersonate** 允许用户 "impersonate" 另外用户。这对于调试和支持目的重要。``request.args[0]`` 是被模拟的用户的id。如果登录用户 ``has_permission('impersonate', db.auth_user, user_id)``这才被允许。
 - **groups** 列出当前登录用户是成员的组。
 - **not_authorized** 显示错误消息，当访问者试图做点他/她不被授权的事情。
@@ -167,8 +144,7 @@ def hello():
     return dict(message='hello %(first_name)s' % auth.user)
 ``:code
 
-任何函数能被装饰，不仅仅是公开的动作。当然，这仍然是一个简单的访问控
-制的例子。更复杂地例子后面会讨论。
+任何函数能被装饰，不仅仅是公开的动作。当然，这仍然是一个简单的访问控制的例子。更复杂地例子后面会讨论。
 ``auth.user``:inxx ``auth.user_id``:inxx
 
 -----
@@ -185,16 +161,14 @@ auth.settings.registration_requires_approval = True
 你能通过appadmin界面批准注册。在表 ``auth_user``中查找。等候的注册有 ``registration_key`` 字段设置为“pending”。当该字段设置为空，注册通过。
 
 通过appadmin界面，你也可以阻止用户登录。在表 ``auth_user``定位用户，设置``registration_key`` 为“blocked”。“blocked”用户不允许登录。注意这会阻止访问者
-登录，但它不会强制已经登录的访问者退出。如果愿意也可用“disabled”替换
-“blocked”，完全系统的行动。
+登录，但它不会强制已经登录的访问者退出。如果愿意也可用“disabled”替换“blocked”，完全系统的行动。
 
 你也可以用下面的语句完全阻止访问“register”页面。
 ``
 auth.settings.actions_disabled.append('register')
 ``:code
 
-如果你想允许用户注册，并且注册后自动登录，但仍想发送电子邮件证实以便
-他们退出后不能再登录，除非他们完成了电子邮件中的指示，你能如下实现：
+如果你想允许用户注册，并且注册后自动登录，但仍想发送电子邮件证实以便他们退出后不能再登录，除非他们完成了电子邮件中的指示，你能如下实现：
 
 ``
 auth.settings.registration_requires_approval = True
@@ -207,15 +181,11 @@ auth.settings.login_after_registration = True
 #### 集成OpenID, Facebook等
 ``Janrain``:inxx ``OpenID``:inxx ``Facebook``:inxx ``LinkedIn``:inxx ``Google``:inxx ``MySpace``:inxx ``Flickr``:inxx
 
-你能用web2py基于角色的访问控制，也可用其它服务认证，比如
-OpenID、Facebook、 LinkedIn、Google、 Dropbox、MySpace和Flickr等。最简单的方
+你能用web2py基于角色的访问控制，也可用其它服务认证，比如OpenID、Facebook、 LinkedIn、Google、 Dropbox、MySpace和Flickr等。最简单的方
 法是使用Janrain Engage (以前 RPX)(Janrain.com)。
-Dropbox作为特例在第14章讨论，因为它不仅允许登录，它还为登录的用户提
-供存储服务。
-Janrain Engage是提供中间件认证的服务。你可以用Janrain.com注册，登记域名
-（你应用的名字），设置你将使用的URL，并提供你API。
-现在，编辑你web2py应用的模型，在你定义 ``auth`` 对象之后，把下面几行内容放
-置好：
+Dropbox作为特例在第14章讨论，因为它不仅允许登录，它还为登录的用户提供存储服务。
+Janrain Engage是提供中间件认证的服务。你可以用Janrain.com注册，登记域名（你应用的名字），设置你将使用的URL，并提供你API。
+现在，编辑你web2py应用的模型，在你定义 ``auth`` 对象之后，把下面几行内容放置好：
 
 ``
 from gluon.contrib.login_methods.rpx_account import RPXAccount
@@ -226,15 +196,13 @@ auth.settings.login_form = RPXAccount(request,
     url = "http://localhost:8000/%s/default/user/login" % request.application)
 ``:code
 
-第一行导入新登录方法，第二行禁用本地注册，第三行要求web2py用PBX登录
-方法。你必须插入你自己的、Janrain.com提供的``api_key``，在注册时选择的域名和
+第一行导入新登录方法，第二行禁用本地注册，第三行要求web2py用PBX登录方法。你必须插入你自己的、Janrain.com提供的``api_key``，在注册时选择的域名和
 你登录页面的外部``url``。
 
 [[image @///image/en6900.png center 300px]]
 
 当新用户第一次登录，web2py创建新``db.auth_user`` 关联该用户。它用``registration_id`` 字段为用户存储唯一的id。大多数认证方法也提供用户名、电子邮
-件、姓和名字但这不保证哪些字段提供取决于用户选择的登录方法。如果同一个
-用户用不同的认证机制登录两次（例如，一次用OpenID，另外一次用
+件、姓和名字但这不保证哪些字段提供取决于用户选择的登录方法。如果同一个用户用不同的认证机制登录两次（例如，一次用OpenID，另外一次用
 Facebook），Janrain可能不认为他/她是同一个用户，并发给不同的 ``registration_id``。
 
 你能定制存储在 ``db.auth_user``的数据和Janrain提供数据之间的映射。
@@ -247,31 +215,25 @@ auth.settings.login_form.mappings.Facebook = lambda profile:\
                  last_name = profile["name"]["familyName"])
 ``:code
 
-字典的键是 ``db.auth_user``的字段，值是Janrain提供配置文件对象数据项。后者的
-详细说明参见在线Janrain文档。
+字典的键是 ``db.auth_user``的字段，值是Janrain提供配置文件对象数据项。后者的详细说明参见在线Janrain文档。
 
 Janrain也保留有关你的用户登录的统计。
 
-该登录表单完全集成web2py基于角色的访问控制，你能创建组，生成组用户成
-员，分配权限和阻止用户等。
+该登录表单完全集成web2py基于角色的访问控制，你能创建组，生成组用户成员，分配权限和阻止用户等。
 
 -----
-Janrain的免费基本服务允许上限至2500唯一注册用户每年登录。提供更多用户
-需要升级到它们的付费服务等级。
-如果你选择不用Janrain而想用不同的登录方法（LDAP,PAM, Google, OpenID,
-OAuth/Facebook, LinkedIn等。），你也可以。实现的API在本章后面描述。
+Janrain的免费基本服务允许上限至2500唯一注册用户每年登录。提供更多用户需要升级到它们的付费服务等级。
+如果你选择不用Janrain而想用不同的登录方法（LDAP,PAM, Google, OpenID,OAuth/Facebook, LinkedIn等。），你也可以。实现的API在本章后面描述。
 -----
 
 #### CAPTCHA 和 reCAPTCHA
 
 ``CAPTCHA``:inxx ``reCAPTCHA``:inxx ``PIL``:inxx
-为防止你网站的垃圾邮件和机器人注册，你可能需要注册CAPTCHA。Web2py支
-持即开即用的``recaptcha``:cite  。这是因为reCAPTCHA很好的设计，免费，可接
+为防止你网站的垃圾邮件和机器人注册，你可能需要注册CAPTCHA。Web2py支持即开即用的``recaptcha``:cite  。这是因为reCAPTCHA很好的设计，免费，可接
 入（它能读取给访问者的词），容易安装，且不需要安装第三方库。
 
 下面是你使用reCAPTCHA需要做的：
-- 注册``recaptcha``:cite  并获得你的（PUBLIC_KEY，PRIVATE_KEY）账号
-对。这是两个字符串。
+- 注册``recaptcha``:cite  并获得你的（PUBLIC_KEY，PRIVATE_KEY）账号对。这是两个字符串。
 - 在 ``auth`` 对象定以后，追加下面的代码到你的模型：
 ``
 from gluon.tools import Recaptcha
@@ -279,8 +241,7 @@ auth.settings.captcha = Recaptcha(request,
     'PUBLIC_KEY', 'PRIVATE_KEY')
 ``:code
 
-如果你访问‘localhost’或‘127.0.0.1’ web网站，reCAPTCHA可能不工作，因为
-它仅对公众可见的web网站注册才工作。
+如果你访问‘localhost’或‘127.0.0.1’ web网站，reCAPTCHA可能不工作，因为它仅对公众可见的web网站注册才工作。
 
  ``Recaptcha``构造函数用下面可选参数：
 ``
@@ -293,8 +254,7 @@ Recaptcha(..., use_ssl=True, error_message='invalid', label='Verify:', options='
 
 更多细节：[[reCAPTCHA http://www.google.com/recaptcha]]``recaptchagoogle``:cite  and [[customizing http://code.google.com/apis/recaptcha/docs/customization.html]]  .
 
-如果你想使用reCAPTCHA，在“"gluon/tools.py”查看``Recaptcha`` 类的定义，因为
-用其它CAPTCHA系统容易。
+如果你想使用reCAPTCHA，在“"gluon/tools.py”查看``Recaptcha`` 类的定义，因为用其它CAPTCHA系统容易。
 
 注意 ``Recaptcha`` 就是扩展了 ``DIV``的帮助对象。它生成虚拟字段验证使用 ``reCaptcha`` 服务，因此它能以任何形式使用，包括用在定义FORMs：
 
@@ -316,8 +276,7 @@ form.element('table').insert(-1,TR('',Recaptcha(...),''))
 auth.define_tables()
 ``:code
 
-定义所有还未定义的**Auth**表。这意味着如果你想这么做，
-你能定义你自己的``auth_user`` 表。
+定义所有还未定义的**Auth**表。这意味着如果你想这么做，你能定义你自己的``auth_user`` 表。
 
 有一些方法定制auth。最简单的方法是添加额外字段：
 
@@ -334,8 +293,7 @@ auth.settings.extra_fields['auth_user']= [
 你不但能给表“auth_user”，也能给其它表“auth_”声明额外字段。用``extra_fields``是推荐的方法，因为它不会打破任何内部机制。
 
 另外一个方法（给专家的！）在于自己定义你的auth表。
-在``auth.define_tables()`` 之前定义表，它不使用默认而是定义的。下面是如何
-实现：
+在``auth.define_tables()`` 之前定义表，它不使用默认而是定义的。下面是如何实现：
 
 ``
 ## after auth = Auth(db)
@@ -373,15 +331,11 @@ auth.settings.table_user = custom_auth_table # tell auth to use custom_auth_tabl
 ## before auth.define_tables()
 ``:code
 
-你能添加你想的任何字段，并改变验证器但你不能删除这个例子中标示为
-“required”的字段。
+你能添加你想的任何字段，并改变验证器但你不能删除这个例子中标示为“required”的字段。
 
-使“password”, “registration_key”, “reset_password_key”
-和 “registration_id” 字段 ``readable=False``和``writable=False``,因为访
-问者不被允许随意更改它们。
+使“password”, “registration_key”, “reset_password_key”和 “registration_id” 字段 ``readable=False``和``writable=False``,因为访问者不被允许随意更改它们。
 
-如果你增加字段“username”，它会用来替换“email”登录。如果你要做
-你还需要增加验证器：
+如果你增加字段“username”，它会用来替换“email”登录。如果你要做你还需要增加验证器：
 ``
 auth_table.username.requires = IS_NOT_IN_DB(db, auth_table.username)
 ``:code
@@ -397,8 +351,7 @@ auth.settings.table_permission_name = 'auth_permission'
 auth.settings.table_event_name = 'auth_event'
 ``:code
 
-在 ``auth`` 对象定义后并在Auth表定义前，表的名字可以重新指定上面变量得到
-修改。例如：
+在 ``auth`` 对象定义后并在Auth表定义前，表的名字可以重新指定上面变量得到修改。例如：
 ``
 auth = Auth(db)
 auth.settings.table_user_name = 'person'
@@ -418,8 +371,7 @@ auth.settings.table_event
 #### 其它登录方法和登录表单
 ``LDAP``:inxx ``PAM``:inxx
 
-Auth提供多登录方法，创建新登录方法的钩子。每种支持的方法对应文件夹中
-的文件。
+Auth提供多登录方法，创建新登录方法的钩子。每种支持的方法对应文件夹中的文件。
 ``
 gluon/contrib/login_methods/
 ``:code
@@ -427,12 +379,10 @@ gluon/contrib/login_methods/
 指每种登录方法在文件中的记述，下面是一些例子。
 
 首先，我们需要区别两种登录方法：
-- 用web2py 登录表单的登录方法（虽然凭证在web2py 外确认）。例如
-LDAP。
+- 用web2py 登录表单的登录方法（虽然凭证在web2py 外确认）。例如LDAP。
 - 需要外部单点登录表单的登录方法（例子是Google and Facebook）。
 
-后一种情况，web2py从不得到登录凭证，仅是服务提供商发布的登录令牌。令
-牌存储在``db.auth_user.registration_id``。
+后一种情况，web2py从不得到登录凭证，仅是服务提供商发布的登录令牌。令牌存储在``db.auth_user.registration_id``。
 
 让我们考虑第一种情况的例子：
 
@@ -452,11 +402,9 @@ Host: basic.example.com
 Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 ``:code
 
-后面的字符串是用户名：密码字符串base64的编码。如果用户授权了，服务响应
-200OK，否则400, 401, 402, 403 或404响应。
+后面的字符串是用户名：密码字符串base64的编码。如果用户授权了，服务响应200OK，否则400, 401, 402, 403 或404响应。
 
-你想用标准 ``Auth`` 登录表单输入用户名和密码，并对这样的服务确认凭据。所有
-你需要做的就是添加下面的代码到你的应用：
+你想用标准 ``Auth`` 登录表单输入用户名和密码，并对这样的服务确认凭据。所有你需要做的就是添加下面的代码到你的应用：
 ``
 from gluon.contrib.login_methods.basic_auth import basic_auth
 auth.settings.login_methods.append(
@@ -469,13 +417,10 @@ auth.settings.login_methods.append(
 auth.settings.login_methods = [auth]
 ``:code
 
-当另外的方法追加了，例如``basic_auth``, **Auth** f首先首先尝试基于``auth_user``内容登
-录访问者，当这失败，它尝试列表中的下一个方法。如果方法成功登录访问者，
+当另外的方法追加了，例如``basic_auth``, **Auth** f首先首先尝试基于``auth_user``内容登录访问者，当这失败，它尝试列表中的下一个方法。如果方法成功登录访问者，
 且如果 ``auth.settings.login_methods[0]==auth``, ``Auth`` 采取下面的动作：
-- 如果用户不存在于``auth_user``，新用户被创建并且用户名/电子邮件地址和密
-码被存储。
-- 如果用户不存在于``auth_user``， 但新接受的密码与存储的老的密码不匹配老
-密码用新的替换（注意密码总存储散列的除非特别说明）。
+- 如果用户不存在于``auth_user``，新用户被创建并且用户名/电子邮件地址和密码被存储。
+- 如果用户不存在于``auth_user``， 但新接受的密码与存储的老的密码不匹配老密码用新的替换（注意密码总存储散列的除非特别说明）。
 
 如果你不希望存储新密码到``auth_user``，那么改变登录方法的顺序就足够了，或从列表删除 ``auth`` 。例如：
 ``
@@ -489,8 +434,7 @@ auth.settings.login_methods = \
 ##### SMTP 和 Gmail
 ``SMTP``:inxx ``Gmail``:inxx
 
-你可以用远程SMTP服务器确认登录凭据，比如Gmail；即如果他们提供的电子
-邮件和密码是访问Gmail SMTP服务器word they provide are valid credentials to access the Gmail SMTP server (``smtp.gmail.com:587``)的有效凭据，你
+你可以用远程SMTP服务器确认登录凭据，比如Gmail；即如果他们提供的电子邮件和密码是访问Gmail SMTP服务器word they provide are valid credentials to access the Gmail SMTP server (``smtp.gmail.com:587``)的有效凭据，你
 接受用户登录。所有需要的代码如下
 ``
 from gluon.contrib.login_methods.email_auth import email_auth
@@ -498,16 +442,14 @@ auth.settings.login_methods.append(
     email_auth("smtp.gmail.com:587", "@gmail.com"))
 ``:code
 
-``email_auth`` 第一个参数是SMTP服务器的地址：端口。第二个参数是电子邮件域
-名。
+``email_auth`` 第一个参数是SMTP服务器的地址：端口。第二个参数是电子邮件域名。
 
 这对任何需要TLS认证的SMTP服务器都有用。``TLS``:inxx
 
 ##### PAM
 ``PAM``:inxx
 
-用可插拔认证模块（PAM）的认证与前面的情况相同。它允许webpy用操作系统
-账户认证用户：
+用可插拔认证模块（PAM）的认证与前面的情况相同。它允许webpy用操作系统账户认证用户：
 ``
 from gluon.contrib.login_methods.pam_auth import pam_auth
 auth.settings.login_methods.append(pam_auth())
@@ -547,8 +489,7 @@ auth.settings.login_methods.append(ldap_auth(mode='cn',
 ##### Google App Engine
 ``GAE login``:inxx
 
-当运行在Google App Engine用Google认证要求跳过web2py登录表单，重定向到
-Google页面，成功就返回。因为行为与前面的例子不同，所以API有点不同。
+当运行在Google App Engine用Google认证要求跳过web2py登录表单，重定向到Google页面，成功就返回。因为行为与前面的例子不同，所以API有点不同。
 
 ``
 from gluon.contrib.login_methods.gae_google_login import GaeGoogleAccount
@@ -558,8 +499,7 @@ auth.settings.login_form = GaeGoogleAccount()
 ##### OpenID
 ``OpenID``:inxx
 
-前面我们讨论了集成Janrain（有OpenID支持），那是最简单的方法使用
-OpenID。但有时，你不想依赖第三方的服务，你想直接从消费者（你的应用）
+前面我们讨论了集成Janrain（有OpenID支持），那是最简单的方法使用OpenID。但有时，你不想依赖第三方的服务，你想直接从消费者（你的应用）
 访问OpenID供应商。
 
 下面是例子：
@@ -588,8 +528,7 @@ db.define_table('alt_logins',
 ##### OAuth2.0 and Facebook
 ``OAuth``:inxx ``Facebook``:inxx
 
-前面我们讨论了集成Janrain（有Facebook支持），但有时，你不想依赖第三方
-的服务，你想直接访问OAuth2.0供应商；例如，Facebook。下面是如何实现：
+前面我们讨论了集成Janrain（有Facebook支持），但有时，你不想依赖第三方的服务，你想直接访问OAuth2.0供应商；例如，Facebook。下面是如何实现：
 
 ``
 from gluon.contrib.login_methods.oauth20_account import OAuthAccount
@@ -642,8 +581,7 @@ auth.settings.login_form=FaceBookAccount()
 ##### LinkedIn
 ``LinkedIn``:inxx
 
-前面我们讨论了集成Janrain（有LinkedIn支持），那是最简单的方法使用
-OAuth。但有时，你不想依赖第三方的服务，或者你想直接访问LinkedIn以获得
+前面我们讨论了集成Janrain（有LinkedIn支持），那是最简单的方法使用OAuth。但有时，你不想依赖第三方的服务，或者你想直接访问LinkedIn以获得
 比Janrain所提供更多的信息。
 下面是例子：
 
@@ -656,8 +594,7 @@ auth.settings.login_form=LinkedInAccount(request,KEY,SECRET,RETURN_URL)
 
 ##### X509
 
-你可以通过传递X509证书给页面来登录，你的凭据会从证书中提取。这要求从
-下面安装``M2Crypto`` ：
+你可以通过传递X509证书给页面来登录，你的凭据会从证书中提取。这要求从下面安装``M2Crypto`` ：
 
 ``
 http://chandlerproject.org/bin/view/Projects/MeTooCrypto
@@ -671,23 +608,19 @@ auth.settings.actions_disabled=['register','change_password','request_reset_pass
 auth.settings.login_form = X509Account()
 ``:code
 
-现在你可以传递X509证书在web2py认证。如何实现是依赖于浏览器的，但你可
-能更倾向于给web服务使用证书。这种情况，你可以用比如``cURL`` 尝试你的认证：
+现在你可以传递X509证书在web2py认证。如何实现是依赖于浏览器的，但你可能更倾向于给web服务使用证书。这种情况，你可以用比如``cURL`` 尝试你的认证：
 
 ``
 curl -d "firstName=John&lastName=Smith" -G -v --key private.key \
      --cert  server.crt https://example/app/default/user/profile
 ``
 
-用Rocket即开即用（web2py内建web服务器），但如果你是用不同的web服务器，
-你可能需要在web服务器侧一些额外的配置工作。特别是，你需要告诉你的web
-服务器，证书在本地主机的哪里，并且它需要确认来自客户的证书。如何实现
-是依赖web服务器的，因而此处省略。
+用Rocket即开即用（web2py内建web服务器），但如果你是用不同的web服务器，你可能需要在web服务器侧一些额外的配置工作。特别是，你需要告诉你的web
+服务器，证书在本地主机的哪里，并且它需要确认来自客户的证书。如何实现是依赖web服务器的，因而此处省略。
 
 ##### Multiple login forms
 
-一些登录方法修改登录表单，一些不修改。当它们做这个的时候，不能同时存
-在的。但通过提供多登录表单一些存在在同一个页面。Web2py通方法实现。下面
+一些登录方法修改登录表单，一些不修改。当它们做这个的时候，不能同时存在的。但通过提供多登录表单一些存在在同一个页面。Web2py通方法实现。下面
 是混合常用登录（auth）和RPX登录（janrain.com）的例子：
 
 ``
@@ -697,8 +630,7 @@ auth.settings.login_form = ExtendedLoginForm(request,
     auth, other_form, signals=['token'])
 ``:code
 
-如果信号设置了并且有请求中有匹配任何信号的参数，
-它返回``other_form.login_form`` 调用。
+如果信号设置了并且有请求中有匹配任何信号的参数，它返回``other_form.login_form`` 调用。
 ``other_form`` 能处理一些特定情况，例如， ``other_form.login_form``内的OpenID多步登录。
 
 否则，它会用``other_form``一起呈现正常登录表单。
@@ -724,14 +656,11 @@ mail.settings.sender = 'you@example.com'
 mail.settings.login = 'username:password'
 ``
 
-你需要用合适的参数为你的SMTP服务器替换mail.settings。如果SMTP服务器不
-需要认证，设置 ``mail.settings.login = None`` 。
+你需要用合适的参数为你的SMTP服务器替换mail.settings。如果SMTP服务器不需要认证，设置 ``mail.settings.login = None`` 。
 
-你可以在第8章读到更多有关电子邮件API和电子邮件配置的内容。这里我们把
-讨论限定在``Mail`` 和``Auth``间的交互。
+你可以在第8章读到更多有关电子邮件API和电子邮件配置的内容。这里我们把讨论限定在``Mail`` 和``Auth``间的交互。
 
-``Auth``中，默认情况，电子邮件确认是禁止的。要启用电子邮件，在模型中``Auth``
-定义的地方追加虾米那几行：
+``Auth``中，默认情况，电子邮件确认是禁止的。要启用电子邮件，在模型中``Auth``定义的地方追加虾米那几行：
 
 ``
 auth.settings.registration_requires_verification = False
@@ -756,19 +685,16 @@ auth.messages.reset_password = 'Click on the link http://' + \
 
 ### 授权Authorization
 
-一旦新用户注册了，新的组会被创建包含该用户。该新用户的角色传统上是
-“user_[id]”，[id]是新创建用户id的id。能用下面的语句禁用创建组：
+一旦新用户注册了，新的组会被创建包含该用户。该新用户的角色传统上是“user_[id]”，[id]是新创建用户id的id。能用下面的语句禁用创建组：
 ``
 auth.settings.create_user_groups = False
 ``:code
 
 但是我们建议不要这样做。
 
-在组内用户有成员资格。每个组用名字/角色标识。组有权限。用户所具有的权限
-是因为他们隶属组。
+在组内用户有成员资格。每个组用名字/角色标识。组有权限。用户所具有的权限是因为他们隶属组。
 
-你能创建组，通过**appadmin**
-授予成员资格和权限或用下面的方法编程授予：
+你能创建组，通过**appadmin**授予成员资格和权限或用下面的方法编程授予：
 ``
 auth.add_group('role', 'description')
 ``:code
@@ -816,10 +742,8 @@ auth.has_membership(group_id, user_id, role)
 auth.add_permission(group_id, 'name', 'object', record_id)
 ``:code
 
-给对象“object”（也是用户定义）中“name”（用户定义的）组 ``group_id``成员的
-权限。如果“object”是表名，则权限指整个表，通过设定 ``record_id`` 为0值；或权
-限指特定记录，通过设定``record_id``比0大的值。当就表给权限，通常用集合
-（’create’, ’read’, ’update’, ’delete’, ’select’）做权限名，因为这些权限能被
+给对象“object”（也是用户定义）中“name”（用户定义的）组 ``group_id``成员的权限。如果“object”是表名，则权限指整个表，通过设定 ``record_id`` 为0值；或权
+限指特定记录，通过设定``record_id``比0大的值。当就表给权限，通常用集合（’create’, ’read’, ’update’, ’delete’, ’select’）做权限名，因为这些权限能被
 CRUD理解并执行。
 
 如果``group_id``是0，web2py使用唯一与当前登录用户相关的组。
@@ -843,12 +767,9 @@ rows = db(auth.accessible_query('read', db.mytable, user_id))\
     .select(db.mytable.ALL)
 ``:code
 
-返回表“mytable” 的用户 ``user_id``有“read”权限的所有行。如果``user_id``没有指定，
-则web2py假定当前登录用户。
-``accessible_query(...)`` 能与其它查询组合来构成更复
-杂的。
-``accessible_query(...)`` 是唯一要求JOIN的 **Auth** 方法，因此它不适用于Google
-App Engine。
+返回表“mytable” 的用户 ``user_id``有“read”权限的所有行。如果``user_id``没有指定，则web2py假定当前登录用户。
+``accessible_query(...)`` 能与其它查询组合来构成更复杂的。
+``accessible_query(...)`` 是唯一要求JOIN的 **Auth** 方法，因此它不适用于Google App Engine。
 
 假设下面的定义：
 ``
@@ -874,8 +795,7 @@ False
 
 #### 装饰器Decorators
 
-最常见检查权限的途径不是显式调用上面的方法，而是装饰函数以便相关登录
-用户的权限被检查了。下面是例子：
+最常见检查权限的途径不是显式调用上面的方法，而是装饰函数以便相关登录用户的权限被检查了。下面是例子：
 ``
 def function_one():
     return 'this is a public function'
@@ -911,18 +831,15 @@ def function_seven():
     return add(3, 4)
 ``:code
 
-``@auth.requires(condition)`` 的条件参数是可以调用的。 ``@auth.requires`` 也用可选
-参数 ``requires_login`` ，默认是 ``True``。如果设置为False，在条件的值是true/false前，
+``@auth.requires(condition)`` 的条件参数是可以调用的。 ``@auth.requires`` 也用可选参数 ``requires_login`` ，默认是 ``True``。如果设置为False，在条件的值是true/false前，
 它不需要登录。条件可以是布尔值或值为布尔的函数。
 
-注意就权限访问所有函数除了第一个是受限制的，访问者可能有也可能没有。
-如果用户没有登录，权限不能被检查；用户重定向到登录页面然后回到要求权
+注意就权限访问所有函数除了第一个是受限制的，访问者可能有也可能没有。如果用户没有登录，权限不能被检查；用户重定向到登录页面然后回到要求权
 限的页面。
 
 #### 组合要求Combining requirements
 
-偶尔，需要组合要求。这能通过一般``requires`` 装饰器实现，用当个参数，true或
-false条件。例如，给代理访问权，但是仅在星期四：
+偶尔，需要组合要求。这能通过一般``requires`` 装饰器实现，用当个参数，true或false条件。例如，给代理访问权，但是仅在星期四：
 ``
 @auth.requires(auth.has_membership(group_id=agents) \
                and request.now.weekday()==1)
@@ -940,15 +857,12 @@ def function_seven():
 
 #### 授权和CRUD Authorization and CRUD
 
-使用装饰器和/或显式检查提供实现访问控制的方法。
-另外一种实现访问控制方法总是使用CRUD（与``SQLFORM``相反）访问数据库，
-强制数据库表和记录访问控制。用下面的语句，通过链 ``Auth`` 和CRUD实现：
+使用装饰器和/或显式检查提供实现访问控制的方法。另外一种实现访问控制方法总是使用CRUD（与``SQLFORM``相反）访问数据库，强制数据库表和记录访问控制。用下面的语句，通过链 ``Auth`` 和CRUD实现：
 ``
 crud.settings.auth = auth
 ``:code
 
-这能防止访问者使用任何CRUD函数除非访问者登录而且有权限。例如，允许访
-问者粘贴评论，但仅能更新他们自己的评论（假设crud、auth和db.comment已定
+这能防止访问者使用任何CRUD函数除非访问者登录而且有权限。例如，允许访问者粘贴评论，但仅能更新他们自己的评论（假设crud、auth和db.comment已定
 义）：
 ``
 def give_create_permission(form):
@@ -1012,15 +926,13 @@ db.dog.large_image.authorization = lambda record: \
    auth.has_permission('read', db.dog, record.id, auth.user.id)
 ``:code
 
-上传文件属性 ``authorization``可以是None（默认）或是函数，决定用户是否登录并
-有当前记录的‘read’权限。这个例子，没有限制下载“small_image”字段链接的
+上传文件属性 ``authorization``可以是None（默认）或是函数，决定用户是否登录并有当前记录的‘read’权限。这个例子，没有限制下载“small_image”字段链接的
 图像，但我们需要对“large_image”字段链接的图像访问控制。
 
 
 #### 访问控制和基本认证
 
-偶尔，有需要公开动作，有装饰器要求访问控制做服务；即从程序或脚本调用
-它们，能使用认证检查授权。
+偶尔，有需要公开动作，有装饰器要求访问控制做服务；即从程序或脚本调用它们，能使用认证检查授权。
 
 **Auth** 允许通过Basic认证登录：
 ``
@@ -1163,8 +1075,7 @@ auth.settings.logged_url = URL('user', args='profile')
 auth.settings.download_url = URL('download')
 ``:code
 
-这些必须指向你想重定向你的用户到的URL，在各种可能 ``auth``动作之后（在没
-有参考的情况下）：
+这些必须指向你想重定向你的用户到的URL，在各种可能 ``auth``动作之后（在没有参考的情况下）：
 
 ``
 auth.settings.login_next = URL('index')
@@ -1198,8 +1109,7 @@ auth.settings.on_failed_authorization = \
 
 你能改变这个变量并重定向用户到其它地方。
 
-经常， ``on_failed_authorization``是URL，但它也可以是返回URL的函数，并且它
-在授权失败会被调用。
+经常， ``on_failed_authorization``是URL，但它也可以是返回URL的函数，并且它在授权失败会被调用。
 
 这些是回调的列表，应该在任何数据库IO前单验证每个相应动作表后执行：
 
@@ -1211,8 +1121,7 @@ auth.settings.retrieve_password_onvalidation = []
 auth.settings.reset_password_onvalidation = []
 ``:code
 
-每个回调必须是函数，用``form`` 对象参数，它能在数据库IO执行前，修改表单
-对象属性。
+每个回调必须是函数，用``form`` 对象参数，它能在数据库IO执行前，修改表单对象属性。
 
 下面是在数据库IO执行后且在重定向前应该执行的回调列表：
 
@@ -1241,8 +1150,7 @@ auth.settings.retrieve_username_captcha = None
 auth.settings.retrieve_password_captcha = None
 ``:code
 
-如果 ``.captcha`` 设置指向 ``gluon.tools.Recaptcha``，所有表单，相应选项
-（象``.login_captcha``）设置为 ``None`` ，都有验证码，而那些相应选项设置为``False`` 则没有。如果，相反，``.captcha`` 设置为 ``None``，只有相应选项设置为 ``gluon.tools.Recaptcha`` 对象的表单有验证码，其它就没有。
+如果 ``.captcha`` 设置指向 ``gluon.tools.Recaptcha``，所有表单，相应选项（象``.login_captcha``）设置为 ``None`` ，都有验证码，而那些相应选项设置为``False`` 则没有。如果，相反，``.captcha`` 设置为 ``None``，只有相应选项设置为 ``gluon.tools.Recaptcha`` 对象的表单有验证码，其它就没有。
 
 下面是登录会话终止时间：
 
@@ -1250,8 +1158,7 @@ auth.settings.retrieve_password_captcha = None
 auth.settings.expiration = 3600  # seconds
 ``:code
 
-你可以改变密码字段的名字（例如，在Firebird中“password”是关键字，不能
-用作字段名）：
+你可以改变密码字段的名字（例如，在Firebird中“password”是关键字，不能用作字段名）：
 
 ``
 auth.settings.password_field = 'password'
@@ -1282,16 +1189,14 @@ auth.settings.hideerror = False
 auth.settings.formstyle = 'table3cols'
 ``:code
 
-（可以是“table2cols”、“divs”和“ul”）
-你能给auth生成的表单设定分隔符：
+（可以是“table2cols”、“divs”和“ul”）你能给auth生成的表单设定分隔符：
 
 ``
 auth.settings.label_separator =	':'
 ``:code
 
 
-默认情况，登录表单提供选项通过“rememberme”选项扩展登录。终止时间可以
-修改或通过下面设置禁止选项：
+默认情况，登录表单提供选项通过“rememberme”选项扩展登录。终止时间可以修改或通过下面设置禁止选项：
 
 ``
 auth.settings.long_expiration = 3600*24*30 # one month
@@ -1380,23 +1285,16 @@ auth.messages.label_remember_me = "Remember me (for 30 days)"
 ### 集中认证服务Central Authentication Service
 ``CAS``:inxx ``authentication``:inxx
 
-Web2py 提供对第三方认证的支持和单点登录。下面我们讨论集中认证服务
-（CAS），它是工业标准，客户端和服务器端都构建到web2py内。
+Web2py 提供对第三方认证的支持和单点登录。下面我们讨论集中认证服务（CAS），它是工业标准，客户端和服务器端都构建到web2py内。
 
-CAS是公开的分布式认证的协议，它的工作原理如下：当访问者到达我们的
-web网站，我们的应用在会话中检查用户是否已经注册（例如通过 ``session.token``对象）。如果用户没有经过认证，控制器从CAS应用重定向用户，用户可以登录、注册和管理他的凭据（姓名、电子邮件和密码）。如果用户注册，他接到电子邮件，注册没有完成，直到他响应了电子邮件。
-一旦用户成功注册并登录，CAS应
-用重定向用户到我们的应用并发给密钥。我们的应用使用密钥通过到后台CAS服
-务器的HTTP请求得到用户的凭据。
+CAS是公开的分布式认证的协议，它的工作原理如下：当访问者到达我们的web网站，我们的应用在会话中检查用户是否已经注册（例如通过 ``session.token``对象）。如果用户没有经过认证，控制器从CAS应用重定向用户，用户可以登录、注册和管理他的凭据（姓名、电子邮件和密码）。如果用户注册，他接到电子邮件，注册没有完成，直到他响应了电子邮件。
+一旦用户成功注册并登录，CAS应用重定向用户到我们的应用并发给密钥。我们的应用使用密钥通过到后台CAS服务器的HTTP请求得到用户的凭据。
 
-使用这样的机制，多个应用可以通过单个CAS服务器实现单点登录。提供认证的
-服务器称之为服务供应商。寻找认证访问者的应用程序叫做服务消费者。
+使用这样的机制，多个应用可以通过单个CAS服务器实现单点登录。提供认证的服务器称之为服务供应商。寻找认证访问者的应用程序叫做服务消费者。
 
-CAS与OpenID很相似，有一个主要的不同。在OpenID情况下，访问者选择服务
-供应商。在CAS情形，我们的应用做决定，是CAS更安全。
+CAS与OpenID很相似，有一个主要的不同。在OpenID情况下，访问者选择服务供应商。在CAS情形，我们的应用做决定，是CAS更安全。
 
-运行web2py， CAS供应商易如拷贝基本构建应用。
-事实上，任何web2py应用公开了动作
+运行web2py， CAS供应商易如拷贝基本构建应用。事实上，任何web2py应用公开了动作
 
 ``
 ## in provider app
@@ -1418,14 +1316,11 @@ http://.../provider/default/user/cas/logout
 auth = Auth(db,cas_provider = 'http://127.0.0.1:8000/provider/default/user/cas')
 ``:code
 
-当你访问登录url消费者应用，它会重定向你到提供商应用，执行认证并重定向
-消费者回来。注册、退出登录、修改密码获取密码的所有处理，在供应商应用完
-成。关于登录用户的条目会被创建在消费者侧，以便你添加额外的字段和本地
-配置。得益于CAS2.0，供应商的所有字段可读，在消费者 ``auth_user`` 表有相应字
+当你访问登录url消费者应用，它会重定向你到提供商应用，执行认证并重定向消费者回来。注册、退出登录、修改密码获取密码的所有处理，在供应商应用完
+成。关于登录用户的条目会被创建在消费者侧，以便你添加额外的字段和本地配置。得益于CAS2.0，供应商的所有字段可读，在消费者 ``auth_user`` 表有相应字
 段会自动拷贝。 
 
-``Auth(...,cas_provider='...')`` 与第三方供应商工作，并支持CAS1.0和2.0。版本自动
-检测。默认情况，通过追加它从基（上面的``cas_provider`` ）构建供应商的URL：
+``Auth(...,cas_provider='...')`` 与第三方供应商工作，并支持CAS1.0和2.0。版本自动检测。默认情况，通过追加它从基（上面的``cas_provider`` ）构建供应商的URL：
 
 ``
 /login
@@ -1453,10 +1348,8 @@ auth.settings.cas_domains.append('example.com')
 
 #### U用web2py授权非web2py 应用
 
-这是可能的但依赖于web服务器。这里我们假定两个应用运行在同一个web服务
-器：具有``mod_wsgi``的 Apache。两个应用中的一个是 web2py采用通过 Auth提供
-访问控制的应用。另外一个可能是CGI脚本、PHP程序或其它任意的。当一个客户
-请求访问后者，我们想指导web服务器请求到前一个应用的权限。
+这是可能的但依赖于web服务器。这里我们假定两个应用运行在同一个web服务器：具有``mod_wsgi``的 Apache。两个应用中的一个是 web2py采用通过 Auth提供
+访问控制的应用。另外一个可能是CGI脚本、PHP程序或其它任意的。当一个客户请求访问后者，我们想指导web服务器请求到前一个应用的权限。
 
 首先，我们需要修改web2py并添加下面的控制器：
 
@@ -1473,16 +1366,13 @@ nohup python web2py.py -a '' -p 8002
 
 端口8002是必须的，不需要启动admin，因而没有admin密码。
 
-然后，我们需要编辑Apache配置文件（例如“/etc/apache2/sitesavailable/
-default”）并指导apache，以便当非web2p程序调用时，它应该调用上
+然后，我们需要编辑Apache配置文件（例如“/etc/apache2/sitesavailable/default”）并指导apache，以便当非web2p程序调用时，它应该调用上
 面的 ``check``动作，仅当它返回``true``，它能执行并响应请求，否则拒绝访问。
  
 
-因为web2py和非web2py应用运行在同一个域名，如果用户登录到web2py应用，
-web2py会话cookie传递给Apache，即使当另外一个应用被请求，会允许凭证确
+因为web2py和非web2py应用运行在同一个域名，如果用户登录到web2py应用，web2py会话cookie传递给Apache，即使当另外一个应用被请求，会允许凭证确
 认。
-要实现这个，我们需要脚本，“web2py/scripts/access.wsgi”能实现。该脚本就在
-web2py里。所有需要我们做的告诉apache调用这个脚本，应用的URL需要访问控
+要实现这个，我们需要脚本，“web2py/scripts/access.wsgi”能实现。该脚本就在web2py里。所有需要我们做的告诉apache调用这个脚本，应用的URL需要访问控
 制，和脚本的位置：
 
 ``
@@ -1498,8 +1388,7 @@ web2py里。所有需要我们做的告诉apache调用这个脚本，应用的UR
 </VirtualHost>
 ``
 
-这里“mˆ yapp/path/needing/authentication/myfile”是正则表达式，应该匹配输入
-请求“/path/to/”是web2py文件夹的绝对位置。
+这里“mˆ yapp/path/needing/authentication/myfile”是正则表达式，应该匹配输入请求“/path/to/”是web2py文件夹的绝对位置。
 
 “access.wsgi”脚本包含下面的行：
 
