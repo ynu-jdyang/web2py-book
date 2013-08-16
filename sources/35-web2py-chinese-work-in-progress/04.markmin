@@ -16,8 +16,7 @@ python web2py.py -a 'your password' -i 127.0.0.1 -p 8000
 python web2py.py -a '<recycle>' -i 127.0.0.1 -p 8000
 ``:code
 
-在这种情况下， web2py 重用以前存储的哈希密码。如果没有提供密码
-或"parameters_8000.py"文件被删除，基于web的管理界面会被禁用。
+在这种情况下， web2py 重用以前存储的哈希密码。如果没有提供密码或"parameters_8000.py"文件被删除，基于web的管理界面会被禁用。
 
 ``PAM``:inxx
 一些Unix/ Linux系统上，如果密码是
@@ -28,8 +27,7 @@ python web2py.py -a '<recycle>' -i 127.0.0.1 -p 8000
 web2py的使用操作系统帐户some_user的PAM密码来认证管理员，除非由PAM配置阻止。
 
 -------
-web2py通常运行CPython（Python解释器的C语言实现由Guido van Rossum创建），但它
-也能运行Jython（解释器的Java实现）。后面的可能性允许在J2EE基础架构的情况下使用的web2py。使用Jython，只需更换"python web2py.py ..."为"jython web2py.py"。
+web2py通常运行CPython（Python解释器的C语言实现由Guido van Rossum创建），但它也能运行Jython（解释器的Java实现）。后面的可能性允许在J2EE基础架构的情况下使用的web2py。使用Jython，只需更换"python web2py.py ..."为"jython web2py.py"。
 可以在第14章中找到关于安装Jython和访问数据库需要的zxJDBC模块的详细信息。
 
 -------
@@ -162,34 +160,26 @@ nocron = None
 ### 工作流
 
 web2py工作流如下：
-- HTTP请求到达web服务器（内置Rocket服务器或通过WSGI连接到web2py的不同
-服务器或另外的适配器）。该web服务器在其自己的线程，并行处理每个请求。
+- HTTP请求到达web服务器（内置Rocket服务器或通过WSGI连接到web2py的不同服务器或另外的适配器）。该web服务器在其自己的线程，并行处理每个请求。
 - HTTP请求标头被解析并传递到调度器（在本章稍后解释）。
-- 调度器将决定由哪一个已安装应用处理请求，并把URL中的PATH_INFO映射成函数
-调用。每个URL对应一个函数调用。
+- 调度器将决定由哪一个已安装应用处理请求，并把URL中的PATH_INFO映射成函数调用。每个URL对应一个函数调用。
 - 对于静态文件夹中文件的请求被直接处理，并且大文件被自动流式传输到客户端。
 - 除静态文件之外的请求被映射成动作（即请求应用控制器中的一个函数）。
-- 调用动作之前，发生的几件事：如果请求标头包含应用的会话cookie，会话对象被恢
-复；如果没有，会话id被创建（但会话文件直到后来才被保存）；创建请求的执行环
+- 调用动作之前，发生的几件事：如果请求标头包含应用的会话cookie，会话对象被恢复；如果没有，会话id被创建（但会话文件直到后来才被保存）；创建请求的执行环
 境；在这种环境下执行模型。
 - 最后，控制器动作在预先构建的环境中执行。
-- 如果动作返回一个字符串，它被返回客户端（或者如果该动作返回一个web2py的
-HTML帮助对象，它被序列化并返回给客户端）。
+- 如果动作返回一个字符串，它被返回客户端（或者如果该动作返回一个web2py的HTML帮助对象，它被序列化并返回给客户端）。
 - 如果动作返回一个可迭代工作流，它被用来循环并将数据分流传送到客户端。
-- 如果动作返回一个字典，web2py会试图找到一个视图呈现该字典。视图必须与动作名
-称相同（除非另有规定）并且扩展名与被请求的页面相同（默认为.html）；失败的话，
-web2py可能采用通用视图（如果可用并且已启用）。视图看到定义在模型中和由动作
-返回的字典中的每个变量，但没有看到在控制器中定义的全局变量。
+- 如果动作返回一个字典，web2py会试图找到一个视图呈现该字典。视图必须与动作名称相同（除非另有规定）并且扩展名与被请求的页面相同（默认为.html）；失败的话，
+web2py可能采用通用视图（如果可用并且已启用）。视图看到定义在模型中和由动作返回的字典中的每个变量，但没有看到在控制器中定义的全局变量。
 - 整个用户代码在单一事务中执行，除非另有规定。
 - 如果用户代码成功，事务被提交。
-- 如果用户代码失败，回溯被存储在票据中，票据ID被发送给客户端。只有系统管理员
-能搜索和阅读票据中的回溯。
+- 如果用户代码失败，回溯被存储在票据中，票据ID被发送给客户端。只有系统管理员能搜索和阅读票据中的回溯。
 
 有一些注意事项要牢记：
 - 同一文件夹/子文件夹中的模型按字母顺序执行。
 - 模型中定义的任何变量对字母顺序排在后面的模型、控制器和视图都是可见的。
-- 子文件夹中的模型被有条件的执行。例如，如果用户请求"/a/c/f"，"a"是应用，
-"c"是控制器，"f"是函数（动作），那么如下模型会被执行：
+- 子文件夹中的模型被有条件的执行。例如，如果用户请求"/a/c/f"，"a"是应用，"c"是控制器，"f"是函数（动作），那么如下模型会被执行：
 
 ``
 applications/a/models/*.py
@@ -197,8 +187,7 @@ applications/a/models/c/*.py
 applications/a/models/c/f/*.py
 ``
 
-- 请求的控制器被执行并且请求的函数被调用。这意味着控制器中的所有顶层代码在每
-个对该控制器请求中被执行。
+- 请求的控制器被执行并且请求的函数被调用。这意味着控制器中的所有顶层代码在每个对该控制器请求中被执行。
 - 只有动作返回一个字典时，视图才被调用。
 - 如果找不到视图，web2py会试图使用通用视图。默认情况下，通用视图被禁用，
 虽然'welcome'应用在/models/db.py包含一行代码在localhost上启用它们。可以每
@@ -277,25 +266,21 @@ http://127.0.0.1:8000/a/c/f.html
 http://127.0.0.1:8000/a/static/filename
 ``:code
 
-没有被称为"static"的控制器。web2py 把这解释成请求应用"a"子文件夹"static"中名
-为"filename"的文件。
+没有被称为"static"的控制器。web2py 把这解释成请求应用"a"子文件夹"static"中名为"filename"的文件。
 
 ``PARTIAL CONTENT``:inxx ``IF_MODIFIED_SINCE``:inxx
 当静态文件被下载了，web2py并不创建会话，也不发出cookie或执行模型。web2py总是以1MB 的块数据流静态文件，并且当客户端发送RANGE 请求文件的一个子集时，发送
 PARTIAL CONTENT。
 
-web2py还支持IF_MODIFIED_SINCE协议，如果文件已经存储在浏览器缓存中并且版本
-没有改变就不发送文件。
+web2py还支持IF_MODIFIED_SINCE协议，如果文件已经存储在浏览器缓存中并且版本没有改变就不发送文件。
 
-当链接到静态文件夹中的一个音频或视频文件时，如果你想强制浏览器下载文件，而不是
-通过媒体播放器的音频/视频流，将``?attachment``添加到URL。这告诉web2py将``Content-Disposition``标头设置为"attachment"。例如：
+当链接到静态文件夹中的一个音频或视频文件时，如果你想强制浏览器下载文件，而不是通过媒体播放器的音频/视频流，将``?attachment``添加到URL。这告诉web2py将``Content-Disposition``标头设置为"attachment"。例如：
 
 ``
 <a href="/app/static/my_audio_file.mp3?attachment">Download</a>
 ``:code
 
-当上面的链接被点击后，浏览器会提示用户下载MP3文件，而不是立即流媒体音频。（正
-如[[below #response]], y所讨论，你还可以直接设置HTTP 请求标头只需分配标头``dict`` 和它们的值给 ``response.headers``.）
+当上面的链接被点击后，浏览器会提示用户下载MP3文件，而不是立即流媒体音频。（正如[[below #response]], y所讨论，你还可以直接设置HTTP 请求标头只需分配标头``dict`` 和它们的值给 ``response.headers``.）
 
 ``request.application``:inxx ``request.controller``:inxx ``request.function``:inxx ``GET``:inxx ``POST``:inxx ``request.args``:inxx
 web2py映射如下形式的GET/POST请求：
@@ -416,8 +401,6 @@ welcome.w2p
 
 -------
 你第一次启动web2py时，创建两个新文件夹：deposit和applications。"welcome"应用被压缩成"welcome.w2p"文件，作为基本构建应用来使用。deposit文件夹用来作为安装和卸载应用的临时存储。
-
-
 -------
 
 web2py的单元测试是在
@@ -460,8 +443,7 @@ index.yaml
 queue.yaml
 ``:code
 
-是用来在Google AppEngine上部署的配置文件。可以在DeploymentRecipes章节和Google
-Documentation页面阅读更多关于它们的内容。
+是用来在Google AppEngine上部署的配置文件。可以在DeploymentRecipes章节和Google Documentation页面阅读更多关于它们的内容。
 
 还有附加的库，通常由第三方开发：
 
@@ -775,15 +757,13 @@ from gluon.tools import Auth, Crud, Service
 
 #### 从Python模块访问API
 
-你的模型或控制器可以导入Python模块，而这些可能需要使用一些web2py的API。它们这
-样做的方式是导入：
+你的模型或控制器可以导入Python模块，而这些可能需要使用一些web2py的API。它们这样做的方式是导入：
 
 ``
 from gluon import *
 ``
 
-事实上，任何Python 模块即使不由web2py 应用导入，可以导入web2py 的API 只要
-web2py在``sys.path``中。
+事实上，任何Python 模块即使不由web2py 应用导入，可以导入web2py 的API 只要web2py在``sys.path``中。
 
 但有一点需要注意。web2py中定义了一些全局对象(request, response, session, cache,T)（请求，响应，会话，缓存，T），只能存在于HTTP请求存在（或伪造）时。因此，只有当它们被应用调用时模块才可以访问它们。出于这个原因，它们被放置到一个叫做``current``的容器中，这是一个线程局部对象。例如。
 
@@ -801,11 +781,9 @@ def index():
 
 请注意以下几点：
 
-- ``importtest``首先在当前应用的模块文件夹中寻找模块，
-之后在``sys.path``列出的文件夹中寻找。因此，应用级模块总是优先于Python模块。这允许不同应用附带它们不同版本的模块，而不会发生冲突。
+- ``importtest``首先在当前应用的模块文件夹中寻找模块，之后在``sys.path``列出的文件夹中寻找。因此，应用级模块总是优先于Python模块。这允许不同应用附带它们不同版本的模块，而不会发生冲突。
 
-- 不同的用户可以同时调用相同的 ``index`` 动作，它调用模块中的函数，而且不会有
-任何冲突因为``current.request``是处在不同线程中的不同对象。只是要小心，不要在模块的函数或类（即顶层）之外访问``current.request`` 
+- 不同的用户可以同时调用相同的 ``index`` 动作，它调用模块中的函数，而且不会有任何冲突因为``current.request``是处在不同线程中的不同对象。只是要小心，不要在模块的函数或类（即顶层）之外访问``current.request`` 
 
 - ``import test`` t是从 ``from applications.appname.modules import test``. 导入test的快捷方式。使用较长的语法，可以从其它应用导入模块。
 
@@ -816,10 +794,8 @@ F为了与普通Python行为的一致性，默认情况下，进行更改时web2
 from gluon.custom_import import track_changes; track_changes(True)
 ``:code
 
-从现在起，每次导入模块，导入器都将检查Python源文件(.py)是否已经改变。如果它改变
-了，模块将被重载。这适用于所有Python模块，甚至是web2py外的模块。该模式是全局性
-的，适用于所有应用。无论使用何种模式，总是重新加载模型，控制器和视图的更改。要关
-闭该模式，使用以 ``False``为参数的相同函数。要了解实际的跟踪状态，使用
+从现在起，每次导入模块，导入器都将检查Python源文件(.py)是否已经改变。如果它改变了，模块将被重载。这适用于所有Python模块，甚至是web2py外的模块。该模式是全局性
+的，适用于所有应用。无论使用何种模式，总是重新加载模型，控制器和视图的更改。要关闭该模式，使用以 ``False``为参数的相同函数。要了解实际的跟踪状态，使用
 ``is_tracking_changes()``函数，也来自于``gluon.custom_import``。
 
 
@@ -887,33 +863,25 @@ my_other_storage = Storage(dict(a=1, b=2)) # convert dictionary to Storage
 - ``request.cookies``:``Cookie.SimpleCookie()``对象包含
 HTTP请求传递的cookie。它行为像一个cookie字典。
 每个cookie就是一个Morsel对象。
--``request.env``:``Storage``对象包含传递到控制器的环境变量，
-包括来自HTTP请求的HTTP标头变量和WSGI参数。
-环境变量都转换成小写，点转换成下划线，便于记忆。
+-``request.env``:``Storage``对象包含传递到控制器的环境变量，包括来自HTTP请求的HTTP标头变量和WSGI参数。环境变量都转换成小写，点转换成下划线，便于记忆。
 - ``request.application``: 所请求应用的名称（从``request.env.path_info``解析）。
 - ``request.controller``: 所请求控制器的名称（从``request.env.path_info``解析）。
 - ``request.function``: 所请求函数的名称 （从``request.env.path_info``解析）。
-- ``request.extension``: 所请求动作的扩展。默认是"html"。如果控制器函数返回一个字典并
-并且没有指定视图，这用来确定呈现字典的视图文件的扩展名（从``request.env.path_info``解析）。
+- ``request.extension``: 所请求动作的扩展。默认是"html"。如果控制器函数返回一个字典并且没有指定视图，这用来确定呈现字典的视图文件的扩展名（从``request.env.path_info``解析）。
 - ``request.folder``:应用目录。例如如果应用是"welcome"``request.folder`` 设置到绝对路径"/path/to/welcome"。在你的程序中，你应该始终使用这个变量和os.path.join函数来构建你需要访问的文件的路径。尽管web2py始终使用绝对路径，一个好的规则是从不明确改变当前工作文件夹（不管它是什么）因为这不是一个线程安全的做法。
 - ``request.now``:  ``datetime.datetime`` 对象存储当前请求的日期时间。
 - ``request.utcnow``: 一个``datetime.datetime`` 对象存储当前请求的UTC日期时间。
-- ``request.args``: 控制器函数名称之后的URL路径组件列表；
-等同于``request.env.path_info.split('/')[3:]``
+- ``request.args``: 控制器函数名称之后的URL路径组件列表；等同于``request.env.path_info.split('/')[3:]``
 - ``request.vars``: 一个``gluon.storage.Storage`` 对象包含HTTP GET和HTTP POST查询变量。
 - ``request.get_vars``: 一个``gluon.storage.Storage``对象只包含HTTP GET查询变量。
 - ``request.post_vars``: 一个``gluon.storage.Storage`` 对象只包含HTTP POST查询变量。
-- ``request.client``: 客户端的ip地址，如果存在的话，由``request.env.http_x_forwarded_for`` 确
-定或否则的话由``request.env.remote_addr``确定。虽然这是有用的，但不应该信任它，因为``http_x_forwarded_for`` 可以被欺骗。
+- ``request.client``: 客户端的ip地址，如果存在的话，由``request.env.http_x_forwarded_for`` 确定或否则的话由``request.env.remote_addr``确定。虽然这是有用的，但不应该信任它，因为``http_x_forwarded_for`` 可以被欺骗。
 - ``request.is_local``: 客户端是localhost为``True``，否则为``False`` 。应该能在代理背后工作，如果代理支持 ``http_x_forwarded_for``。
 - ``request.is_https``: 如果请求使用HTTPS协议为``True``，否则为``False``。 
-- ``request.body``: 一个只读文件流，其中包含HTTP请求的主体。
-它被自动解析得到``request.post_vars`` 然后rewind。
+- ``request.body``: 一个只读文件流，其中包含HTTP请求的主体。它被自动解析得到``request.post_vars`` 然后rewind。
 - 如果通过Ajax请求调用函数，``request.ajax``为真。
-- ``request.cid`` 是生成Ajax请求（如有）的组件 ``id``。
-你可以阅读第12章中有关组件的更多内容。
-- ``request.restful`` t这是一个新的和非常有用的装饰器decorator，可用于分离
-GET/POST/PUSH/DELETE请求来改变web2py动作的默认行为。 在第十章我们会进一步讨论。
+- ``request.cid`` 是生成Ajax请求（如有）的组件 ``id``。你可以阅读第12章中有关组件的更多内容。
+- ``request.restful`` t这是一个新的和非常有用的装饰器decorator，可用于分离GET/POST/PUSH/DELETE请求来改变web2py动作的默认行为。 在第十章我们会进一步讨论。
 - ``request.user_agent()`` 从客户端解析user_agent字段并以字典的形式返回信息。
 这对检测移动设备是有用的。
 它使用Ross Peoples创建的"gluon/contrib/user_agent_parser.py"。
@@ -1028,16 +996,13 @@ request.env.wsgi_version | 10
 ``response.body``: 一个 ``StringIO`` 对象，web2py向其中写入输出页面的主体。
 切勿更改此变量。
 
-``response.cookies``: 类似于``request.cookies``，但后者包含从客户端向服务器
-发送的cookie，前者包含由服务器发送到客户端的cookie。会话cookie自动处理。
+``response.cookies``: 类似于``request.cookies``，但后者包含从客户端向服务器发送的cookie，前者包含由服务器发送到客户端的cookie。会话cookie自动处理。
 
 ``response.download(request, db)``: 用于实现控制器功能的方法，允许下载已上传文件。
 ``request.download`` 预计``request.args`` 中的最后一个参数``arg``是编码后的文件名（即，upload上传时间产生的并存储在upload字段的文件名）。它从编码文件名中提取上传字段名、表名以及原始文件名。``response.download`` 有两个可选参数： ``chunk_size``以字节为单位设置分块数据流的大小（默认为64k），
 ``attachments`` 确定下载的文件是否应被视为附件（默认为``True``）。
-注意， ``response.download`` 是专门用于与``db`` 上传字段相关的下载文件。对于其它类型的文件下载和
-流媒体，使用``response.stream`` （见下文）。
-另外，请注意，没有必要使用 ``response.download`` 访问上传到/static文件夹的文件—可以直接通过URL访问静态文件
-（例如，/app/static/files/myfile.pdf）。
+注意， ``response.download`` 是专门用于与``db`` 上传字段相关的下载文件。对于其它类型的文件下载和流媒体，使用``response.stream`` （见下文）。
+另外，请注意，没有必要使用 ``response.download`` 访问上传到/static文件夹的文件—可以直接通过URL访问静态文件（例如，/app/static/files/myfile.pdf）。
 
 ``response.files``: 页面需要的CSS和JS文件的列表。
 在标准"layout.html"的顶部，它们将通过包含的"web2py_ajax.html"被自动链接。要包括新的CSS和JS文件，只需将其追加到该列表中。它会处理重复。顺序是重要的。
@@ -1106,8 +1071,7 @@ request.env.wsgi_version | 10
 
 改变这个变量的值来修改与一个特定动作相关联的视图文件。
 
-``response.xmlrpc(request, methods)``: 控制器返回时，此函数通过XML-RPC``xmlrpc``:cite 公开该方
-法。此函数被废弃了，因为有一个更好的机制，在第10章中描述。
+``response.xmlrpc(request, methods)``: 控制器返回时，此函数通过XML-RPC``xmlrpc``:cite 公开该方法。此函数被废弃了，因为有一个更好的机制，在第10章中描述。
 
 ``response.write(text)``: 将文本写入到输出页面主体的方法。
 
@@ -1338,8 +1302,7 @@ URL('f')
 ``:code
 
 注意，``URL``函数的输出取决于当前应用的名称，调用控制器，以及其它参数。web2py支持URL映射及URL逆映射。URL映射允许你重定义外部URL的格式。
-如果你使用``URL``函数来生成所有的内部URL，对URL映射的增加或改变将防止破坏
-web2py应用中的链接。
+如果你使用``URL``函数来生成所有的内部URL，对URL映射的增加或改变将防止破坏web2py应用中的链接。
 
 你可以传递附加参数到``URL``函数，即，URL路径中的附加项（args）和URL 查询变量（vars）：
 
@@ -1453,8 +1416,7 @@ URL(..., scheme=True, host=True)
 你可以将以下参数传递给URL函数：
 - ``hmac_key``: 签署名URL的密钥（一个字符串）
 - ``salt``: 一个可选字符串在签署之前salt加密数据
-- ``hash_vars``: 来自URL查询字符串的变量名可选列表（即，GET变量）要包含在签
-名中。也可以将它设置成``True``，以包含全部变量；或``False``，以不包含任何变
+- ``hash_vars``: 来自URL查询字符串的变量名可选列表（即，GET变量）要包含在签名中。也可以将它设置成``True``，以包含全部变量；或``False``，以不包含任何变
 量。
 
 下面是一个用法的例子：
@@ -1561,8 +1523,7 @@ raise HTTP(303,
            Location='http://www.web2py.com')
 ``:code
 
-命名的``HTTP`` 初始对象方法的参数直接翻译为HTTP报头指令，这种情况，重定向目标位
-置。 ``redirect`` 用可选的第二参数，是重定向的HTTP状态代码（默认303）。暂时
+命名的``HTTP`` 初始对象方法的参数直接翻译为HTTP报头指令，这种情况，重定向目标位置。 ``redirect`` 用可选的第二参数，是重定向的HTTP状态代码（默认303）。暂时
 重定向修改该数字为307或永久重定向修改为301。
 
 最常见使用重定向的方法是重定向到同个应用的其它页面或（可选）传递参数：
@@ -1718,8 +1679,7 @@ response.cookies[response.session_id_name] = response.session_id
 response.cookies[response.session_id_name]['path'] = "/"
 ``:code
 
-注意， 如果单个应用包含多个子域名， 而且你想在哪些子域名间（ 例如
-sub1.yourdomain.com,sub2.yourdomain.com等）共享会话，你必须显式设置会话cookie域名如下：
+注意， 如果单个应用包含多个子域名， 而且你想在哪些子域名间（ 例如sub1.yourdomain.com,sub2.yourdomain.com等）共享会话，你必须显式设置会话cookie域名如下：
 ``
 if not request.env.remote_addr in ['127.0.0.1', 'localhost']:
     response.cookies[response.session_id_name]['domain'] = ".yourdomain.com"
@@ -1757,8 +1717,7 @@ default_application = "myapp"
 ``routes_in``:inxx
 ``routes_out``:inxx
 
- web2py有能力在调用控制器action（URL映射）之前重写进来的请求的URL路径，相反
-的，web2py可以重写由``URL``函数生成的URL路径（反URL映射）。这么做的一个原因是为了处理URL的遗留数据，另一个是为了简化路径使之变短。
+ web2py有能力在调用控制器action（URL映射）之前重写进来的请求的URL路径，相反的，web2py可以重写由``URL``函数生成的URL路径（反URL映射）。这么做的一个原因是为了处理URL的遗留数据，另一个是为了简化路径使之变短。
 
 web2py包含两个不同的URL重写系统：简单易用的parameter-based系统适用于大多数使用场合，和灵活的pattern-based 系统适用于更复杂的场合。为了简化URL 重写规则，在"web2py"文件夹中创建一个新文件称作``routes.py``（``routes.py``的内容取决于你选用两种重写系统中的哪一种，正如下面两部分介绍的）。两个系统不能混用。
 
@@ -1768,8 +1727,7 @@ web2py包含两个不同的URL重写系统：简单易用的parameter-based系�
 
 #### 基于参数的系统
 
-基于参数（参数的）路由器提供到若干“canned”重写URL的便捷访问方法。它
-的能力包括：
+基于参数（参数的）路由器提供到若干“canned”重写URL的便捷访问方法。它的能力包括：
 
 * 忽略从外部可见URL的默认应用、控制器和函数名（那些由URL（）函数创建）
 
@@ -2041,9 +1999,7 @@ routes_onerror = [
 - ``requested_uri``:等同于``request.env.request_uri``
 - ``request_url``: 等同于``request.url``
 
-错误处理动作可以通过``request.vars`` 访问这些变量，这些变量还能用于生成错误响应。
-尤其是，错误动作返回原始的HTTP错误代码而不是默认的200（OK）状态码是一个好主
-意。这可以通过设置``response.status = request.vars.code``来完成。也有可能让错误动作（或队列）发送电子邮件给管理员，包括到 ``admin``中票据的链接。
+错误处理动作可以通过``request.vars`` 访问这些变量，这些变量还能用于生成错误响应。尤其是，错误动作返回原始的HTTP错误代码而不是默认的200（OK）状态码是一个好主意。这可以通过设置``response.status = request.vars.code``来完成。也有可能让错误动作（或队列）发送电子邮件给管理员，包括到 ``admin``中票据的链接。
 
 不匹配的错误显示默认错误页面。默认错误页面也可以在这里定制（参见web2py根文件夹
 中的``router.example.py``和``routes.example.py`` ）:
@@ -2068,7 +2024,7 @@ error_message_ticket = '''<html><body><h1>Internal error</h1>
 
 我们所说的 **cron** 是web2py中的一个不专属于UNIX cron机制的功能。web2py cron也适用于windows。
 
-wweb2py cron是应该选择的方法，    
+web2py cron是应该选择的方法，    
 个调用之间的时间间隔比较相对较短。每个任务都在自己的进程中运行，可以同时运行多个任务，但你不能控制有多少任务运行。如果不小心一个任务与自身重叠，它可能会导致数据库锁定和内存使用量激增。
 
 web2py的调度采用不同的方法。正在运行的进程数目是固定的，并且它们可以在不同的机器上运行。每个进程被称为一个工人。每个工人取一个可用任务并在预定时间之后尽快执行该任务，但不一定是在确切的时间。正在运行的进程数不能多于预定任务数，这样不会有内存使用激增。调度程序的任务可以被定义在模型中并且存储在数据库中。 web2py的调度没有实现分布式队列，因为它假定分配任务的时间与运行任务的时间相比是微不足道的。工人从数据库中取任务。
@@ -2123,8 +2079,7 @@ If the task/script is prefixed with an asterisk (``*``) and ends with ``.py``, i
 
 根据你如何调用web2py，web2py cron有四种操作模式。
 - ''soft cron'': 所有执行模式下都可用
-- ''hard cron'':如果使用内置web服务器（直接使用或通过Apache mod_proxy）则可
-用
+- ''hard cron'':如果使用内置web服务器（直接使用或通过Apache mod_proxy）则可用
 - ''external cron'': 如果你能访问系统自己的cron服务则可用
 - 无cron
 
@@ -2201,8 +2156,7 @@ python web2py.py -K myapp
 
 现在我们的基础设施到位：明确了任务，告诉了调度，启动了工作者（S）。剩下的就是实际安排任务：
 
-可以编程方式或通过appadmin 预定任务。事实上，任务预定可以简单地通过在
-表"scheduler_task"中添加一个条目来完成，你可以通过访问appadmin该表：
+可以编程方式或通过appadmin 预定任务。事实上，任务预定可以简单地通过在表"scheduler_task"中添加一个条目来完成，你可以通过访问appadmin该表：
 
 ``
 http://127.0.0.1:8000/scheduler/appadmin/insert/db/scheduler_task
@@ -2239,10 +2193,8 @@ QUEUED, RUNNING, COMPLETED, FAILED, TIMEOUT
 RUNNING, COMPLETED, FAILED, TIMEOUT
 ``
 
-当``QUEUED``的任务被取走，它成为一个``RUNNING``任务并且它的运行状态也是
-``RUNNING``。
-如果运
-行完成，没有异常抛出，也没有任务超时，该运行标记为``COMPLETED``并且该任务标记为``QUEUED``或``COMPLETED``取决于稍后的时间是否会再次运行它。任务的输出是在JSON中序列化并存储在运行记录中。
+当``QUEUED``的任务被取走，它成为一个``RUNNING``任务并且它的运行状态也是``RUNNING``。
+如果运行完成，没有异常抛出，也没有任务超时，该运行标记为``COMPLETED``并且该任务标记为``QUEUED``或``COMPLETED``取决于稍后的时间是否会再次运行它。任务的输出是在JSON中序列化并存储在运行记录中。
 
 当``RUNNING`` 的任务抛出一个异常，运行标记为 ``FAILED`` 并且任务被标记为``FAILED``。回溯被存储在运行记录中。
 
@@ -2252,8 +2204,7 @@ RUNNING, COMPLETED, FAILED, TIMEOUT
 
 使用appadmin，可以检查所有 ``RUNNING`` 的任务， ``COMPLETED``任务的输出，``FAILED`` 任务的错误等。
 
-调度程序还创建了一个表称为“scheduler_worker”，其中存储工人的心跳和他们的状态。工
-人可能的状态是：
+调度程序还创建了一个表称为“scheduler_worker”，其中存储工人的心跳和他们的状态。工人可能的状态是：
 
 ``
 ACTIVE, INACTIVE, DISABLED
@@ -2295,10 +2246,8 @@ completed_runs = db(db.scheduler_run.status='COMPLETED').select()
 ------
 
 - 我们建议有一个单独的模型文件来确定任务和实例化``Scheduler`` （在任务被定义之后）。 
-- 我们建议每个应用至少使用一名工人，
-让你有更多的控制权，虽然这不是绝对必要的。
-- 如果你的任务是定义在一个模块（而不是一个模型）中，
-你可能需要重新启动工人。
+- 我们建议每个应用至少使用一名工人，让你有更多的控制权，虽然这不是绝对必要的。
+- 如果你的任务是定义在一个模块（而不是一个模型）中，你可能需要重新启动工人。
 
 ### 第三方模块
 ``import``:inxx
@@ -2321,12 +2270,10 @@ web2py源代码发布和Windows二进制发布包在顶级文件夹中有site-pa
 
 使用site-packages的问题是，难以在同一时间使用不同版本的单个模块，例如可以有两个应用，但每一个使用不同版本的同一个文件。在这个例子中，``sys.path``不能被改变，因为它会影响这两个应用。
 
-对于这种情况，web2py 提供了另一种方式来导入模块，这样的方式没有改变全局
-``sys.path``：将它们放置在应用的"modules"文件夹中。一个附带的好处是，该模块将自动与应用一起复制和发布。
+对于这种情况，web2py 提供了另一种方式来导入模块，这样的方式没有改变全局``sys.path``：将它们放置在应用的"modules"文件夹中。一个附带的好处是，该模块将自动与应用一起复制和发布。
 
 ------
-一旦模块“mymodule.py”被放置到应用的"modules/"文件夹，在web2py应用内，可以从
-任何地方导入它（无需改变``sys.path``）：
+一旦模块“mymodule.py”被放置到应用的"modules/"文件夹，在web2py应用内，可以从任何地方导入它（无需改变``sys.path``）：
 ``
 import mymodule
 ``
@@ -2379,8 +2326,7 @@ result = other.some_action()
 ``cooperation``:inxx
 
 应用协作的方法有很多：
-- 应用可以连接到相同数据库，从而可以共享表。数据库中的所有表由所有应用程
-序定义是没有必要的，但它们必须被那些使用它们的应用定义。所有使用相同表
+- 应用可以连接到相同数据库，从而可以共享表。数据库中的所有表由所有应用程序定义是没有必要的，但它们必须被那些使用它们的应用定义。所有使用相同表
 的应用，必须有一个用``migrate=False``定义表。
 - 应用可以使用LOAD帮助对象嵌入来自其它应用的组件（第12章中介绍）。
 - 应用可以共享会话。
@@ -2461,8 +2407,7 @@ propagate=0
 ### ''WSGI''（Web服务器网关接口）
 ``WSGI``:inxx
 
-web2py和WSGI有一个又爱又恨的关系。我们的观点是，WSGI作为协议将Web服务器以
-可移植的方式连接到Web应用，我们为了这一目的使用它。 web2py中核心是一个WSGI
+web2py和WSGI有一个又爱又恨的关系。我们的观点是，WSGI作为协议将Web服务器以可移植的方式连接到Web应用，我们为了这一目的使用它。 web2py中核心是一个WSGI
 应用：``gluon.main.wsgibase``。一些开发人员将WSGI作为中间通信协议推到了极致并将Web应用作为一个有许多层（每层是一个WSGI中间件，独立于整个框架开发）的洋葱来开发。
 web2py内部不采用这种结构。这是因为我们觉得如果用一个单一的综合层处理它们，可以更好地优化框架核心功能（处理Cookie，会话，错误，交易，调度）的处理速度和安全性。
 
@@ -2492,8 +2437,7 @@ else:
 
 #### 内部中间件
 
-给定控制器中的任何动作（例如``index``）及任何第三方中间件应用
-（例如``MyMiddleware``，它将输出转换为大写），你可以使用web2py的装饰器将中间件应用于动作。下面是一个例子：
+给定控制器中的任何动作（例如``index``）及任何第三方中间件应用（例如``MyMiddleware``，它将输出转换为大写），你可以使用web2py的装饰器将中间件应用于动作。下面是一个例子：
 ``
 class MyMiddleware:
     """converts output to upper case"""
