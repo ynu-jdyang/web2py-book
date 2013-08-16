@@ -1,13 +1,10 @@
-
 ## jQuery 和 Ajax
 ``Ajax``:inxx
 
-虽然web2py主要为服务器端开发，但 **welcome** 基本构建应用一道提供了基
-本``jquery``:cite库, jQuery日历（日期拾取、日期时间拾取和时钟），
+虽然web2py主要为服务器端开发，但 **welcome** 基本构建应用一道提供了基本``jquery``:cite库, jQuery日历（日期拾取、日期时间拾取和时钟），
 “superfish.js”菜单和一些附加的基于jQuery的JavaScript函数。
 
-web2py根本不阻碍你使用其它Ajax [78]库，比如Prototype、ExtJS或YUI，
-我们决定打包jQuery因为我们发现它更易于使用而且比其它相当的库更强大。
+web2py根本不阻碍你使用其它Ajax [78]库，比如Prototype、ExtJS或YUI，我们决定打包jQuery因为我们发现它更易于使用而且比其它相当的库更强大。
 我们也发现它抓住了web2py有效而简洁的精髓。
 
 ### web2py_ajax.html
@@ -55,8 +52,7 @@ response.include_files()
 - 用弹出日期时间拾取连接“datetime”类INPUT区域。
 - 用弹出时间拾取连接“time”类INPUT区域。
 - 定义``web2py_ajax_component``, 一个非常重要的工具将在第12章描述。
-- 定义 ``web2py_comet``,一个能用在HTML5 websockets的函数（不在本书描述
-但可以阅读“gluon/contrib/comet_messaging.py”里的代码例子）。 ``websockets``:inxx
+- 定义 ``web2py_comet``,一个能用在HTML5 websockets的函数（不在本书描述但可以阅读“gluon/contrib/comet_messaging.py”里的代码例子）。 ``websockets``:inxx
 
 为后向兼容，它也包含``popup``, ``collapse``, 和``fade`` 函数。
 
@@ -96,16 +92,13 @@ def index():
 
 [[image @///image/en7000.png center 480px]]
 
-如果无效表单提交，服务器返回修改包含错误消息的页面。错误消息是“error”
-类的DIV，因为上述的web2y.js代码，错误呈现向下华东的效果：
+如果无效表单提交，服务器返回修改包含错误消息的页面。错误消息是“error”类的DIV，因为上述的web2y.js代码，错误呈现向下华东的效果：
 [[image @///image/en7100.png center 480px]]
 
 错误消息的颜色在“layout.html”CSS代码给定。
-web2y.js代码防止你在输入区域输入非法值。这在之前完成而且，不是一个替代，
-服务器端验证。
+web2y.js代码防止你在输入区域输入非法值。这在之前完成而且，不是一个替代，服务器端验证。
 
-当你在“date”类INPUT字段输入，web2y.js代码显示日期拾取，当你在
-“datetime”类INPUT字段输入，它显示日期时间拾取。
+当你在“date”类INPUT字段输入，web2y.js代码显示日期拾取，当你在“datetime”类INPUT字段输入，它显示日期时间拾取。
 下面是例子：
 
 [[image @///image/en7200.png center 480px]]
@@ -114,8 +107,7 @@ web2y.js代码防止你在输入区域输入非法值。这在之前完成而且
 
 [[image @///image/en7300.png center 480px]]
 
-就提交，控制器动作设置相应flash到消息“record inserted”。默认布局以DIV切
-id=“flash”呈现该消息。web2y.js代码负责使该DIV出现并且当你点击它使它消失。
+就提交，控制器动作设置相应flash到消息“record inserted”。默认布局以DIV类id=“flash”呈现该消息。web2y.js代码负责使该DIV出现并且当你点击它使它消失。
 
 [[image @///image/en7400.png center 480px]]
 
@@ -124,10 +116,8 @@ id=“flash”呈现该消息。web2y.js代码负责使该DIV出现并且当你�
 ### jQuery 效果
 ``effects``:inxx
 
-这里描述的基本效果无需额外的文件，所有你需要的已经包含在
-web2py_ajax.html文件。
-HTML/XHTML对象能用它们的类型（例如DIV对象）、它们的类或它们的
-id标识。例如：
+这里描述的基本效果无需额外的文件，所有你需要的已经包含在web2py_ajax.html文件。
+HTML/XHTML对象能用它们的类型（例如DIV对象）、它们的类或它们的id标识。例如：
 ``
 <div class="one" id="a">Hello</div>
 <div class="two" id="b">World</div>
@@ -233,35 +223,30 @@ jQuery(document).ready(function(){
 - jQuery(...).fadeIn(speed, callback): 使对象渐入
 - jQuery(...).fadeOut(speed, callback): 使对象淡出
 
-speed参数通常是“slow”、“fast”或忽略（默认）。callback回调函数是可
-选函数，当效果完成时调用。jQuery效果可以容易地嵌入到帮助对象，例如，在
+speed参数通常是“slow”、“fast”或忽略（默认）。callback回调函数是可选函数，当效果完成时调用。jQuery效果可以容易地嵌入到帮助对象，例如，在
 视图：
 
 ``
 {{=DIV('click me!', _onclick="jQuery(this).fadeOut()")}}
 ``:code
 
-jQuery是非常紧凑和简介的Ajax库；因此web2py无需jQuery之上额外的抽象层
-（除了下面讨论的``ajax``函数）。当需要时，jQuery API能够以本来的表单形式访
+jQuery是非常紧凑和简介的Ajax库；因此web2py无需jQuery之上额外的抽象层（除了下面讨论的``ajax``函数）。当需要时，jQuery API能够以本来的表单形式访
 问和准备好访问。 
 
 咨询文档以获得更多有关这些效果和其它jQuery API的信息。
 
-jQuery库也能用插件和用户接口Widget（User Interface Widget）扩展。这个主题
-不在本书讨论；参看``jquery-ui``:cite 了解更多。
+jQuery库也能用插件和用户接口Widget（User Interface Widget）扩展。这个主题不在本书讨论；参看``jquery-ui``:cite 了解更多。
 
 #### 表单的条件域
 
 jQuery效果典型应用是表单基于它区域的值改变它的形式。
 
-在web2py中容易实现因为SQLFORM帮助对象生成“CSS friendly”表单。表单包
-含行的表。每行含标签、输入区域和可选第三列。项目有从表名和字段名严格继
+在web2py中容易实现因为SQLFORM帮助对象生成“CSS friendly”表单。表单包含行的表。每行含标签、输入区域和可选第三列。项目有从表名和字段名严格继
 承的id。
 
 规定是每个INPUT字段有id ``tablename_fieldname`` ，用id``tablename_fieldname__row``包含在row（行）中。
 
-作为例子，创建输入表单要求纳税人的名字和纳税人配偶的名字，只有当
-他/她结婚。
+作为例子，创建输入表单要求纳税人的名字和纳税人配偶的名字，只有当他/她结婚。
 创建有下列模型的test应用：
 ``
 db = DAL('sqlite://db.db')
@@ -303,8 +288,7 @@ jQuery(document).ready(function(){
 
 [[image @///image/en7600.png center 480px]]
 
-此处“taxpayer_married”是复选框，关联到表“taxpayer”的字段
-“married”其类型“boolean”。“taxpayer_spouse_name__row”是给表
+此处“taxpayer_married”是复选框，关联到表“taxpayer”的字段“married”其类型“boolean”。“taxpayer_spouse_name__row”是给表
 “taxpayer”的“spouse_name”输入字段的行。
 
 #### 删除确认
@@ -330,8 +314,7 @@ def edit():
 ``:code
 
 ``deletable``:inxx
-在SQLFORM构造函数参数``deletable=True`` 指示web2py在编辑表单显示“delete”
-复选框。默认它是 ``False`` 。web2py的“web2py.js”包含下列代码：
+在SQLFORM构造函数参数``deletable=True`` 指示web2py在编辑表单显示“delete”复选框。默认它是 ``False`` 。web2py的“web2py.js”包含下列代码：
 
 ``
 jQuery(document).ready(function(){
@@ -342,8 +325,7 @@ jQuery(document).ready(function(){
 });
 ``:code
 
-按照规定，该复选框有等于“delete”的类。上面的jQuery 代码带确认对话框
-（JavaScript标准的）链接该复选框的onclick事件，如果纳税人不勾选就不
+按照规定，该复选框有等于“delete”的类。上面的jQuery 代码带确认对话框（JavaScript标准的）链接该复选框的onclick事件，如果纳税人不勾选就不
 检查复选框。
 
 [[image @///image/en7700.png center 480px]]
@@ -357,8 +339,7 @@ jQuery(document).ready(function(){
 ajax(url, [name1, name2, ...], target)
 ``:code
 
-它异步调用url（第一个参数），传递名字与列表中名字（第二个参数）
-相等的输入字段值，然后存储id等于目标（第三个参数）的标签的内HTML的响
+它异步调用url（第一个参数），传递名字与列表中名字（第二个参数）相等的输入字段值，然后存储id等于目标（第三个参数）的标签的内HTML的响
 应。
 
 下面是``default`` 控制器的例子：
@@ -384,8 +365,7 @@ def echo():
 
 #### Eval target
 
- ``ajax`` 函数的第三个参数是字符串“:eval”。这意味着被服务器返回的字符
-串不会嵌在文档中而是被评估。
+ ``ajax`` 函数的第三个参数是字符串“:eval”。这意味着被服务器返回的字符串不会嵌在文档中而是被评估。
 
 下面是一个``default``控制器例子：
 ``
@@ -409,11 +389,9 @@ def echo():
 
 #### 自动完成Auto-completion
 
-web2py包含内建自动完成小工具（widget），在Forms章描述过。这里我
-们将从零开始创建一个简单点的。
+web2py包含内建自动完成小工具（widget），在Forms章描述过。这里我们将从零开始创建一个简单点的。
 
-上面的 ``ajax`` 函数的另外一个应用是自动完成。这里我们希望创建输入字段
-期望月名，当访问者敲入不完整的名字，通过Ajax请求执行自动完成。响应时，
+上面的 ``ajax`` 函数的另外一个应用是自动完成。这里我们希望创建输入字段期望月名，当访问者敲入不完整的名字，通过Ajax请求执行自动完成。响应时，
 自动完成的下拉框出现在输入字段下方
 
 这能够通过下面的 ``default`` 控制器实现：
@@ -455,12 +433,9 @@ jQuery("#month").keyup(function(){
 </script>
 ``:code
 
-每次访问者在“month”输入框敲入内容，视图中的 jQuery脚本出发Ajax请
-求。输入框的值用Ajax请求提交给“month_selector”动作。该动作找到以提交
-文本开头（选到的）月份名的列表，创建DIV列表（每个包含推荐的月份名），
-并返回带序列化DIV的字符串。视图在“suggestions”DIV显示响应
-HTML。“month_selector”动作生成建议和嵌在DIV的JavaScript代码，当访问
-者点击每个建议时必须执行。例如，当访问者敲入”M”回调动作返回：
+每次访问者在“month”输入框敲入内容，视图中的 jQuery脚本出发Ajax请求。输入框的值用Ajax请求提交给“month_selector”动作。该动作找到以提交
+文本开头（选到的）月份名的列表，创建DIV列表（每个包含推荐的月份名），并返回带序列化DIV的字符串。视图在“suggestions”DIV显示响应
+HTML。“month_selector”动作生成建议和嵌在DIV的JavaScript代码，当访问者点击每个建议时必须执行。例如，当访问者敲入”M”回调动作返回：
 ``
 <div>
      <div onclick="jQuery('#month').val('March')"
@@ -503,12 +478,10 @@ jQuery提供可选自动完成插件具有更多的功能，但这里不讨论�
 #### Ajax表单提交
 ``asynchronous``:inxx
 
-这里我们考虑页面允许访问者用Ajax提交消息又不重载整个页面。使用
-LOAD帮助对象，web2py提供比这里描述的更好的机制来实现，会在第12章描
+这里我们考虑页面允许访问者用Ajax提交消息又不重载整个页面。使用LOAD帮助对象，web2py提供比这里描述的更好的机制来实现，会在第12章描
 述。此处，我们想展示给你如何简单用地jQuery实现。
 
-它包含表单“myform”和“target”DIV。当表单提交时，服务器可能接受
-它（并执行数据库插入）或拒绝它（因为它没有通过验证）。相应的通知用
+它包含表单“myform”和“target”DIV。当表单提交时，服务器可能接受它（并执行数据库插入）或拒绝它（因为它没有通过验证）。相应的通知用
 Ajax响应返回并显示在“target”DIV。
 
 创建 ``test`` 应用有下面的模型：
@@ -535,8 +508,7 @@ def new_post():
 
 第一个动作仅返回一个视图。
 
-第二个动作是Ajax回调。它期望 ``request.vars``里的表单变量处理它们，成功则
-返回``DIV("Message posted")`` 或失败返回错误消息``TABLE``。 
+第二个动作是Ajax回调。它期望 ``request.vars``里的表单变量处理它们，成功则返回``DIV("Message posted")`` 或失败返回错误消息``TABLE``。 
 
 现在编辑“default/index.html”视图：
 ``
@@ -558,17 +530,14 @@ jQuery('#myform').submit(function() {
 </script>
 ``:code
 
-注意在这个例子中表单是如何用HTML手动创建，但它被SQLFORM不同于显式
-表单的动作处理。SQLFORM对象从不序列化为HTML。这个情况的 ``SQLFORM.accepts`` 不用回话并设置 ``formname=None``，因为我们选择不设置表单名字而且表单键是手工HTML形式。
+注意在这个例子中表单是如何用HTML手动创建，但它被SQLFORM不同于显式表单的动作处理。SQLFORM对象从不序列化为HTML。这个情况的 ``SQLFORM.accepts`` 不用回话并设置 ``formname=None``，因为我们选择不设置表单名字而且表单键是手工HTML形式。
 
 视图底部的脚本连接“myform”提交按钮到内联函数，该函数用web2py ``ajax`` 函数提交``id="your_message"`` 的INPUT，在 ``id="target"``的DIV内显示回答。
 
 #### 投票和打分Voting and rating
 
-另一个Ajax应用是页面内的投票和打分项。这里我们考虑允许访问者对粘贴的
-图像投票的应用。应用由单个页面组成，根据他们的票排列显示图像。我们将允
-许访问者多次投票，但是如果用户认证很容易修改这个举动，通过跟踪个人投
-票数据库，并且用投票者的 ``request.env.remote_addr`` 关联它们。
+另一个Ajax应用是页面内的投票和打分项。这里我们考虑允许访问者对粘贴的图像投票的应用。应用由单个页面组成，根据他们的票排列显示图像。我们将允
+许访问者多次投票，但是如果用户认证很容易修改这个举动，通过跟踪个人投票数据库，并且用投票者的 ``request.env.remote_addr`` 关联它们。
 
 下面是例子模型：
 ``
@@ -594,8 +563,7 @@ def vote():
     return str(new_votes)
 ``:code
 
-下载动作需要允许list_items视图下载存储在“uploads”文件夹的图像。投票
-当做用来Ajax回调。
+下载动作需要允许list_items视图下载存储在“uploads”文件夹的图像。投票当做用来Ajax回调。
 
 下面是“default/list_items.html”视图：
 ``
@@ -614,13 +582,11 @@ Votes=<span id="item{{=item.id}}">{{=item.votes}}</span>
 {{pass}}
 ``:code
 
-当访问者点击“[vote up]” JavaScript代码存储item.id在隐藏
-“id”INPUT字段并且通过Ajax请求提交该值给服务器。服务器给相应记录增加
+当访问者点击“[vote up]” JavaScript代码存储item.id在隐藏“id”INPUT字段并且通过Ajax请求提交该值给服务器。服务器给相应记录增加
 投票计数并以字符串返回新的票数。这个值于是被插入到目标``item{{=item.id}}`` SPAN。
 
 -------
-Ajax回调能用在后台执行计算，但我们推荐使用 **cron** 或后台进程（第4章
-讨论过），因为web服务器执行线程超时措施。如果计算耗时太长，web服务器
+Ajax回调能用在后台执行计算，但我们推荐使用 **cron** 或后台进程（第4章讨论过），因为web服务器执行线程超时措施。如果计算耗时太长，web服务器
 终止它。参考你的web服务器参数来设置超时值。
 -------
 
