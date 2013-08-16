@@ -8,8 +8,7 @@ web2py使用Python模型，控制器和视图，虽然在视图中它使用略�
 - 如何转义嵌入的代码？
 - 缩进应根据Python还是HTML规则？
 
-web2py使用 ``{{ ... }}`` 转义嵌入在HTML中的Python代码。使用大括号而不是尖
-括号的优势是，它对所有常见的HTML编辑器是透明的。这使开发人员可以使用
+web2py使用 ``{{ ... }}`` 转义嵌入在HTML中的Python代码。使用大括号而不是尖括号的优势是，它对所有常见的HTML编辑器是透明的。这使开发人员可以使用
 这些编辑器创建web2py视图。
 
 由于开发人员将Python代码嵌入到HTML中，该文件的缩进应根据HTML规则而不是Python规则。因此，在``{{...}}``标签内我们允许不缩进的Python。因为Python通常使用缩进来分隔代码块，我们需要以不同的方式来分隔它们，这就是web2py模板语言使用Python关键字 ``pass``的原因。 
@@ -30,8 +29,7 @@ pass
 }}
 ``:code
 
-需要注意的是``pass``是一个Python关键字，而不是web2py关键字。一些Python
-编辑器，比如Emacs，使用关键字``pass``来表示块的划分并用它来重新自动缩进代
+需要注意的是``pass``是一个Python关键字，而不是web2py关键字。一些Python编辑器，比如Emacs，使用关键字``pass``来表示块的划分并用它来重新自动缩进代
 码。
 
 web2py模板语言实现的功能是一样的。当它发现类似如下的代码时：
@@ -65,8 +63,7 @@ response.write("""</body></html>""", escape=False)
 response.write(x)
 ``:code
 
-默认情况下，这样注入HTML中的变量被转义。如果``x`` 是一个 ``XML`` 对象，转
-义被忽略，即使转义设置为``True``。
+默认情况下，这样注入HTML中的变量被转义。如果``x`` 是一个 ``XML`` 对象，转义被忽略，即使转义设置为``True``。
 
 下面是一个介绍 ``H1``帮助对象的例子：
 ``
@@ -80,8 +77,7 @@ response.write(H1(i))
 
 评估完成后，``H1``对象和它的组成部分被递归地序列化，转义，并写入到响应主体中。由``H1``和内部HTML生成的标签不被转义。这种机制保证了在网页上显示的所有文字--- 只有文字 ---  总是得到转义，从而防止XSS漏洞。同时，代码简单且易于调试。
 
-方法 ``response.write(obj, escape=True)`` 有两个参数，要写入的对象以及它是否
-要进行转义（默认设置为``True``）。如果``obj``有``.xml()``方法，它被调用并将结果写入到响应主体（``escape``参数被忽略）。否则，它使用对象的``__str__`` 的方法将其序列化，如果转义参数是``True``，对其进行转义。所有内置帮助对象（例子中是``H1`` ）知道如何通过``.xml()``方法对自身进行序列化。
+方法 ``response.write(obj, escape=True)`` 有两个参数，要写入的对象以及它是否要进行转义（默认设置为``True``）。如果``obj``有``.xml()``方法，它被调用并将结果写入到响应主体（``escape``参数被忽略）。否则，它使用对象的``__str__`` 的方法将其序列化，如果转义参数是``True``，对其进行转义。所有内置帮助对象（例子中是``H1`` ）知道如何通过``.xml()``方法对自身进行序列化。
 
 这都是透明完成的。你永远不需要（而且永远不应该）显式调用``response.write`` 方法。
 
@@ -109,8 +105,7 @@ web2py模板语言支持所有的Python控制结构。在这里我们每个结�
 </ul>
 ``:code
 
-这里``item``是任意可迭代对象，如Python列表，Python元组，或Rows对象，
-或任何作为迭代器来实现的对象。首先序列化和转义要显示的元素。 
+这里``item``是任意可迭代对象，如Python列表，Python元组，或Rows对象，或任何作为迭代器来实现的对象。首先序列化和转义要显示的元素。 
 
 #### ``while``
 ``while``:inxx
@@ -235,8 +230,7 @@ web2py模板语言允许开发人员定义和实现可以返回任何Python对�
 
 它产生与上述完全相同的输出。在这种情况下，函数``itemize2``代表一段要在函数调用位置取代web2py标记的HTML。请注意，``itemize2``调用前面没有'='，因为该函数不返回文本，而是直接将它写入到响应中。
 
-有一点需要注意：视图中定义的函数必须用一个return语句终止，否则自动
-缩进会失败。
+有一点需要注意：视图中定义的函数必须用一个return语句终止，否则自动缩进会失败。
 
 ### HTML帮助对象
 ``helpers``:inxx
@@ -250,15 +244,12 @@ web2py模板语言允许开发人员定义和实现可以返回任何Python对�
 ``
 <div id="123" class="myclass">thisisatest</div>
 ``:code
-``DIV`` 是一个帮助对象类，即可以用来编程的建立HTML的东西。它对应于
-HTML的 ``<div>`` 标签。
+``DIV`` 是一个帮助对象类，即可以用来编程的建立HTML的东西。它对应于HTML的 ``<div>`` 标签。
 
-位置参数被解释为包含在open和close标签之间的对象。以下划线开头的命名
-参数被解释为HTML标签的属性（不再带下划线）。一些帮助对象也有不以下划
+位置参数被解释为包含在open和close标签之间的对象。以下划线开头的命名参数被解释为HTML标签的属性（不再带下划线）。一些帮助对象也有不以下划
 线开始的命名参数，这些参数是特定于标记的。
 
-除了一组命名参数之外，帮助对象也可以使用``*`` 符号接收一个单独的列表或
-元组作为自己的一套组件，并且它可以使用``**``接收单一的字典作为属性组，例
+除了一组命名参数之外，帮助对象也可以使用``*`` 符号接收一个单独的列表或元组作为自己的一套组件，并且它可以使用``**``接收单一的字典作为属性组，例
 如：
 ``
 {{
@@ -293,11 +284,9 @@ attributes = {'_id':'123', '_class':'myclass'}
 ``
 
 ``Document Object Model (DOM)``:inxx
-在web2py中的帮助对象机制不仅是一个无需连接字符串即可生成HTML的
-系统。它提供了一个文档对象模型（DOM）的服务器端表示。
+在web2py中的帮助对象机制不仅是一个无需连接字符串即可生成HTML的系统。它提供了一个文档对象模型（DOM）的服务器端表示。
 
-可以通过位置引用帮助对象的组件，并且从组件的角度看，帮助对象的行
-为类似列表：
+可以通过位置引用帮助对象的组件，并且从组件的角度看，帮助对象的行为类似列表：
 ``
 >>> a = DIV(SPAN('a', 'b'), 'c')
 >>> print a
@@ -309,8 +298,7 @@ attributes = {'_id':'123', '_class':'myclass'}
 <div><span>yb</span><b>x</b></div>
 ``:code
 
-帮助对象的属性可以通过名称引用，而且从属性的角度看，帮助对象的行
-为类似于字典：
+帮助对象的属性可以通过名称引用，而且从属性的角度看，帮助对象的行为类似于字典：
 ``
 >>> a = DIV(SPAN('a', 'b'), 'c')
 >>> a['_class'] = 's'
@@ -319,11 +307,9 @@ attributes = {'_id':'123', '_class':'myclass'}
 <div class="s"><span class="t">ab</span>c</div>
 ``:code
 
-注意，可以通过称为``a.components``的列表访问完整的组件集，并且可以通过
-称为``a.attributes``的字典访问完整属性集。所以，当 ``i``是整数时``a[i]`` 相当于``a.components[i]``，并且当``s``是字符串时``a[s]``相当于 ``a.attributes[s]`` 。
+注意，可以通过称为``a.components``的列表访问完整的组件集，并且可以通过称为``a.attributes``的字典访问完整属性集。所以，当 ``i``是整数时``a[i]`` 相当于``a.components[i]``，并且当``s``是字符串时``a[s]``相当于 ``a.attributes[s]`` 。
 
-注意帮助对象属性作为关键字参数传递给帮助对象。然而，在一些情况下，
-属性名称中包含Python标识符不允许的特殊字符（例如，连字符），因此不能
+注意帮助对象属性作为关键字参数传递给帮助对象。然而，在一些情况下，属性名称中包含Python标识符不允许的特殊字符（例如，连字符），因此不能
 被用来作为关键字参数名称。例如：
 
 ``
@@ -332,8 +318,7 @@ DIV('text', _data-role='collapsible')
 
 不会起作用，因为"_data-role"包含连字符，这将产生Python语法错误。
 
-在这种情况下，你可以将属性作为字典传递并使用Python的``**``函数参数符
-号，它将（键：值）对字典映射成关键字参数集：  
+在这种情况下，你可以将属性作为字典传递并使用Python的``**``函数参数符号，它将（键：值）对字典映射成关键字参数集：  
 
 ``
 >>> print DIV('text', **{'_data-role': 'collapsible'})
@@ -349,8 +334,7 @@ DIV('text', _data-role='collapsible')
 
 #### ``XML``（可扩展标记语言）
 ``XML``:inxx
-``XML`` 是一种用于封装不应该转义的文本的对象。文本中可以包含或不包含有
-效的XML。例如，它可以包含JavaScript。
+``XML`` 是一种用于封装不应该转义的文本的对象。文本中可以包含或不包含有效的XML。例如，它可以包含JavaScript。
 
 在这个例子中的文本被转义：
 ``
@@ -364,26 +348,22 @@ DIV('text', _data-role='collapsible')
 <b>hello</b>
 ``:code
 
-有时候，你想呈现存储在变量中的HTML，但该HTML可能包含不安全的标
-记例如脚本：
+有时候，你想呈现存储在变量中的HTML，但该HTML可能包含不安全的标记例如脚本：
 ``
 >>> print XML('<script>alert("unsafe!")</script>')
 <script>alert("unsafe!")</script>
 ``:code
 
-类似未转义的可执行输入（例如，在博客评论的主体中输入）是不安全的，
-因为它可以被用来生成跨站点脚本（XSS）攻击该页面的其它游客。
+类似未转义的可执行输入（例如，在博客评论的主体中输入）是不安全的，因为它可以被用来生成跨站点脚本（XSS）攻击该页面的其它游客。
 
 ``sanitize``:inxx
-web2py的``XML``帮助对象可以净化我们的文本，以防止注入并转义所有标签，
-除了那些明确允许的。下面是一个例子：
+web2py的``XML``帮助对象可以净化我们的文本，以防止注入并转义所有标签，除了那些明确允许的。下面是一个例子：
 ``
 >>> print XML('<script>alert("unsafe!")</script>', sanitize=True)
 &lt;script&gt;alert(&quot;unsafe!&quot;)&lt;/script&gt;
 ``:code
 
-默认情况下， ``XML`` 的构造函数认为一些标签的内容和一些属性是安全的。你
-可以使用可选参数``permitted_tags``和``allowed_attributes``重写默认值。下面是``XML`` 帮助对象可选参数的默认值。
+默认情况下， ``XML`` 的构造函数认为一些标签的内容和一些属性是安全的。你可以使用可选参数``permitted_tags``和``allowed_attributes``重写默认值。下面是``XML`` 帮助对象可选参数的默认值。
 ``
 XML(text, sanitize=False,
     permitted_tags=['a', 'b', 'blockquote', 'br/', 'i', 'li',
@@ -411,8 +391,7 @@ XML(text, sanitize=False,
 {{=A('click me', callback=URL('myaction'))}}
 ``
 
-按下链接的效果将是对"myaction"的一个ajax调用，而不是重定向。在这种情况
-下，你可以可选的指定两个参数： ``target`` 和 ``delete``:
+按下链接的效果将是对"myaction"的一个ajax调用，而不是重定向。在这种情况下，你可以可选的指定两个参数： ``target`` 和 ``delete``:
 ``
 {{=A('click me', callback=URL('myaction'), target="t")}}
 <div id="t"><div>
@@ -422,8 +401,7 @@ XML(text, sanitize=False,
 ``
 <div id="b">{{=A('click me', callback=URL('myaction'), delete='div#b")}}</div>
 ``
-响应之后，匹配"div#b"的最接近的标记将被删除。在这种情况下，该按钮将被
-删除。一个典型的应用是：
+响应之后，匹配"div#b"的最接近的标记将被删除。在这种情况下，该按钮将被删除。一个典型的应用是：
 
 ``
 {{=A('click me', callback=URL('myaction'), delete='tr")}}
@@ -441,13 +419,11 @@ callback和delete可以结合起来。
 <div id="myid"></div>
 ``:code
 
-并且点击链接会导致内容被加载在div中。这类似于上面的语法但是更强大，因
-为它是专门用来刷新页面组件的。第12章我们将在组件的上下文中更详细的讨
+并且点击链接会导致内容被加载在div中。这类似于上面的语法但是更强大，因为它是专门用来刷新页面组件的。第12章我们将在组件的上下文中更详细的讨
 论``cid``的应用。 
 
 这些ajax功能需要jQuery和"static/js/web2py_ajax.js"，通过在布局头中放置 ``{{include 'web2py_ajax.html'}}`` ，它们会被自动包含。
-“views/web2py_ajax.html”定义了一些基于``request`` 的变量并且包括所有必要的js
-和css文件。
+“views/web2py_ajax.html”定义了一些基于``request`` 的变量并且包括所有必要的js和css文件。
 
 
 ##### ``B``
@@ -498,8 +474,7 @@ Here is a <a href="/app/default/index">link</a>, and here is some <b>bold text</
 ##### ``CODE``
 ``CODE``:inxx
 
-该帮助对象为Python，C，C++，HTML和web2py代码执行语法高亮显示，并且
-最好为代码清单使用``PRE``。``CODE``也有能力创建链接到web2py的API文档。  
+该帮助对象为Python，C，C++，HTML和web2py代码执行语法高亮显示，并且最好为代码清单使用``PRE``。``CODE``也有能力创建链接到web2py的API文档。  
 
 下面是一个高亮显示部分Python代码的例子。
 ``
@@ -548,12 +523,10 @@ CODE("print 'hello world'", language='python', link=None, counter=1, styles={})
 
 如果指定 ``link`` 的值，例如"/examples/global/vars/"，代码中的web2py API引用链接到URL链接处的文档。例如"request"将被链接到"/examples/global/vars/request"。在上述的例子中，链接由"global.py"控制器中的"vars" 动作处理看，"global.py"控制器作为web2py的 "examples"应用的部分发布。
 
-``counter`` 参数用于行编号。它可以被设置为三个不同值中的任意一个。它可以是没
-有行号时的 ``None`` ，或一个指定起始号码的数值，或一个字符串。如果计数器设
+``counter`` 参数用于行编号。它可以被设置为三个不同值中的任意一个。它可以是没有行号时的 ``None`` ，或一个指定起始号码的数值，或一个字符串。如果计数器设
 置为一个字符串，它被解释为提示，并且没有行号。
 
- ``styles`` 参数有点棘手。如果你看一下上面生成的HTML，它包含一个有两列的表，
-每列都有自己的使用CSS声明为inline的样式。``styles``属性允许你覆盖这两个CSS
+ ``styles`` 参数有点棘手。如果你看一下上面生成的HTML，它包含一个有两列的表，每列都有自己的使用CSS声明为inline的样式。``styles``属性允许你覆盖这两个CSS
 样式。例如：
 
 ``
@@ -609,8 +582,7 @@ CODE("print 'hello world'", language='python', link=None, counter=1, styles={})
 ##### ``FORM``
 ``FORM``:inxx
 
-这是最重要的帮助工具之一。其形式简单，它只是一个 ``<form>...</form>`` 标签，
-但因为帮助对象时对象并且知道其所包含的内容，它们可以处理提交的表单
+这是最重要的帮助工具之一。其形式简单，它只是一个 ``<form>...</form>`` 标签，但因为帮助对象时对象并且知道其所包含的内容，它们可以处理提交的表单
 （例如，执行字段验证）。这将在第7章中详细讨论。
 ``
 >>> print FORM(INPUT(_type='submit'), _action='', _method='post')
@@ -621,8 +593,7 @@ CODE("print 'hello world'", language='python', link=None, counter=1, styles={})
 默认情况下，"enctype" 是“multipart / form-data”。
 
 ``hidden``:inxx
- ``FORM``的构造函数及 ``SQLFORM``也可以接收一个特殊参数。一本字典传递时，其
-项目被翻译成``hidden``的INPUT字段。例如：
+ ``FORM``的构造函数及 ``SQLFORM``也可以接收一个特殊参数。一本字典传递时，其项目被翻译成``hidden``的INPUT字段。例如：
 ``
 >>> print FORM(hidden=dict(a='b'))
 <form enctype="multipart/form-data" action="" method="post">
@@ -704,8 +675,7 @@ XHTML(..., lang='en', doctype='transitional', xmlns='http://www.w3.org/1999/xhtm
 <input value="a" name="test" />
 ``:code
 
-它也有一个可选的特殊的参数，称为"value"与“_value”不同。后者设置输入字
-段的默认值，前者设置其当前值。对于一个"text"类型的输入，前者凌驾于后者：
+它也有一个可选的特殊的参数，称为"value"与“_value”不同。后者设置输入字段的默认值，前者设置其当前值。对于一个"text"类型的输入，前者凌驾于后者：
 ``
 >>> print INPUT(_name='test', _value='a', value='b')
 <input value="b" name="test" />
@@ -804,8 +774,7 @@ XHTML(..., lang='en', doctype='transitional', xmlns='http://www.w3.org/1999/xhtm
 
 ##### ``MARKMIN``
 
-实现的markmin的wiki语法。它根据下面例子中描述的markmin规则，将输入文
-本转换成输出html：
+实现的markmin的wiki语法。它根据下面例子中描述的markmin规则，将输入文本转换成输出html：
 
 ``MARKMIN``:inxx
 ``
@@ -856,8 +825,7 @@ print markmin2pdf(m) # requires pdflatex
 ``$````$\int_a^b sin(x)dx$````$``  | $$\int_a^b sin(x)dx$$
 ---------------------------------------------------
 
-只需包括一个没有标记的到图像视频或音频文件的链接，相应的图像，视频或
-音频文件就会被自动包括（对于音频和视频，它使用HTML<audio>和<video>
+只需包括一个没有标记的到图像视频或音频文件的链接，相应的图像，视频或音频文件就会被自动包括（对于音频和视频，它使用HTML<audio>和<video>
 标签）。
 
 添加一个带有``qr:`` 前缀的链接，例如 
@@ -905,8 +873,7 @@ embed:http://www.youtube.com/embed/x1w8hKTJ2Co
 ----------
 ``
 
-MARKMIN语法也支持引用文字，HTML5音频和视频标签，图像对齐，自定义
-CSS，并且它可以扩展：
+MARKMIN语法也支持引用文字，HTML5音频和视频标签，图像对齐，自定义CSS，并且它可以扩展：
 
 ``
 MARKMIN("!`!!`!abab!`!!`!:custom", extra=dict(custom=lambda text: text.replace('a','c'))
@@ -941,8 +908,7 @@ MARKMIN("!`!!`!abab!`!!`!:custom", extra=dict(custom=lambda text: text.replace('
 
 ##### ``ON``
 
-这是为了向后兼容，它只是``True``的一个别名。它专门用于复选框并且已经被废弃
-了，因为``True`` 更加Python。
+这是为了向后兼容，它只是``True``的一个别名。它专门用于复选框并且已经被废弃了，因为``True`` 更加Python。
 
 ``ON``:inxx
 ``
@@ -1000,8 +966,7 @@ MARKMIN("!`!!`!abab!`!!`!:custom", extra=dict(custom=lambda text: text.replace('
 ##### ``PRE``
 ``PRE``:inxx
 
-生成一个 ``<pre>...</pre>``标签用于显示预格式化的文本。通常应优先为代码清单
-选用``CODE`` 帮助对象。
+生成一个 ``<pre>...</pre>``标签用于显示预格式化的文本。通常应优先为代码清单选用``CODE`` 帮助对象。
 ``
 >>> print PRE('<hello>', XML('<b>world</b>'), _class='test', _id=0)
 <pre id="0" class="test">&lt;hello&gt;<b>world</b></pre>
@@ -1010,8 +975,7 @@ MARKMIN("!`!!`!abab!`!!`!:custom", extra=dict(custom=lambda text: text.replace('
 ##### ``SCRIPT``
 ``SCRIPT``:inxx
 
-这是包括或链接脚本如JavaScript。为了真过时了的浏览器的利益，标签之间的
-内容呈现为HTML注释。
+这是包括或链接脚本如JavaScript。为了真过时了的浏览器的利益，标签之间的内容呈现为HTML注释。
 ``
 >>> print SCRIPT('alert("hello world");', _type='text/javascript')
 <script type="text/javascript"><!--
@@ -1061,8 +1025,7 @@ body { color: white }
 ##### ``TABLE``, ``TR``, ``TD``
 ``TABLE``:inxx ``TR``:inxx ``TD``:inxx
 
-这些标签（以及可选的 ``THEAD``， ``TBODY`` 和 ``TFOOTER``帮助对象）用来建立
-HTML表格。
+这些标签（以及可选的 ``THEAD``， ``TBODY`` 和 ``TFOOTER``帮助对象）用来建立HTML表格。
 ``
 >>> print TABLE(TR(TD('a'), TD('b')), TR(TD('c'), TD('d')))
 <table><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table>
@@ -1073,8 +1036,7 @@ HTML表格。
 <table><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table>
 ``:code
 
-使用Python的``*``函数的参数标记能很容易的将Python数组转换成一个HTML表，
-它将列表中的元素映射到位置函数的参数。 
+使用Python的``*``函数的参数标记能很容易的将Python数组转换成一个HTML表，它将列表中的元素映射到位置函数的参数。 
 
 在这里，我们逐行进行：
 ``
@@ -1217,16 +1179,14 @@ HTML表格。
 {{=TAG['name']('a', 'b', c='d')}}
 ``:code
 
-如果创建的TAG对象名称为空，可以用它来把多个字符串和HTML帮助对象连
-接在一起，而不需要将它们嵌入到周围标签中，但这种用法已经过时了。使用 ``CAT`` 帮助对象来取代它。
+如果创建的TAG对象名称为空，可以用它来把多个字符串和HTML帮助对象连接在一起，而不需要将它们嵌入到周围标签中，但这种用法已经过时了。使用 ``CAT`` 帮助对象来取代它。
 
 请注意， ``TAG`` 是一个对象，而且``TAG.name`` 或``TAG['name']`` 是一个函数，该函数返回一个临时的帮助对象类。
 
 ##### ``MENU``
 ``MENU``:inxx
 
-MENU帮助对象接收一个列表或元组的列表，形式为``response.menu`` （正如第4章
-中描述的）并使用无序列表生成一个表示菜单的树状结构。例如：
+MENU帮助对象接收一个列表或元组的列表，形式为``response.menu`` （正如第4章中描述的）并使用无序列表生成一个表示菜单的树状结构。例如：
 ``
 >>> print MENU([['One', False, 'link1'], ['Two', False, 'link2']])
 <ul class="web2py-menu web2py-menu-vertical">
@@ -1270,8 +1230,7 @@ MENU帮助对象用如下可选参数：
 ``
 {{=BEAUTIFY({"a": ["hello", XML("world")], "b": (1, 2)})}}
 ``:code
-``BEAUTIFY`` 返回一个类似XML的对XML可序列化的，带有一个漂亮的构造函数
-参数表示。在这种情况下，如下代码的XML表示：
+``BEAUTIFY`` 返回一个类似XML的对XML可序列化的，带有一个漂亮的构造函数参数表示。在这种情况下，如下代码的XML表示：
 ``
 {"a": ["hello", XML("world")], "b": (1, 2)}
 ``:code
@@ -1306,8 +1265,7 @@ DIV帮助对象以及所有派生的帮助对象提供了搜索方法 ``element`
 <div><div><div id="target" class="abc">changed</div></div></div>
 ``:code
 
-``elements`` 的未命名参数是一个字符串，其中可能包含：标签名称，之前为#的标
-签ID，之前是一个点的类，方括号中的属性显式值。
+``elements`` 的未命名参数是一个字符串，其中可能包含：标签名称，之前为#的标签ID，之前是一个点的类，方括号中的属性显式值。
 
 下面是4个通过id搜索以前的标签的等价方法：
 ``
@@ -1325,8 +1283,7 @@ DIV帮助对象以及所有派生的帮助对象提供了搜索方法 ``element`
 >>> d = a.elements('div',_class='abc')
 ``:code
 
-可以使用任何属性来定位元素（不只是``id``和``class``），其中包括多个属性
-（element函数可以带多个命名参数），但只返回第一个匹配的元素。  
+可以使用任何属性来定位元素（不只是``id``和``class``），其中包括多个属性（element函数可以带多个命名参数），但只返回第一个匹配的元素。  
 
 使用jQuery语法"div#target"可以指定由空格分隔的多个搜索条件：
 ``
@@ -1346,8 +1303,7 @@ DIV帮助对象以及所有派生的帮助对象提供了搜索方法 ``element`
 >>> d = a.elements('span', _id=re.compile('test\d{3}')
 ``:code
 
-DIV帮助对象的一个特殊命名参数（及其派生）是``find``。可以用它来在标签的文
-本内容中指定搜索值或搜索正则表达式。例如： 
+DIV帮助对象的一个特殊命名参数（及其派生）是``find``。可以用它来在标签的文本内容中指定搜索值或搜索正则表达式。例如： 
 ``
 >>> a = DIV(SPAN('abcde'), DIV('fghij'))
 >>> d = a.elements(find='bcd')
@@ -1403,8 +1359,7 @@ example of [[a link #test]]
 
 #### 解析
 
-TAG对象也是一个XML/ HTML解析器。它可以读取文本并将其转换成一个树状
-结构的帮助对象。这使得可以用上面的API操作：
+TAG对象也是一个XML/ HTML解析器。它可以读取文本并将其转换成一个树状结构的帮助对象。这使得可以用上面的API操作：
 ``
 >>> html = '<h1>Title</h1><p>this is a <span>test</span></p>'
 >>> parsed_html = TAG(html)
@@ -1418,11 +1373,9 @@ TAG对象也是一个XML/ HTML解析器。它可以读取文本并将其转换�
 
 视图可以扩展并以树状结构包含其它视图。
 
-例如，我们能想到的一个视图的“index.html”，扩展"layout.html" 并包括
-“body.html”。同时，"layout.html" 中可以包括"header.html" 和"footer.html"。
+例如，我们能想到的一个视图的“index.html”，扩展"layout.html" 并包括“body.html”。同时，"layout.html" 中可以包括"header.html" 和"footer.html"。
 
-树的根就是我们所说的布局视图。就像任何其它HTML模板文件，你可以使用
-web2py管理界面编辑它。文件名"layout.html"仅仅是一个惯例。
+树的根就是我们所说的布局视图。就像任何其它HTML模板文件，你可以使用web2py管理界面编辑它。文件名"layout.html"仅仅是一个惯例。
 
 这是一个最低限度的页面，它扩展"layout.html" 视图并包括"page.html"视图：
 
@@ -1444,18 +1397,15 @@ web2py管理界面编辑它。文件名"layout.html"仅仅是一个惯例。
 </html>
 ``:code
 
-调用视图时，扩展（布局）视图被加载，调用视图取代布局中的``{{include}}`` 指
-令。处理将继续递归进行，直到所有``extend``和``include``扩展都已被处理。生成的模板之后被翻译成Python代码。请注意，当一个应用是字节码编译的，编译的是这
-个Python代码，而不是原视图文件本身。因此，一个给定视图的字节码编译版本
-是一个single.pyc文件，其中包含的Python代码不只是原视图文件的，而是它的
+调用视图时，扩展（布局）视图被加载，调用视图取代布局中的``{{include}}`` 指令。处理将继续递归进行，直到所有``extend``和``include``扩展都已被处理。生成的模板之后被翻译成Python代码。请注意，当一个应用是字节码编译的，编译的是这
+个Python代码，而不是原视图文件本身。因此，一个给定视图的字节码编译版本是一个single.pyc文件，其中包含的Python代码不只是原视图文件的，而是它的
 整个扩展和包含视图树的。
 
 -------
 ``extend``，``include``，``block`` 和 ``super`` 是特殊模板指令，而不是Python命令。
 -------
 
- ``{{extend...}}``指令之前的任何内容或代码将在扩展视图的内容/代码之前被插入
-（因此被执行）。虽然这通常不用于在扩展视图的内容之前插入实际的HTML内容，它可以作为一种有用的手段，定义扩展视图可用的变量或函数。
+ ``{{extend...}}``指令之前的任何内容或代码将在扩展视图的内容/代码之前被插入（因此被执行）。虽然这通常不用于在扩展视图的内容之前插入实际的HTML内容，它可以作为一种有用的手段，定义扩展视图可用的变量或函数。
 例如，考虑一个视图"index.html"：
 ``
 {{sidebar_enabled=True}}
@@ -1472,22 +1422,16 @@ web2py管理界面编辑它。文件名"layout.html"仅仅是一个惯例。
 {{pass}}
 ``:code
 
-因为 "index.html"中 ``sidebar_enabled`` 赋值在 ``extend``之前，该行被插入
-在"layout.html"开始之前，使``sidebar_enabled``在"layout.html"代码内处处可用
+因为 "index.html"中 ``sidebar_enabled`` 赋值在 ``extend``之前，该行被插入在"layout.html"开始之前，使``sidebar_enabled``在"layout.html"代码内处处可用
 （welcome应用使用了一个较为复杂的版本）。
 
-还值得指出的是由控制器函数返回的变量不仅可用在函数的主视图中，而且可
-用在在其所有扩展和包含视图中。
+还值得指出的是由控制器函数返回的变量不仅可用在函数的主视图中，而且可用在在其所有扩展和包含视图中。
 
- ``extend``或``include`` include（即扩展或包含的视图名称）的参数可以是一个Python变量（但
-不能是Python表达式）。然而，这会带来一个限制 -在``extend`` 或 ``include`` 语句中使
-用变量的视图不能字节码编译。正如上面提到的，字节码编译的视图包括整个
-扩展和包含视图的树，所以具体的扩展及包含视图必须在编译时已知，如果视
-图名称是变量（其值直到运行时才能确定）。这是不可能的，由于字节码编译
-视图可以提供显著的速度提升，应尽量避免在``extend`` 和 ``include`` 中使用变量。
+ ``extend``或``include`` include（即扩展或包含的视图名称）的参数可以是一个Python变量（但不能是Python表达式）。然而，这会带来一个限制 -在``extend`` 或 ``include`` 语句中使
+用变量的视图不能字节码编译。正如上面提到的，字节码编译的视图包括整个扩展和包含视图的树，所以具体的扩展及包含视图必须在编译时已知，如果视
+图名称是变量（其值直到运行时才能确定）。这是不可能的，由于字节码编译视图可以提供显著的速度提升，应尽量避免在``extend`` 和 ``include`` 中使用变量。
 
-在某些情况下，在 ``include`` 中使用变量一个替代是简单地把 
-``{{include ...}}`` 指令放在 ``if...else`` 块内。
+在某些情况下，在 ``include`` 中使用变量一个替代是简单地把 ``{{include ...}}`` 指令放在 ``if...else`` 块内。
 
 ``
 {{if some_condition:}}
@@ -1497,16 +1441,14 @@ web2py管理界面编辑它。文件名"layout.html"仅仅是一个惯例。
 {{pass}}
 ``:code
 
-字节码编译上面的代码不存在任何问题，因为未涉及任何变量。但是，请注意，
-字节码编译的视图实际上包括“this_view.html”和“that_view.html”的Python代
+字节码编译上面的代码不存在任何问题，因为未涉及任何变量。但是，请注意，字节码编译的视图实际上包括“this_view.html”和“that_view.html”的Python代
 码，尽管只有其中一个视图的代码被执行，取决于``some_condition``的值。
 
 请记住，这仅适用于 ``include`` -- 你不能把 ``{{extend ...}}`` 指令放在 ``if...else`` 块内。
 
 ``response.menu``:inxx ``menu``:inxx ``response.meta``:inxx ``meta``:inxx
 
-布局用于封装页面共性（页眉，页脚，菜单），虽然它们不是强制性的，它们
-将使你的应用更容易编写和维护。特别是，我们建议编写利用以下可以在控制
+布局用于封装页面共性（页眉，页脚，菜单），虽然它们不是强制性的，它们将使你的应用更容易编写和维护。特别是，我们建议编写利用以下可以在控制
 器中设置的变量的布局。使用这些熟悉的变量将有助于使你的布局可互换：
 ``
 response.title
@@ -1521,8 +1463,7 @@ response.files
 
 除了``menu`` 和``files``，这些都是字符串，它们的含义应该是显而易见的。
 
-``response.menu`` 菜单是一个3-元组或4 -元组列表。三个要素是：链接名称，一个
-表示链接是否处于活动状态（是否是当前链接）的布尔值和所链接页面的URL。例如：
+``response.menu`` 菜单是一个3-元组或4 -元组列表。三个要素是：链接名称，一个表示链接是否处于活动状态（是否是当前链接）的布尔值和所链接页面的URL。例如：
 ``
 response.menu = [('Google', False, 'http://www.google.com',[]),
                  ('Index',  True,  URL('index'), [])]
@@ -1539,14 +1480,12 @@ response.menu = [('Google', False, 'http://www.google.com',[]),
 {{include 'web2py_ajax.html'}}
 ``:code
 
-在HTML头中，因为这将包括jQuery库并为特殊效果和Ajax定义一些向后兼容
-的JavaScript函数。“web2py_ajax.html”包括视图中的 ``response.meta`` 标签，jQuery基础，日历日期选择器，以及所有必需的CSS和JS``response.files``。
+在HTML头中，因为这将包括jQuery库并为特殊效果和Ajax定义一些向后兼容的JavaScript函数。“web2py_ajax.html”包括视图中的 ``response.meta`` 标签，jQuery基础，日历日期选择器，以及所有必需的CSS和JS``response.files``。
 
 #### 默认页面布局
 ``superfish``:inxx ``ez.css``:inxx
 
-以下web2py基本构建应用 **welcome**附带的"views/layout.html"（剥离一些可选部
-分）。任何新应用都有类似的默认布局： 
+以下web2py基本构建应用 **welcome**附带的"views/layout.html"（剥离一些可选部分）。任何新应用都有类似的默认布局： 
 
 ``
 <!DOCTYPE html>
@@ -1678,22 +1617,16 @@ response.menu = [('Google', False, 'http://www.google.com',[]),
 
 缺省布局有一些特征使它很容易使用和定制：
 
-- 这是用HTML5编写的并为向后兼容性使用 ``modernizr``:cite 库。实际的布
-局包括一些IE浏览器要求的额外的条件语句，为了简洁起见省略了它们。
+- 这是用HTML5编写的并为向后兼容性使用 ``modernizr``:cite 库。实际的布局包括一些IE浏览器要求的额外的条件语句，为了简洁起见省略了它们。
 - 它显示可以设置在模型中的``response.title``和 ``response.subtitle``。如果它们都没有设置，它采用应用名作为标题
-- 它包含``web2py_ajax.html`` 文件到其头部，该文件生成所有链接和脚本导入
-语句。
-- 为了灵活布局，它使用``skeleton``:cite 的一个修改版本，它能在移动设备
-上运行并重新排列列以适合小型屏幕。
-- 它为动态级联菜单使用"superfish.js"。有一个明确的脚本来激活superfish
-级联菜单并且如果没有必要的话可以删除它。
--  ``{{=auth.navbar(...)}}`` 显示欢迎当前用户以及身份验证函数链接，如登
-录，注销，注册，更改密码等，取决于上下文。这是一个hepler工厂并且它的输出象其它任何帮助对象一样操作。它被放置在``{{try:}}...{{except:pass}}``中，
+- 它包含``web2py_ajax.html`` 文件到其头部，该文件生成所有链接和脚本导入语句。
+- 为了灵活布局，它使用``skeleton``:cite 的一个修改版本，它能在移动设备上运行并重新排列列以适合小型屏幕。
+- 它为动态级联菜单使用"superfish.js"。有一个明确的脚本来激活superfish级联菜单并且如果没有必要的话可以删除它。
+-  ``{{=auth.navbar(...)}}`` 显示欢迎当前用户以及身份验证函数链接，如登录，注销，注册，更改密码等，取决于上下文。这是一个hepler工厂并且它的输出象其它任何帮助对象一样操作。它被放置在``{{try:}}...{{except:pass}}``中，
 以防auth未定义。
 -  ``{{=MENU(response.menu)`` 显示菜单结构为 ``<ul>...</ul>``.
 - 呈现页面时，``{{include}}`` 将被扩展视图的内容替换。
-- 默认情况下它采用的是有条件的三列（左边和右边的侧边栏可以被扩展
-视图关闭）
+- 默认情况下它采用的是有条件的三列（左边和右边的侧边栏可以被扩展视图关闭）
 - 它使用以下类：header, main, footer
 - 它包含以下功能块：statusbar, left_sidebar, center, right_sidebar, footer。
 
@@ -1738,11 +1671,9 @@ a { color: #349C01; }
 
 ####移动部署
 
-默认layout.html的设计是移动设备友好的，但那还不够。当页面被移动设备访问
-时，可能需要使用不同的视图。
+默认layout.html的设计是移动设备友好的，但那还不够。当页面被移动设备访问时，可能需要使用不同的视图。
 
-为了使开发台式机和移动设备更容易，web2py中包含``@mobilize`` 装饰器。这个装
-饰器应用于应该有正常的视图和移动视图的动作。如下说明这一点： 
+为了使开发台式机和移动设备更容易，web2py中包含``@mobilize`` 装饰器。这个装饰器应用于应该有正常的视图和移动视图的动作。如下说明这一点： 
 
 ``
 from gluon.contrib.user_agent_parser import mobilize 
@@ -1751,10 +1682,8 @@ def index():
    return dict()
 ``
 
-请注意，在控制器中使用它之前，装饰器必须是重要的。"index"函数被普通浏
-览器（台式计算机）调用时，web2py会使用"[controller]/index.html"视图呈现返
-回的字典。然而，由移动设备调用它时，该词典将
-被"[controller]/index.mobile.html"呈现。请注意，移动视图有“mobile.html”扩展
+请注意，在控制器中使用它之前，装饰器必须是重要的。"index"函数被普通浏览器（台式计算机）调用时，web2py会使用"[controller]/index.html"视图呈现返
+回的字典。然而，由移动设备调用它时，该词典将被"[controller]/index.mobile.html"呈现。请注意，移动视图有“mobile.html”扩展
 名。
 
 另外，你可以使用下面的逻辑来使所有视图移动友好：
@@ -1764,8 +1693,7 @@ if request.user_agent().is_mobile:
     response.view.replace('.html','.mobile.html')
 ``
 
-创建"*.mobile.html"的任务留给了开发者，但我们强烈建议使用"jQuery
-Mobile"插件，这使得任务很容易完成。
+创建"*.mobile.html"的任务留给了开发者，但我们强烈建议使用"jQuery Mobile"插件，这使得任务很容易完成。
 
 ### 视图中的函数
 
@@ -1811,15 +1739,13 @@ Hello World!!!
 </html>
 ``:code
 
-请注意，该函数定义在HTML中（尽管它可能还包含Python代码）所以
-``response.write``用来编写它的内容（函数不返回该内容）。这就是为什么布局使
+请注意，该函数定义在HTML中（尽管它可能还包含Python代码）所以``response.write``用来编写它的内容（函数不返回该内容）。这就是为什么布局使
 用``{{mysidebar()}}``而不是``{{=mysidebar()}}``调用视图。以这种方式定义的函数可以使用参数。
 
 ### 视图中的块
 ``block``:inxx
 
-使视图更加模块化的另一种方法是通过使用``{{block...}}s``并且这种机制是上一节
-讨论的机制的一种替代。 
+使视图更加模块化的另一种方法是通过使用``{{block...}}s``并且这种机制是上一节讨论的机制的一种替代。 
 
 请考虑"layout.html":
 
@@ -1859,13 +1785,11 @@ my new sidebar!!!
 </html>
 ``:code
 
-你可以有许多块，并且如果被扩展视图中有块，但扩展视图中没有，被扩展视
-图的内容被使用。此外，注意到不像函数，没有必要在``{{extend ...}}`` 之前定义块--即使定义在``extend``之后，可以用它们来在被扩展视图的任意位置创建替换。
+你可以有许多块，并且如果被扩展视图中有块，但扩展视图中没有，被扩展视图的内容被使用。此外，注意到不像函数，没有必要在``{{extend ...}}`` 之前定义块--即使定义在``extend``之后，可以用它们来在被扩展视图的任意位置创建替换。
 
 ``super``:inxx
 
-在块内，你可以使用表达式``{{super}}``来包含父内容。例如，如果我们将上述被
-扩展视图替换为： 
+在块内，你可以使用表达式``{{super}}``来包含父内容。例如，如果我们将上述被扩展视图替换为： 
 
 ``
 {{extend 'layout.html'}}
