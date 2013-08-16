@@ -3,23 +3,17 @@
 
 ### 依赖性dependencies
 
-web2py提供作为数据库抽象层（DAL）的API（应用程序编程接口），把
-Python对象映射成为数据库对象，比如：查询、表和记录对象等。DAL使用指定
-语言实时动态地为数据库后端生成SQL语句，以便你不必写SQL代码或者学习
-不同的SQL语言（SQL是通用的术语），并且应用程序可以在不同类型的数据
-库之间移植。在撰写本书的时候，支持的数据库是SQLite（Python支持，web2py
-也一样）、PostgreSQL、MySQL、 Oracle、MSSQL、FireBird、DB2、
-Informix、Ingres 和 Google App Engine (SQL 和 NoSQL)(部分支持)。事实上我们
-能支持更多的数据库。请查阅web2py网站和邮件列表获得更多最新的改进。
+web2py提供作为数据库抽象层（DAL）的API（应用程序编程接口），把Python对象映射成为数据库对象，比如：查询、表和记录对象等。DAL使用指定
+语言实时动态地为数据库后端生成SQL语句，以便你不必写SQL代码或者学习不同的SQL语言（SQL是通用的术语），并且应用程序可以在不同类型的数据
+库之间移植。在撰写本书的时候，支持的数据库是SQLite（Python支持，web2py也一样）、PostgreSQL、MySQL、 Oracle、MSSQL、FireBird、DB2、
+Informix、Ingres 和 Google App Engine (SQL 和 NoSQL)(部分支持)。事实上我们能支持更多的数据库。请查阅web2py网站和邮件列表获得更多最新的改进。
 Google NoSQL将作为一个特别的案例在第13章中加以讨论。
 
-web2py的Windows二进制发行版直接用于SQLite和MySQL。其Mac二进制发
-行版直接用于SQLite。要使用其他任意一个数据库后端，从源码发行版开始运行
+web2py的Windows二进制发行版直接用于SQLite和MySQL。其Mac二进制发行版直接用于SQLite。要使用其他任意一个数据库后端，从源码发行版开始运行
 并为所需要的后端安装合适的驱动。
 ``database drivers``:inxx
 
-一旦合适的驱动安装以后，从源文件启动web2py，它会找到驱动。以下是
-驱动列表：
+一旦合适的驱动安装以后，从源文件启动web2py，它会找到驱动。以下是驱动列表：
 
 ----------
 database | driver (source)
@@ -105,10 +99,8 @@ db().select(db.table.ALL, orderby=myorder)
 ``
 >>> db = DAL('sqlite://storage.db', pool_size=0)
 ``:code
-``db`` 不是一个关键词；它是一个存储连接对象 ``DAL``的局部变量。你也可以给
-它取个另外不同的名字。``DAL`` 构造函数需要单个连接字符串的参数。连接字符串
-是仅有的依赖特定后端数据库的web2py代码。下表中是支持一些特定类型后端
-数据库连接字符串的例子（所有情况下，我们假定数据库在本地主机上运行采
+``db`` 不是一个关键词；它是一个存储连接对象 ``DAL``的局部变量。你也可以给它取个另外不同的名字。``DAL`` 构造函数需要单个连接字符串的参数。连接字符串
+是仅有的依赖特定后端数据库的web2py代码。下表中是支持一些特定类型后端数据库连接字符串的例子（所有情况下，我们假定数据库在本地主机上运行采
 用默认端口并命名为test）：
 
 -------------
@@ -125,50 +117,40 @@ db().select(db.table.ALL, orderby=myorder)
 **Google App Engine/NoSQL** | ``google:datastore``
 -------------
 
-注意SQLite数据库只由一个文件构成。如果不存在，它会被创建。每次被访
-问的时候该文件会被锁定。就MySQL, PostgreSQL, MSSQL, FireBird, Oracle,
-DB2, Ingres 和 Informix情况，数据库“test”需在web2py外创建。一旦连接建立，
-web2py会适当地创建、修改和删除表。
+注意SQLite数据库只由一个文件构成。如果不存在，它会被创建。每次被访问的时候该文件会被锁定。就MySQL, PostgreSQL, MSSQL, FireBird, Oracle,
+DB2, Ingres 和 Informix情况，数据库“test”需在web2py外创建。一旦连接建立，web2py会适当地创建、修改和删除表。
 
-也可以把连接字符串设置为``None``。这种情况DAL将不连接到任何一个后端
-数据库，但是API能被测试所访问。这类例子将在第七章中讨论。
+也可以把连接字符串设置为``None``。这种情况DAL将不连接到任何一个后端数据库，但是API能被测试所访问。这类例子将在第七章中讨论。
 
 #### 连接池
 ``connection pooling``:inxx
 
 DAL构造函数的第二个参数是``pool_size``；它的默认值是0。
 
-因为，为每个请求建立一个新的数据库连接是会相当慢的，因此web2py对
-连接池采用了一种机制。一旦一个连接建立了，页面被服务了并且事务处理完
-成，连接不被关闭而是转到连接池里。当下一个http请求到达，web2py尝试从
-连接池里获得连接并为新的事务处理所用。如果在连接池中没有可用连接，新
+因为，为每个请求建立一个新的数据库连接是会相当慢的，因此web2py对连接池采用了一种机制。一旦一个连接建立了，页面被服务了并且事务处理完
+成，连接不被关闭而是转到连接池里。当下一个http请求到达，web2py尝试从连接池里获得连接并为新的事务处理所用。如果在连接池中没有可用连接，新
 的连接会被建立。
 
  ``pool_size`` 参数在SQLite 和 Google App Engine中忽略。
 
-池中的连接在线程中依次共享，在这个意义上，可以被两个不同但不是并
-发的线程使用。每个web2py进程仅有一个连接池。
+池中的连接在线程中依次共享，在这个意义上，可以被两个不同但不是并发的线程使用。每个web2py进程仅有一个连接池。
 
-当web2py启动，连接池总是空的。连接池可增长至``pool_size`` 的值与当前最
-大并发请求数间的最小值。这就意味着如果 ``pool_size=10`` 而我们的服务器接收的
+当web2py启动，连接池总是空的。连接池可增长至``pool_size`` 的值与当前最大并发请求数间的最小值。这就意味着如果 ``pool_size=10`` 而我们的服务器接收的
 并发请求数从未超过5次，那么实际的连接池大小就不会超过5。如果 ``pool_size=0`` 那么连接池没有使用。
 
 连接池机制在SQLite中忽略，因为它不能产生任何效益。
 
 #### Connection failures
 
-如果web2py连接数据库失败，它等待1秒后最多尝试5次后宣布失败。在
-连接池情形下，可能存在池中连接保持打开但一段时间不用而被数据库终端关
+如果web2py连接数据库失败，它等待1秒后最多尝试5次后宣布失败。在连接池情形下，可能存在池中连接保持打开但一段时间不用而被数据库终端关
 闭的情况。得益于重试功能，web2py可以再建立这些丢弃的连接。
 
-当使用连接池一个连接使用以后，重新放回池中然后再循环。可能存在当池
-中连接空闲但连接被数据库服务器关闭。这可能是由于故障或超时造成。这种情
+当使用连接池一个连接使用以后，重新放回池中然后再循环。可能存在当池中连接空闲但连接被数据库服务器关闭。这可能是由于故障或超时造成。这种情
 况出现时，web2py进行检测并重新建立连接。
 
 #### 复制的数据库replicated database
 
- ``DAL(...)`` 第一个参数可以是URI（统一资源标识）的列表。这种情况下，
-web2py尝试连接它们中每一个。这样做的主要意图是应对多数据库服务器和在
+ ``DAL(...)`` 第一个参数可以是URI（统一资源标识）的列表。这种情况下，web2py尝试连接它们中每一个。这样做的主要意图是应对多数据库服务器和在
 多服务器之间的负荷分担。下面是一个典型应用示例：
 
 ``
@@ -180,15 +162,13 @@ db = DAL(['mysql://...1','mysql://...2','mysql://...3'])
 ### 保留关键词
 ``reserved Keywords``:inxx
 
-还有另外一个参数可以传递给DAL的构造函数用来检查表名和字段名是否
-违反目标后端数据库的SQL保留关键字。
+还有另外一个参数可以传递给DAL的构造函数用来检查表名和字段名是否违反目标后端数据库的SQL保留关键字。
 
 这个参数是``check_reserved``，它的默认值是None。
 
 这是一个包含数据库后端适配器名字的字符串列表。
 
-适配器名字与在DAL中使用的连接字符串一样。因此如果你想检查是否与
-PostgreSQL和MSSQL冲突，那么你的连接字符串可以采用下面形式：
+适配器名字与在DAL中使用的连接字符串一样。因此如果你想检查是否与PostgreSQL和MSSQL冲突，那么你的连接字符串可以采用下面形式：
 ``
 db = DAL('sqlite://storage.db',
          check_reserved=['postgres', 'mssql'])
@@ -196,12 +176,10 @@ db = DAL('sqlite://storage.db',
 
 DAL会采用与列表同样的顺序检查关键字。
 
-T会有两个额外的选项“all”（全部）和“common”（通常）。如果你指定
-all，它会检查是否与所有知道的SQL关键字冲突。如果你指定common，它仅
+T会有两个额外的选项“all”（全部）和“common”（通常）。如果你指定all，它会检查是否与所有知道的SQL关键字冲突。如果你指定common，它仅
 仅检查通常的SQL关键字，比如 ``SELECT``, ``INSERT``, ``UPDATE``等等。
 
-为支持后台数据库，你也可指定你是否检查与非保留字冲突。这种情形你
-可以追加``_nonreserved``在名字后。例如：
+为支持后台数据库，你也可指定你是否检查与非保留字冲突。这种情形你可以追加``_nonreserved``在名字后。例如：
 ``
 check_reserved=['postgres', 'postgres_nonreserved']
 ``:code
@@ -218,11 +196,8 @@ check_reserved=['postgres', 'postgres_nonreserved']
 
 ### ``DAL``, ``Table``, ``Field``
 
-要理解掌握DAL API最好的方法是你亲自尝试每一个函数。
-这可以通过web2py shell交互来完成，但是最终DAL代码要写入模块和控
-制器。
-以创建一个连接开始。为了更好的效果，你可以用SQLite数据库。
-当你更换后台引擎，所讨论的并不会有任何的改变。
+要理解掌握DAL API最好的方法是你亲自尝试每一个函数。这可以通过web2py shell交互来完成，但是最终DAL代码要写入模块和控
+制器。以创建一个连接开始。为了更好的效果，你可以用SQLite数据库。当你更换后台引擎，所讨论的并不会有任何的改变。
 
 ``DAL``:inxx ``SQLite``:inxx ``MySQL``:inxx ``PostgresSQL``:inxx ``Oracle``:inxx ``MSSQL``:inxx ``FireBird``:inxx ``DB2``:inxx ``Informix``:inxx
 ``
@@ -247,8 +222,7 @@ sqlite
 
 连接字符串被称之为 ``_uri`` 因为它是Uniform Resource Identifier的缩写。
 
-DAL允许与同一个数据库的多个连接或者与不同数据库连接，甚至是不同
-类型的多个数据库。目前，我们假定是单个数据库，这情形是最常见的。
+DAL允许与同一个数据库的多个连接或者与不同数据库连接，甚至是不同类型的多个数据库。目前，我们假定是单个数据库，这情形是最常见的。
 
 ``define_table``:inxx ``Field``:inxx
 ``type``:inxx ``length``:inxx ``default``:inxx ``requires``:inxx ``required``:inxx ``unique``:inxx
@@ -259,17 +233,14 @@ DAL最重要的方法 ``define_table``:
 >>> db.define_table('person', Field('name'))
 ``:code
 
-它定义、存储并返回一个叫“person”的``Table`` 对象包含字段（列）“name”。
-这个对象也可以通过``db.person``访问，因此你无需抓住返回值。
+它定义、存储并返回一个叫“person”的``Table`` 对象包含字段（列）“name”。这个对象也可以通过``db.person``访问，因此你无需抓住返回值。
 
 不要声明字段名“id”，因为这个已被web2py创建了。
 默认情况每个表格都有一个“id”字段。它是一个自增整数字段（从1开始），用来交叉引用并使每个记录独一无二，因此id是主键（primary key）。
-（说明：id从1开始是后端指定的。例如，这在Google App Engine NoSQL就不
-适用。）
+（说明：id从1开始是后端指定的。例如，这在Google App Engine NoSQL就不适用。）
 
 ``named id field``:inxx
-你可以选择定义一个字段类型``type='id'`` ，web2py会用这个字段作为自增id
-字段。不推荐这样使用除非访问传统数据库表。你也可以使用不同的主键但会有
+你可以选择定义一个字段类型``type='id'`` ，web2py会用这个字段作为自增id字段。不推荐这样使用除非访问传统数据库表。你也可以使用不同的主键但会有
 一些限制，这些会在传统数据库和键表章节讨论。
 
 
@@ -310,23 +281,15 @@ Field(name, 'string', length=None, default=None,
       uploadseparate=None)
 ``:code
 
-不是它们所有都与每个字段有关。“length”（长度）只与“string”（字符
-串）类型的字段有关。“uploadfield”和“authorize”只与“upload”类型的字段有
+不是它们所有都与每个字段有关。“length”（长度）只与“string”（字符串）类型的字段有关。“uploadfield”和“authorize”只与“upload”类型的字段有
 关。“ondelete”只与“reference”和“upload”类型的字段有关。
-- ``length`` 指定了“string” 、 “password”或“upload”字段的最大长度。如果
-``length``不指定默认值使用了，但是默认值不能够保证后向兼容。为了避
-免不想要的升级迁移，我们推荐一定要指定string、 password或upload
-字段的长度。
-- ``default`` 给字段设定默认值。默认值可以在执行插入操作的时候如果没有
-一个明确指定的参数值时使用。它也可以用来预填充表单，这些表单从
-使用SQLFORM的表编译得到。注意，不单是固定的值，默认值可以是
-函数（包括lambda函数），能够为字段返回合适类型的值。那样的情
-形下，一旦每条记录插入就调用一次函数，即便是多条记录插入到单
-个事务也一样。
-- ``required`` 告知DAL，如果字段没有明确指定值那么插入这张表是不允
-许的。
-- ``requires`` 是一个验证器或是一个验证器列表。它不被DAL使用，但被
-SQLFORM使用。给定类型的默认验证器在下表中列出：
+- ``length`` 指定了“string” 、 “password”或“upload”字段的最大长度。如果``length``不指定默认值使用了，但是默认值不能够保证后向兼容。为了避
+免不想要的升级迁移，我们推荐一定要指定string、 password或upload字段的长度。
+- ``default`` 给字段设定默认值。默认值可以在执行插入操作的时候如果没有一个明确指定的参数值时使用。它也可以用来预填充表单，这些表单从
+使用SQLFORM的表编译得到。注意，不单是固定的值，默认值可以是函数（包括lambda函数），能够为字段返回合适类型的值。那样的情
+形下，一旦每条记录插入就调用一次函数，即便是多条记录插入到单个事务也一样。
+- ``required`` 告知DAL，如果字段没有明确指定值那么插入这张表是不允许的。
+- ``requires`` 是一个验证器或是一个验证器列表。它不被DAL使用，但被SQLFORM使用。给定类型的默认验证器在下表中列出：
 
 ----------
 **field type** | **default field validators**
@@ -352,10 +315,8 @@ SQLFORM使用。给定类型的默认验证器在下表中列出：
 它处理为 ``double``类型。（n，m）分别是数字个数的总数和十进制小数点以
 后的数字的个数。
 
- ``list:`` 特殊字段，这是设计来使用NoSQL 某些非规范功能的（Google
-App Engine NoSQL的情况，``ListProperty`` 和 ``StringListProperty``字段类
-型），back-port所有其它能够支持的相关的数据库。就关系数据库列表
-以一个文本字段形式存储。条目用符号``|``分开，每个字符串中的分隔符``|``
+ ``list:`` 特殊字段，这是设计来使用NoSQL 某些非规范功能的（Google App Engine NoSQL的情况，``ListProperty`` 和 ``StringListProperty``字段类
+型），back-port所有其它能够支持的相关的数据库。就关系数据库列表以一个文本字段形式存储。条目用符号``|``分开，每个字符串中的分隔符``|``
 转义为``||``。它们在各自的章节讨论。
 
 -------
@@ -364,46 +325,30 @@ App Engine NoSQL的情况，``ListProperty`` 和 ``StringListProperty``字段类
 
 ``ondelete``:inxx
 
-- ``ondelete`` 翻译为“ ON DELETE” SQL 语句。默认时它的值是
-“CASCADE”（层叠）。它告知数据库当删除一条记录时要删除引用到
+- ``ondelete`` 翻译为“ ON DELETE” SQL 语句。默认时它的值是“CASCADE”（层叠）。它告知数据库当删除一条记录时要删除引用到
 这条记录的所有记录。要关闭这项功能，把ondelete 设置为``ondelete`` to "NO ACTION" 或"SET NULL"。
-- ``notnull=True`` 翻译为“NOT NULL”SQL语句。它能防止数据库的字段插
-入空的值。
-- ``unique=True`` 翻译为 “UNIQUE” SQL语句，它确保这个字段的值在表
-内是独特的。在数据库级是强制的。
-- ``uploadfield`` 仅用在“upload”类型字段。一个“upload”类型字段存储了一
-个其他地方保存的文件的名字，默认在文件系统的应用程序
-“uploads/”文件夹下。如果 ``uploadfield`` i被设置，那么文件存在同名表所
-在的区域，``uploadfield`` 的值是该区域的名字。稍后这将在SQLFORM相
+- ``notnull=True`` 翻译为“NOT NULL”SQL语句。它能防止数据库的字段插入空的值。
+- ``unique=True`` 翻译为 “UNIQUE” SQL语句，它确保这个字段的值在表内是独特的。在数据库级是强制的。
+- ``uploadfield`` 仅用在“upload”类型字段。一个“upload”类型字段存储了一个其他地方保存的文件的名字，默认在文件系统的应用程序
+“uploads/”文件夹下。如果 ``uploadfield`` i被设置，那么文件存在同名表所在的区域，``uploadfield`` 的值是该区域的名字。稍后这将在SQLFORM相
 关内中更加详细地讨论。
-- ``uploadfolder`` 默认指应用程序“uploads/”文件夹。如果设定为不同的路径，
-文件会上传至不同的文件夹。例如
-uploadfolder=os.path.join(request.folder，static/temp)文件将会被上传至
-web2py/applications/myapp/static/temp文件夹。
-- ``uploadseparate`` 如果设置为True上载文件到uploadfolder 文件夹的不同
-子文件夹。这样可以优化以避免太多的文件在同样的文件夹/子文件夹。
-警告：你不能在不中断系统的情况下把``uploadseparate``的值从True改为
-False。web2py或采用分离的子文件夹或不采用。在文件被上载后修改的
-动作会阻止web2py获得那些文件。如果这种情况发生，可以移动文件
-并修复问题但不在这里说明。 
+- ``uploadfolder`` 默认指应用程序“uploads/”文件夹。如果设定为不同的路径，文件会上传至不同的文件夹。例如
+uploadfolder=os.path.join(request.folder，static/temp)文件将会被上传至web2py/applications/myapp/static/temp文件夹。
+- ``uploadseparate`` 如果设置为True上载文件到uploadfolder 文件夹的不同子文件夹。这样可以优化以避免太多的文件在同样的文件夹/子文件夹。
+警告：你不能在不中断系统的情况下把``uploadseparate``的值从True改为False。web2py或采用分离的子文件夹或不采用。在文件被上载后修改的
+动作会阻止web2py获得那些文件。如果这种情况发生，可以移动文件并修复问题但不在这里说明。 
 - ``widget`` 必须是可用的widget 对象之一，包括客户widget，例如： ``SQLFORM.widgets.string.widget``。一些可用的widget会在后面讨论。每
 个字段类型都有一个默认的widget。
-- ``label`` 是一个字符串（或者是能被序列化为字符串的内容），包含为这
-个字段在自动生成表单中所用的标识。
-- ``comment``  是一个字符串（或者是能被序列化为字符串的内容），包含
-一个与这个字段相关的评价，会显示在在自动生成的表单输入区域的右边。
+- ``label`` 是一个字符串（或者是能被序列化为字符串的内容），包含为这个字段在自动生成表单中所用的标识。
+- ``comment``  是一个字符串（或者是能被序列化为字符串的内容），包含一个与这个字段相关的评价，会显示在在自动生成的表单输入区域的右边。
 - ``writable`` 如果一个字段是可写属性，它在自动生成中创建和修改表单中
 进行能被编辑。
-- ``readable`` 如果一个字段是可读属性，它指在只读的表单中可见。如果一
-个字段几部可读也不可写，它不会在创建和修改表单的时候显示。
+- ``readable`` 如果一个字段是可读属性，它指在只读的表单中可见。如果一个字段几部可读也不可写，它不会在创建和修改表单的时候显示。
 - ``update`` 包含了当记录被修改时这个字段的默认值。
-- ``compute`` 是一个可选函数。如果一条记录被插入或者修改，compute函
-数将被执行并且这个字段会填充函数执行结果。记录作为一个``dict``传递
+- ``compute`` 是一个可选函数。如果一条记录被插入或者修改，compute函数将被执行并且这个字段会填充函数执行结果。记录作为一个``dict``传递
 给compute函数，dict不含当前值或任何其它compute字段。
-- ``autodelete`` 决定当记录所参考的文件被删除了，相应的上传文件是否被
-删除。只为“upload”字段。
-- ``represent`` 可以是None或是一个函数，这个函数得到字段值并返回字段
-值的替换表示，例如：
+- ``autodelete`` 决定当记录所参考的文件被删除了，相应的上传文件是否被删除。只为“upload”字段。
+- ``represent`` 可以是None或是一个函数，这个函数得到字段值并返回字段值的替换表示，例如：
 ``
 db.mytable.name.represent = lambda name,row: name.capitalize()
 db.mytable.other_id.represent = lambda id,row: row.myfield
@@ -412,10 +357,8 @@ db.mytable.some_uploadfield.represent = lambda value,row: \
 ``:code
 
 ``blob``:inxx
-Blob字段也是特殊的。默认情况，二进制数据在被存储到确切的数据库
-字段前是base64编码的，当取出的时候被解码。虽然这会产生比blob
-字段本身所需存储空间多占用25%的副作用，但它又两个优势。平均来
-说它减少了web2py和数据库服务器之间数据通信量，而且它使得通信
+Blob字段也是特殊的。默认情况，二进制数据在被存储到确切的数据库字段前是base64编码的，当取出的时候被解码。虽然这会产生比blob
+字段本身所需存储空间多占用25%的副作用，但它又两个优势。平均来说它减少了web2py和数据库服务器之间数据通信量，而且它使得通信
 独立于back-end-specific escaping conventions 传统。
 
 大多数字段和表的属性可以在它们定以后进行修改。
@@ -490,8 +433,7 @@ True
 True
 ``:code
 
-字段也有方法。其中一些用于生成查询，我们将在后面看到。字段对象的一
-个特殊方法是``validate``，被称之为字段的验证器。
+字段也有方法。其中一些用于生成查询，我们将在后面看到。字段对象的一个特殊方法是``validate``，被称之为字段的验证器。
 
 ``
 print db.person.name.validate('John')
@@ -502,40 +444,30 @@ print db.person.name.validate('John')
 ### 迁移
 ``migrations``:inxx
 
-``define_table`` 函数检查是否有相应的表存在。如果表不存在，它生成SQL创
-建表并执行SQL。如果表存在但与已定义的不同，它生成SQL来重构表并执行。
-如果一个字段改变类型但没有更名，它会进行数据转换（如果你不想这样，你
-需要定义表两次，第一次，让web2py删除该字段并清除它，第二次，添加新
-定义的字段由web2py创建）。如果表存在并且与当前的定义匹配，就不做任
-何处理。所有的情况下，该函数创建``db.person``对象表示表。
+``define_table`` 函数检查是否有相应的表存在。如果表不存在，它生成SQL创建表并执行SQL。如果表存在但与已定义的不同，它生成SQL来重构表并执行。
+如果一个字段改变类型但没有更名，它会进行数据转换（如果你不想这样，你需要定义表两次，第一次，让web2py删除该字段并清除它，第二次，添加新
+定义的字段由web2py创建）。如果表存在并且与当前的定义匹配，就不做任何处理。所有的情况下，该函数创建``db.person``对象表示表。
 
-我们定义这样的举动为“migration”（迁移）。 web2py对所有的迁移和迁
-移尝试做日志在“databases/sql.log”文件。
+我们定义这样的举动为“migration”（迁移）。 web2py对所有的迁移和迁移尝试做日志在“databases/sql.log”文件。
 
- ``define_table`` 的第一个参数总是表名。其它没有名字的参数是字段
-（Field）。该函数最后有一个可选的的名为“migrate”的参数，这个参数必须
+ ``define_table`` 的第一个参数总是表名。其它没有名字的参数是字段（Field）。该函数最后有一个可选的的名为“migrate”的参数，这个参数必须
 用名字显式引用：
 ``
 >>> db.define_table('person', Field('name'), migrate='person.table')
 ``:code
 
-迁移的返回值是文件名（在“databases”应用程序文件夹），web2py为该
-表存储了内部迁移的信息。这些文件非常重要，绝不能移走除非整个数据库删
-除了。这种情形，“.table”文件需手动删除。默认的migrate的值是True。这让
-web2py通过连接字符串的散列产生文件名。如果migrate设置为False，迁移是
-不能执行的，web2py假定表以数据存储存在，它包含（至少）``define_table``列
-出的字段。最佳实践是给迁移表一个清晰的名字。 
+迁移的返回值是文件名（在“databases”应用程序文件夹），web2py为该表存储了内部迁移的信息。这些文件非常重要，绝不能移走除非整个数据库删
+除了。这种情形，“.table”文件需手动删除。默认的migrate的值是True。这让web2py通过连接字符串的散列产生文件名。如果migrate设置为False，迁移是
+不能执行的，web2py假定表以数据存储存在，它包含（至少）``define_table``列出的字段。最佳实践是给迁移表一个清晰的名字。 
 
 在同一个应用中两张表有相同的迁移名字的可能性不大。
 
-DAL类也用“migrate”参数，它决定了迁移调用``define_table``的默认参数
-值。例如，
+DAL类也用“migrate”参数，它决定了迁移调用``define_table``的默认参数值。例如，
 ``
 >>> db = DAL('sqlite://storage.db', migrate=False)
 ``:code
 
-设定迁移默认参数值为False，无论任何时候，调用``db.define_table``无迁移
-参数。 
+设定迁移默认参数值为False，无论任何时候，调用``db.define_table``无迁移参数。 
 
 对所有的表在连接的时候迁移可以禁用。
 
@@ -543,18 +475,15 @@ DAL类也用“migrate”参数，它决定了迁移调用``define_table``的默
 db = DAL(...,migrate_enabled=False)
 ``
 
-当两个应用共享统一个数据库时，推荐使用这样的操作。两个应用中的一
-个执行迁移，另一个禁用迁移。
+当两个应用共享统一个数据库时，推荐使用这样的操作。两个应用中的一个执行迁移，另一个禁用迁移。
 
 ### 修复损坏迁移
 ``fake_migrate``:inxx
 
 迁移时存在两个常见的问题，有办法能够进行恢复。
 
-一个是SQLite特有的。SQLite不强制列的类型也不能删除列。这意味着如果
-你有字符串类型的类删除了，但它并没有被真正地删除。如果你又添加了一个
-不同类型的列（比如日期型），你日期型的列却包含字符串结束（实际中是无
-用数据）。web2py不会报错，因为它不知道数据库里面的是什么，直到它检索
+一个是SQLite特有的。SQLite不强制列的类型也不能删除列。这意味着如果你有字符串类型的类删除了，但它并没有被真正地删除。如果你又添加了一个
+不同类型的列（比如日期型），你日期型的列却包含字符串结束（实际中是无用数据）。web2py不会报错，因为它不知道数据库里面的是什么，直到它检索
 记录失败才会。
 
 当查询记录web2py在gluon.sql.parse函数中返回出错，这就是问题的症结：
@@ -562,12 +491,9 @@ db = DAL(...,migrate_enabled=False)
 
 解决问题的方法是更新表的所有记录并且用None更新列中有问题的值。
 
-另一个问题更常见也是MySQL的典型问题。MySQL在一个事务中不允许
-多于一张ALTER TABLE（重构表）。这意味着web2py必须把复杂的事务分解
-成比较小的（一张ALTER TABLE一次），一次提交一张。这使得复杂的事务能
-被提交处理，也造成了一个部分失败的话，让web2py陷入崩溃的状态。为什么
-一个事务的部分会失败？因为，举例来说，web2py试图转换数据，它牵扯到重
-构一张表，把字符串列转换为时期类型，但数据没能够转换。web2py会发生什
+另一个问题更常见也是MySQL的典型问题。MySQL在一个事务中不允许多于一张ALTER TABLE（重构表）。这意味着web2py必须把复杂的事务分解
+成比较小的（一张ALTER TABLE一次），一次提交一张。这使得复杂的事务能被提交处理，也造成了一个部分失败的话，让web2py陷入崩溃的状态。为什么
+一个事务的部分会失败？因为，举例来说，web2py试图转换数据，它牵扯到重构一张表，把字符串列转换为时期类型，但数据没能够转换。web2py会发生什
 么呢？它根本不清楚存在数据库中表的结构到底是什么样的。
 
 解决的办法在于禁止所有表的迁移并允许假迁移。
@@ -575,12 +501,10 @@ db = DAL(...,migrate_enabled=False)
 db.define_table(....,migrate=False,fake_migrate=True)
 ``:code
 
-这会根据表的定义重建关于表的web2py元数据。尝试多种表的定义看看哪
-一种符合（迁移失败之前的和迁移失败之后的）。一旦成功，删除
+这会根据表的定义重建关于表的web2py元数据。尝试多种表的定义看看哪一种符合（迁移失败之前的和迁移失败之后的）。一旦成功，删除
 ``fake_migrate=True``属性。  
 
-在尝试修复迁移问题之前，复制“applications/yourapp/databases/*.table”文
-件是谨慎的做法。
+在尝试修复迁移问题之前，复制“applications/yourapp/databases/*.table”文件是谨慎的做法。
 
 但是如果失败了，这不会有助于缩小问题范围。
 
@@ -610,8 +534,7 @@ Although if this fails, it will not help in narrowing down the problem.
 >>> db.person.truncate()
 ``:code
 
-现在，如果你再次插入一条记录，计数器又从1开始（这是后台特定的但不适
-用于GoogleNoSQL）：
+现在，如果你再次插入一条记录，计数器又从1开始（这是后台特定的但不适用于GoogleNoSQL）：
 ``
 >>> db.person.insert(name="Alex")
 1
@@ -624,15 +547,12 @@ web2py同时提供了bulk_insert块插入的方法。
 [3,4,5]
 ``:code
 
-它需要列出要插入记录的字段并且一次完成多条记录的插入。它返回所插入记
-录的ID值。对于所支持的关系型数据库，使用这个函数与采用循环单条记录插
-入相比没有什么优势，但对于Google App Engine NoSQL，它会有较大的速度
-优势。
+它需要列出要插入记录的字段并且一次完成多条记录的插入。它返回所插入记录的ID值。对于所支持的关系型数据库，使用这个函数与采用循环单条记录插
+入相比没有什么优势，但对于Google App Engine NoSQL，它会有较大的速度优势。
 
 ### 提交和回滚``commit`` and ``rollback``
 
-除非你执行了commit（提交）命令，否则 creat（创建）、drop（删除）、
-insert （插入）、truncate（截断）、delete（删除）和update（更新）操作都不真
+除非你执行了commit（提交）命令，否则 creat（创建）、drop（删除）、insert （插入）、truncate（截断）、delete（删除）和update（更新）操作都不真
 会被执行。
 
 ``commit``:inxx
@@ -678,8 +598,7 @@ else:
 
 #### 定时查询
 
-所有的查询被web2py自动定时的。变量``db._timings``是一个元组列表。每个元
-组包含原始的SQL查询传递给数据库驱动还有以秒为单位执行所需的时间。这个
+所有的查询被web2py自动定时的。变量``db._timings``是一个元组列表。每个元组包含原始的SQL查询传递给数据库驱动还有以秒为单位执行所需的时间。这个
 参数能用工具条在视图中显式。  
 
 ``
@@ -696,13 +615,11 @@ DAL允许你显式发布SQL语句。
 [(1, u'Massimo'), (2, u'Massimo')]
 ``:code
 
-这种情况，DAL对返回值不做语法分析或者变换，格式取决于特定的数据库驱
-动程序。这种查询用法正常但不需要，在索引中更普遍。``executesql``有两个可选参
+这种情况，DAL对返回值不做语法分析或者变换，格式取决于特定的数据库驱动程序。这种查询用法正常但不需要，在索引中更普遍。``executesql``有两个可选参
 数：``placeholders`` 和  ``as_dict``。 ``placeholders`` 是可选的值序列能被替换或者，如果DB驱动支持，是在你的SQL中一个字典键匹配的占位符。
 
 
-如果 ``as_dict`` 设置为True，DB驱动返回的结果指针会被转换成字典键序列，用
-db对象字段名。对正常的查询用``as_dict = True ``返回与用 **.as_list()** 的结果是一样的。
+如果 ``as_dict`` 设置为True，DB驱动返回的结果指针会被转换成字典键序列，用db对象字段名。对正常的查询用``as_dict = True ``返回与用 **.as_list()** 的结果是一样的。
 ``
 [{field1: value1, field2: value2}, {field1: value1b, field2: value2b}]
 ``:code
@@ -733,8 +650,7 @@ web2py生成查询时从不用 "*" 符。web2py查询字段时总是要求明确
 
 ### 索引 Indexes
 
-目前DAL API不提供命令生成表的索引，但这可以用``executesql`` 命令实现。
-这是因为索引的存在会使迁移复杂化，最好进行显式地处理。索引对那些用在
+目前DAL API不提供命令生成表的索引，但这可以用``executesql`` 命令实现。这是因为索引的存在会使迁移复杂化，最好进行显式地处理。索引对那些用在
 循环查询的字段是需要的。
 
 下面是一个 [[create an index using SQL in SQLite http://www.sqlite.org/lang_createindex.html]]:的例子
@@ -758,8 +674,7 @@ web2py在某些条件下可以连接到传统数据库。
 当访问一张现存的表，例如，在当前应用中不能通过web2py生成，总是设置 ``migrate=False``。
 -------
 
-如果传统表有自增整型字段如果不叫“id”，web2py仍能访问，但是表的定义
-必须显式包含 ``Field('....','id')`` 这里…是那个自增整型字段的名字。
+如果传统表有自增整型字段如果不叫“id”，web2py仍能访问，但是表的定义必须显式包含 ``Field('....','id')`` 这里…是那个自增整型字段的名字。
 
 ``keyed table``:inxx
 
@@ -780,20 +695,17 @@ db.define_table('account',
 - ``update_record`` 函数对键表Rows对象不可用。
 
 -------
-注意目前这仅对DB2、MS-SQL、Ingres和Informix有用，其它数据库可以简
-单添加。
+注意目前这仅对DB2、MS-SQL、Ingres和Informix有用，其它数据库可以简单添加。
 -------
 
-在撰写本书的时候，我们不能保证``primarykey`` 属性能用于每个现存的传统
-表及每个支持的后端数据库。为了简单化，我们推荐，如果可能，就创建一个
+在撰写本书的时候，我们不能保证``primarykey`` 属性能用于每个现存的传统表及每个支持的后端数据库。为了简单化，我们推荐，如果可能，就创建一个
 带自增的id字段的数据库视图。
 
 ### 分布式事务
 ``distributed transactions``:inxx
 
 ------
-在写本书的时候，这个功能仅能被PostgreSQL、MySQL和Firebird支持，
-因为它们公开两个阶段提交的API。
+在写本书的时候，这个功能仅能被PostgreSQL、MySQL和Firebird支持，因为它们公开两个阶段提交的API。
 ------
 
 假定你有到不同PostgreSQL数据库的两个（或更多）连接，例如：
@@ -809,8 +721,7 @@ DAL.distributed_transaction_commit(db_a, db_b)
 
 失败了，这个函数回滚并引发``Exception``。
 
-控制器中，当动作返回，如果你有两个确切的连接而你又没有调用上面的
-函数，web2py分别提交这两个事务。这意味着有可能一个事务处理成功而另外
+控制器中，当动作返回，如果你有两个确切的连接而你又没有调用上面的函数，web2py分别提交这两个事务。这意味着有可能一个事务处理成功而另外
 一个失败了。分布式事务能够防止这样的情况发生。
 
 ### 手册上传
@@ -820,17 +731,14 @@ DAL.distributed_transaction_commit(db_a, db_b)
 >>> db.define_table('myfile', Field('image', 'upload'))
 ``:code
 
-正常情况insert通过SQLFORM或者crud表单（是SQLFORM）自动地处理，
-但偶尔你已经有相关文件系统的文件，你想编程上传。这能用下面的方式完成：
+正常情况insert通过SQLFORM或者crud表单（是SQLFORM）自动地处理，但偶尔你已经有相关文件系统的文件，你想编程上传。这能用下面的方式完成：
 ``
 >>> stream = open(filename, 'rb')
 >>> db.myfile.insert(image=db.myfile.image.store(stream, filename))
 ``:code
 
-上传field对象的``store`` 方法采用文件stream和文件名参数。它用文件名确定文件
-扩展名（类型），为该文件创建新的临时文件（依据web2py上传机制），把
-文件内容装载在新临时文件（在上传文件夹内，特别说明的除外）。它返回新
-临时文件名，存储在``db.myfile``表的 ``image`` 字段。
+上传field对象的``store`` 方法采用文件stream和文件名参数。它用文件名确定文件扩展名（类型），为该文件创建新的临时文件（依据web2py上传机制），把
+文件内容装载在新临时文件（在上传文件夹内，特别说明的除外）。它返回新临时文件名，存储在``db.myfile``表的 ``image`` 字段。
 
 注意，如果文件要存储在关联的blob字段而不是在文件系统，``store()``方法不会把文件插入到blob字段（因为，``store()``方法在插入操作前被调用），因此文件必须显式地被插入到blob字段： 
 ``
@@ -893,8 +801,7 @@ DAL.distributed_transaction_commit(db_a, db_b)
 >>> s = db(q)
 ``:code
 
-注意迄今还没有执行数据库查询操作。DAL+Query简单定义了在db中符合查询
-的记录集。web2py从涉及查询的表（或多张表）来决定，事实上，无需具体说
+注意迄今还没有执行数据库查询操作。DAL+Query简单定义了在db中符合查询的记录集。web2py从涉及查询的表（或多张表）来决定，事实上，无需具体说
 明。
 
 ### 查询``select``
@@ -907,8 +814,7 @@ DAL.distributed_transaction_commit(db_a, db_b)
 ``:code
 
 ``Row``:inxx
-它返回``gluon.sql.Rows``类的迭代对象，它的成员是Row对象。``gluon.sql.Row``对
-象用起来像字典，它们的成员也能作为属性访问，比如``gluon.storage.Storage``。前者与后者有区别是因为它的值是只读的。
+它返回``gluon.sql.Rows``类的迭代对象，它的成员是Row对象。``gluon.sql.Row``对象用起来像字典，它们的成员也能作为属性访问，比如``gluon.storage.Storage``。前者与后者有区别是因为它的值是只读的。
   
 
 Rows对象允许对select结果循环，为每行打印所选字段的值：
@@ -927,8 +833,7 @@ Alex
 
 ``ALL``:inxx
 
-select命令能带参数。所有未命名的参数被解释为你想要取到的字段名。例如，你
-能显式地得到字段id 和字段name。
+select命令能带参数。所有未命名的参数被解释为你想要取到的字段名。例如，你能显式地得到字段id 和字段name。
 ``
 >>> for row in db().select(db.person.id, db.person.name):
         print row.name
@@ -946,8 +851,7 @@ Bob
 Carl
 ``:code
 
-注意：没有查询字符串传递给db。web2py明白如果你没有附加信息想要person
-表的所有字段，就是想要person表的所有记录。
+注意：没有查询字符串传递给db。web2py明白如果你没有附加信息想要person表的所有字段，就是想要person表的所有记录。
 一个等同可以替换的语法如下：
 ``
 >>> for row in db(db.person.id > 0).select():
@@ -957,8 +861,7 @@ Bob
 Carl
 ``:code
 
-web2py知悉如果没有额外的信息就是你索要person表所有记录（id>0），那么
-你想要person表的所有字段。
+web2py知悉如果没有额外的信息就是你索要person表所有记录（id>0），那么你想要person表的所有字段。
 
 给定一行
 
@@ -1082,18 +985,15 @@ record = db.mytable(id,myfield='somevalue')
 >>> dogs = db(db.dog._id>0).select()
 ``:code
 
-此处 ``._id`` 是对该表主键的引用。正常情况``db.dog._id`` 和 ``db.dog.id`` 是一样的，本
-书大部分都这么假定。 ``_id``:inxx
+此处 ``._id`` 是对该表主键的引用。正常情况``db.dog._id`` 和 ``db.dog.id`` 是一样的，本书大部分都这么假定。 ``_id``:inxx
 
 
-对dog表的Row，不仅能够从查询的表（dog）得到还能从链接表（递归地）
-得到：
+对dog表的Row，不仅能够从查询的表（dog）得到还能从链接表（递归地）得到：
 ``
 >>> for dog in dogs: print dog.name, dog.owner.name
 ``:code
 
-``dog.owner.name`` 要求在dog表中数据库查询命令，因此它不高效。我们建议联合
-而不是递归查询，尽管如此当访问个人记录这样简单而且实用
+``dog.owner.name`` 要求在dog表中数据库查询命令，因此它不高效。我们建议联合而不是递归查询，尽管如此当访问个人记录这样简单而且实用
 通过对 person表引用的dogs表，你能后向完成。
 
 ``
@@ -1108,8 +1008,7 @@ for dog in person.dog.select(orderby=db.dog.name):
 db(db.dog.owner==person.id)
 ``:code
 
-即被当前``person``引用到的 ``dog``s Set集对象。如果引用表格对被引用表多次引用，
-该语法出问题。这种情况下，需要更清楚并且使用完全查询。
+即被当前``person``引用到的 ``dog``s Set集对象。如果引用表格对被引用表多次引用，该语法出问题。这种情况下，需要更清楚并且使用完全查询。
 
 
 #### 视图中序列化``Rows`` 对象
@@ -1136,10 +1035,8 @@ def index()
 {{=SQLTABLE(rows)}}
 ``:code
 
-``SQLTABLE``把rows 对象变成包含列名标头的HTML 表，每条记录一个对象。
-Rows 对象交替标示为even 类和odd 类。在后台，Rows 对象首先转换成
-SQLTABLE对象（不要与Table混淆），然后序列化。从数据库提出的值也被与
-field相关的验证器格式化，然后转义（注意：在视图中这样用db不被视为好的
+``SQLTABLE``把rows 对象变成包含列名标头的HTML 表，每条记录一个对象。Rows 对象交替标示为even 类和odd 类。在后台，Rows 对象首先转换成
+SQLTABLE对象（不要与Table混淆），然后序列化。从数据库提出的值也被与field相关的验证器格式化，然后转义（注意：在视图中这样用db不被视为好的
 MVC实践）。
 
 但是，显式调用SQLTABLE可能有时也很方便。
@@ -1150,8 +1047,7 @@ SQLTABLE构造函数采用下面可选参数：
 - ``upload`` URL或允许对已上传文件下载的动作（默认None）
 - ``headers`` 把字段名映射成用做标头的标签的字典（默认 ``{}``）。也可以是指令。当前我们支持 ``headers='fieldname:capitalize'``。
 - ``truncate`` 表中长值截断的字符位数（默认16）
-- ``columns`` 以列的方式显示的fieldname列表（tablename.fieldname格式）。那
-些未列出的将不显示（默认all）
+- ``columns`` 以列的方式显示的fieldname列表（tablename.fieldname格式）。那些未列出的将不显示（默认all）
 - ``**attributes`` 通常帮助对象属性会传递给大部分外部TABLE对象。
 
 这有一个例子：
@@ -1168,10 +1064,8 @@ SQLTABLE构造函数采用下面可选参数：
 ``SQLFORM.grid``:inxx ``SQLFORM.smartgrid``:inxx
 
 ------
-``SQLTABLE`` 有用，但需要更多的时候是有类型的。``SQLFORM.grid`` 是SQLTABLE
-的扩展，能创建具有搜索特性和分页的表，它能打开详细记录、创建、编辑、删
-除记录。``SQLFORM.smartgrid`` 更一般化，不仅允许上述所有功能还能创建访问
-引用记录的按钮。
+``SQLTABLE`` 有用，但需要更多的时候是有类型的。``SQLFORM.grid`` 是SQLTABLE的扩展，能创建具有搜索特性和分页的表，它能打开详细记录、创建、编辑、删
+除记录。``SQLFORM.smartgrid`` 更一般化，不仅允许上述所有功能还能创建访问引用记录的按钮。
 ------
 
 使用``SQLFORM.grid``的例子如下：
@@ -1227,8 +1121,7 @@ Bob
 ``:code
 
 -----
-``orderby='<random>'`` 的用法不被Google NoSQL支持。但是这样的情况，同样还有
-其它很多，内置插件不够，可以采用import：
+``orderby='<random>'`` 的用法不被Google NoSQL支持。但是这样的情况，同样还有其它很多，内置插件不够，可以采用import：
 ``
 import random
 rows=db(...).select().sort(lambda row: random.random())
@@ -1258,8 +1151,7 @@ Carl
 
 ``distinct``:inxx
 
-用参数 ``distinct=True``，你能指定仅仅想查询不同的记录。与用所有指定字段分组
-是同样效果，除了它不需要排序之外。当用distinct，很重要的是不要查询所有
+用参数 ``distinct=True``，你能指定仅仅想查询不同的记录。与用所有指定字段分组是同样效果，除了它不需要排序之外。当用distinct，很重要的是不要查询所有
 字段，特别是不要用id字段，否则所有的记录总是不同的。
 
 这有一个例子：
@@ -1325,9 +1217,7 @@ Bob
 3 Carl
 ``:code
 
-因为Python限制超载"``and``"和 "``or``" 运算符，这些不能用在形成查询语句。因而，
-必须使用二进制运算符。
-也有可能用合适的逻辑运算符来构建查询：
+因为Python限制超载"``and``"和 "``or``" 运算符，这些不能用在形成查询语句。因而，必须使用二进制运算符。也有可能用合适的逻辑运算符来构建查询：
 
 ``
 >>> query = db.person.name!='Alex'
@@ -1346,8 +1236,7 @@ Bob
 3
 ``:code
 
-注意``count`` 采用可选的 ``distinct`` 参数，默认False，它的作用与``select``命令中的
-``distinct``参数非常像。
+注意``count`` 采用可选的 ``distinct`` 参数，默认False，它的作用与``select``命令中的``distinct``参数非常像。
 
 有时你需要检查表是否为空。比计数更有效的方法是用 ``isempty`` 方法：
 
@@ -1370,8 +1259,7 @@ False
 >>> db(db.person.id > 3).delete()
 ``:code
 
-把参数名传递给相应的你需要修改的字段，你能update（更新修改）集合中的
-所有记录：
+把参数名传递给相应的你需要修改的字段，你能update（更新修改）集合中的所有记录：
 
 ``update``:inxx
 ``
@@ -1451,8 +1339,7 @@ we2py允许使用``update_record``更新已经在内存中的单个记录：
 >>> first_row_dict = rows.first().as_dict()
 ``:code
 
-这些方法很方便地把Rows 传递给通用视图，或存储Rows 在会话中（因为
-Rows对象自身不能被序列化，它有一个打开DB连接的引用）：
+这些方法很方便地把Rows 传递给通用视图，或存储Rows 在会话中（因为Rows对象自身不能被序列化，它有一个打开DB连接的引用）：
 ``
 >>> rows = db(query).select()
 >>> session.rows = rows # not allowed!
@@ -1462,8 +1349,7 @@ Rows对象自身不能被序列化，它有一个打开DB连接的引用）：
 #### ``find``, ``exclude``, ``sort``
 ``find``:inxx ``exclude``:inxx ``sort``:inxx
 
-当需要执行两个查询，其中一个包含上次查询的子集。这种情况，再访问数据
-库是无谓的。 ``find``, ``exclude`` 和``sort`` 对象允许你操Rows对象，不必访问数据库生
+当需要执行两个查询，其中一个包含上次查询的子集。这种情况，再访问数据库是无谓的。 ``find``, ``exclude`` 和``sort`` 对象允许你操Rows对象，不必访问数据库生
 成另外一个。更具体：
 - ``find`` 返回经一个条件过滤的新的Rows，源中保持不变。
 - ``exclude`` 返回经一个条件过滤的新的Rows，并在源Rows中删除。
@@ -1545,8 +1431,7 @@ ret = db.mytable.validate_and_insert(field='value')
 id = db.mytable.insert(field='value')
 ``:code
 
-除了在执行插入前为字段调用验证器，如果验证不通过则安全退出。如果验证
-器通不过，出错信息记录在 ``ret.error``。如果通过，新记录的id在``ret.id``中。请注意
+除了在执行插入前为字段调用验证器，如果验证不通过则安全退出。如果验证器通不过，出错信息记录在 ``ret.error``。如果通过，新记录的id在``ret.id``中。请注意
 正常情况验证被表单处理逻辑执行，因此这个函数几乎不需要。
 
 同样地
@@ -1561,8 +1446,7 @@ ret = db(query).validate_and_update(field='value')
 num = db(query).update(field='value')
 ``:code
 
-除了在执行更新前为字段调用验证器。注意仅当插入涉及到单个表时才用。更新
-记录数在``res.updated`` ，错误将记在``ret.errors``。
+除了在执行更新前为字段调用验证器。注意仅当插入涉及到单个表时才用。更新记录数在``res.updated`` ，错误将记在``ret.errors``。
 
 #### ``smart_query`` 方法（实验性的）
 有时当你使用自然语言解析查询命令，例如
@@ -1580,14 +1464,12 @@ rows = db.smart_query([db.person],search).select()
 
 第一个参数必须是允许被搜索的表或字段列表。如果搜索字符串无效，导致 ``RuntimeError`` 。这项功能能用来构建RESTful 接口（参看第10 章），它被``SQLFORM.grid`` 和 ``SQLFORM.smartgrid``在内部使用。
 
-在智能查询搜索字符串中，字段仅能被字段名标识，或 tablename.fieldname。如
-果包含空格，字符串可以用双引号分隔。
+在智能查询搜索字符串中，字段仅能被字段名标识，或 tablename.fieldname。如果包含空格，字符串可以用双引号分隔。
 
 ### 计算字段
 ``compute``:inxx
 
-DAL field有``compute``属性。这必须是采用Row对象的函数（或lambda），并为
-field返回值。当一条新纪录被修改，包括插入和更新，如果为field的值没有提
+DAL field有``compute``属性。这必须是采用Row对象的函数（或lambda），并为field返回值。当一条新纪录被修改，包括插入和更新，如果为field的值没有提
 供，web2py尝试用``compute``函数从其它字段值计算。这是一个例子： 
 ``
 >>> db.define_table('item',
@@ -1600,8 +1482,7 @@ field返回值。当一条新纪录被修改，包括插入和更新，如果为
 9.95
 ``:code
 
-注意计算得到的值存在db中，在检索它计算，如同在后面描述的虚拟字段情况
-一样。计算字段的两种典型应用如下：
+注意计算得到的值存在db中，在检索它计算，如同在后面描述的虚拟字段情况一样。计算字段的两种典型应用如下：
 - wiki应用，存储已处理的输入wiki文本为HTML，避免每次请求的在处理
 - 为了搜索，为字段计算正常的值，用来搜索。
 
@@ -1610,8 +1491,7 @@ field返回值。当一条新纪录被修改，包括插入和更新，如果为
 #### 旧风格虚拟字段
 ``virtualfields``:inxx
 
-虚拟字段也是计算字段（上一小节），但它有所区别的是因为它是virtual，在
-这个意义上，它不存储在db中，当每次记录从数据库中提取时，它就计算。它
+虚拟字段也是计算字段（上一小节），但它有所区别的是因为它是virtual，在这个意义上，它不存储在db中，当每次记录从数据库中提取时，它就计算。它
 们用来简化用户代码而不用附加存储，但不能用于搜索。
 
 为定义一个或多个虚拟字段，你需要定义容器类，实例化它并链接到表或查询。
@@ -1630,8 +1510,7 @@ field返回值。当一条新纪录被修改，包括插入和更新，如果为
 >>> db.item.virtualfields.append(MyVirtualFields())
 ``:code
 
-注意这个类的每个方法采用单个参数（self）是一个新的虚拟字段。``self`` 指查询
-的每个row（行）。Field值在``self.item.unit_price``全路径引用。表链接到虚拟字段，通过追加类的实例到表的 ``virtualfields`` 属性。
+注意这个类的每个方法采用单个参数（self）是一个新的虚拟字段。``self`` 指查询的每个row（行）。Field值在``self.item.unit_price``全路径引用。表链接到虚拟字段，通过追加类的实例到表的 ``virtualfields`` 属性。
 
 虚拟字段能访问递归字段
 ``
@@ -1712,8 +1591,7 @@ field返回值。当一条新纪录被修改，包括插入和更新，如果为
 
 #### 新风格的虚拟字段（实验性的）
 
-web2py提供一种新的更简单的方法定义和lazy虚拟字段。这部分标记为实验是
-因为有可能在此描述的API会有一些改变。
+web2py提供一种新的更简单的方法定义和lazy虚拟字段。这部分标记为实验是因为有可能在此描述的API会有一些改变。
 
 这里我们考虑前面章节中相同的例子。我们特别考虑下面的模型：
 
@@ -1759,8 +1637,7 @@ web2py提供一种新的更简单的方法定义和lazy虚拟字段。这部分�
 ``
 
 ------
-记住虚拟字段没有和其它字段相同的属性（default、readable 和 requires等），
-它们不出现在``db.table.fields``列表，并且在表（TABLE）和网格中默认不可见
+记住虚拟字段没有和其它字段相同的属性（default、readable 和 requires等），它们不出现在``db.table.fields``列表，并且在表（TABLE）和网格中默认不可见
 （SQLFORM.grid、SQLFORM.smartgrid）。
 ------
 
@@ -1779,8 +1656,7 @@ person表的dog表：
                     format='%(name)s')
 ``:code
 
-表dog有两个字段，表的name和owner。当字段类型是其它表的，这意图是引用
-到其它表的字段通过它的id。事实上，你能显示实际类型值，并得到：
+表dog有两个字段，表的name和owner。当字段类型是其它表的，这意图是引用到其它表的字段通过它的id。事实上，你能显示实际类型值，并得到：
 ``
 >>> print db.dog.owner.type
 reference person
@@ -1804,8 +1680,7 @@ Skipper
 Snoopy
 ``:code
 
-因为dog引用 person，一个人可以有很多狗，因此，现在person表的记录得到新
-的属性dog，它是定义人所有的狗集合。这允许对所有人进行循环，很轻易得到
+因为dog引用 person，一个人可以有很多狗，因此，现在person表的记录得到新的属性dog，它是定义人所有的狗集合。这允许对所有人进行循环，很轻易得到
 他们的狗：
 
 ``referencing``:inxx
@@ -1824,8 +1699,7 @@ Carl
 
 #### 内联Inner joins
 
-另一种方式通过使用一个连接实现了类似的结果，具体是INNER JOIN（内
-联）。web2py自动和透明地执行连接，当查询链接到两张或多张表，如同下面
+另一种方式通过使用一个连接实现了类似的结果，具体是INNER JOIN（内联）。web2py自动和透明地执行连接，当查询链接到两张或多张表，如同下面
 的例子：
 
 ``Rows``:inxx ``inner join``:inxx ``join``:inxx
@@ -1838,8 +1712,7 @@ Alex has Snoopy
 Bob has Puppy
 ``:code
 
-观察web2py联合，因此现在rows对象包含两条记录，每张表一条，链接在一
-起。因为两条记录可能有名字相冲突的字段，当你从行（对象）取出字段值要
+观察web2py联合，因此现在rows对象包含两条记录，每张表一条，链接在一起。因为两条记录可能有名字相冲突的字段，当你从行（对象）取出字段值要
 指定表。这意味着当你执行前：
 ``
 row.name
@@ -1865,8 +1738,7 @@ Alex has Snoopy
 Bob has Puppy
 ``:code
 
-当输出一样时，两种情况生成的SQL不同。当同一个表联合两次和别名时，后
-者语法消除可能的奇异：
+当输出一样时，两种情况生成的SQL不同。当同一个表联合两次和别名时，后者语法消除可能的奇异：
 
 ``
 >>> db.define_table('dog',
@@ -1882,8 +1754,7 @@ Bob has Puppy
 
 #### 左外联Left outer join
 
-注意Carl不出现在上面的列表，因为他没有狗。如果你打算查询人（不论他有
-没有狗）和他的狗（如果他们有），那你需要执行LEFT OUTER JOIN。这用选
+注意Carl不出现在上面的列表，因为他没有狗。如果你打算查询人（不论他有没有狗）和他的狗（如果他们有），那你需要执行LEFT OUTER JOIN。这用选
 择命令的参数“left”完成。下面是例子：
 
 ``Rows``:inxx ``left outer join``:inxx ``outer join``:inxx
@@ -1904,17 +1775,14 @@ Carl has None
 left = db.dog.on(...)
 ``:code
 
-做left join（左联）查询。``db.dog.on``的参数是为join需要的条件（与上面内联同
-样的）。在左联，对哪个字段查询必须是清晰的。
+做left join（左联）查询。``db.dog.on``的参数是为join需要的条件（与上面内联同样的）。在左联，对哪个字段查询必须是清晰的。
 
 多左联能通过``db.mytable.on(...)``传递列表或元组给``left`` 属性。 
 
 #### 分组和计数Grouping and counting
 
-当执行联合，有时你需要根据一定的标准分类rows对象并进行计数。例如，统
-计每个人拥有的狗的数量。Web2py也允许这么做。首先，你需要count运算符。
-其次，你想通过owner 联合person 表和dog 表。第三，你想查询所有
-rows（person+dog），用person分组，当分组时进行统计：
+当执行联合，有时你需要根据一定的标准分类rows对象并进行计数。例如，统计每个人拥有的狗的数量。Web2py也允许这么做。首先，你需要count运算符。
+其次，你想通过owner 联合person 表和dog 表。第三，你想查询所有rows（person+dog），用person分组，当分组时进行统计：
 
 ``grouping``:inxx
 ``
@@ -1926,14 +1794,12 @@ Alex 2
 Bob 1
 ``:code
 
-注意count运算符（内嵌的）用做一个字段。这里仅有的问题是如何取回信息。
-每行明确包含一个人，还有数字，但是count不是person的字段也不是一张表。
+注意count运算符（内嵌的）用做一个字段。这里仅有的问题是如何取回信息。每行明确包含一个人，还有数字，但是count不是person的字段也不是一张表。
 因此，它在哪？它在存储对象代表记录，有关键词等价于查询表达式本身。
 
 ### 多对多关系
 ``many-to-many``:inxx
-在之前的例子，我们允许一只狗有一个主人，而一个人可以有多只狗。如果狗
-Skipper为Alex和Curt所有会怎样？这需要多对多关系，它通过中间表实现，
+在之前的例子，我们允许一只狗有一个主人，而一个人可以有多只狗。如果狗Skipper为Alex和Curt所有会怎样？这需要多对多关系，它通过中间表实现，
 通过所有关系表链接人到狗。
 
 下面是怎么做：
@@ -2015,11 +1881,9 @@ list:reference <table>
 
 它们分别包含字符串列表、整型列表和引用列表。
 
-就Google App Engine NoSQL``list:string`` 映射为``StringListProperty``，其它两个映
-射为``ListProperty(int)``。就关系数据库，它们都映射为文本字段，包含用``|``分隔的项目列表。例如``[1,2,3]`` 映射为| ``|1|2|3|``。
+就Google App Engine NoSQL``list:string`` 映射为``StringListProperty``，其它两个映射为``ListProperty(int)``。就关系数据库，它们都映射为文本字段，包含用``|``分隔的项目列表。例如``[1,2,3]`` 映射为| ``|1|2|3|``。
 
-对于字符串列表，字符有转义的，其中任何 ``|``替换为``||``。无论如何，这是内部表示
-对用户是透明的。
+对于字符串列表，字符有转义的，其中任何 ``|``替换为``||``。无论如何，这是内部表示对用户是透明的。
 
 你能用``list:string``，用下面的方式，例如： 
 
@@ -2040,8 +1904,7 @@ Toy Car ['red', 'green']
 通常，要求在表单层是强制的，不在``insert``层。 
 
 ------
-对``list:<type>`` 字段，``contains(value)`` 运算符映射为非trival 查询，检查包
-含 ``value``的列表。 ``contains`` 运算符也为规则``string`` 和``text`` 字段用，它映射为``LIKE '%value%'``。
+对``list:<type>`` 字段，``contains(value)`` 运算符映射为非trival 查询，检查包含 ``value``的列表。 ``contains`` 运算符也为规则``string`` 和``text`` 字段用，它映射为``LIKE '%value%'``。
 ------
 
 ``list:reference`` 和 ``contains(value)`` 运算符特别有用，非规范化多对多关系。下面是例子：
@@ -2082,8 +1945,7 @@ requires = IS_IN_DB(db,'tag.id',db.tag._format,multiple=True)
 
 ### 其它运算符
 
-Web2py 有其它运算符提供API 访问相同SQL 运算符。让我们定义另一张
-表”log” 存储安全事件，它们的event_time（时间时间）和severity（严重程
+Web2py 有其它运算符提供API 访问相同SQL 运算符。让我们定义另一张表”log” 存储安全事件，它们的event_time（时间时间）和severity（严重程
 度），severity是整型数。
 
 ``date``:inxx ``datetime``:inxx ``time``:inxx
@@ -2093,8 +1955,7 @@ Web2py 有其它运算符提供API 访问相同SQL 运算符。让我们定义�
                            Field('severity', 'integer'))
 ``:code
 
-如前面，插入一些时间，“port scan”（端口扫描），“xss injection”（xss 注
-入）和“unauthorized login”（未经授权登录）。
+如前面，插入一些时间，“port scan”（端口扫描），“xss injection”（xss 注入）和“unauthorized login”（未经授权登录）。
 ``
 >>> import datetime
 >>> now = datetime.datetime.now()
@@ -2121,8 +1982,7 @@ Field有like运算符，你能用来匹配字符串：
 port scan
 ``:code
 
-“port %”表示字符串以 “port”开始。百分符号“%”，是通配符，代表任何字符
-序列。Web2py也提供一些快捷：
+“port %”表示字符串以 “port”开始。百分符号“%”，是通配符，代表任何字符序列。Web2py也提供一些快捷：
 
 
 ``
@@ -2185,7 +2045,7 @@ port scan
 xss injection
 ``:code
 
- DAL也允许嵌套查询，belongs运算符的参数。唯一要注意的是，嵌套查询徐要
+ DAL也允许嵌套查询，belongs运算符的参数。唯一要注意的是，嵌套查询需要
 ``_select``不是``select``，仅有一个字段显式查询，就是定义集合的那个。
 
 ``nested select``:inxx
@@ -2201,8 +2061,7 @@ unauthorized login
 #### ``sum``, ``min``, ``max`` 和 ``len``
 
 ``sum``:inxx ``min``:inxx ``max``:inxx
-之前，你已用过count运算符统计记录数。相似地，你能用sum运算符来累积
-（求和）记录组中指定字段值。在count情况下，求和的结果通过存储对象得到：
+之前，你已用过count运算符统计记录数。相似地，你能用sum运算符来累积（求和）记录组中指定字段值。在count情况下，求和的结果通过存储对象得到：
 ``
 >>> sum = db.log.severity.sum()
 >>> print db().select(sum).first()[sum]
@@ -2219,8 +2078,7 @@ unauthorized login
 
 ``.len()`` 计算string字符串、text文本或boolean布尔字段的长度。
 
-表达式可以组合形成更复杂的表达式。例如，我们正在计算日志中所有严重字
-符串，长度的总和，增加一个：
+表达式可以组合形成更复杂的表达式。例如，我们正在计算日志中所有严重字符串，长度的总和，增加一个：
 
 ``
 >>> sum = (db.log.severity.len()+1).sum()
@@ -2229,8 +2087,7 @@ unauthorized login
 
 #### 子字符串Substrings
 
-可以构建表达式引用子字符串。例如，我们分类dogs，它的名字用三个相同的
-字符开始，并且每类中查询一个：
+可以构建表达式引用子字符串。例如，我们分类dogs，它的名字用三个相同的字符开始，并且每类中查询一个：
 
 ``
 db(db.dog).select(dictinct = db.dog.name[:3])
@@ -2239,8 +2096,7 @@ db(db.dog).select(dictinct = db.dog.name[:3])
 
 #### ``coalesce``默认值 和``coalesce_zero``
 
-有时候当你需要从数据库中取出值，如果记录的值设置为NULL，也需要默认
-值。在SQL中有一个关键词， ``COALESCE``，来实现。Web2py有相同的``coalesce``
+有时候当你需要从数据库中取出值，如果记录的值设置为NULL，也需要默认值。在SQL中有一个关键词， ``COALESCE``，来实现。Web2py有相同的``coalesce``
 方法：
 
 ``
@@ -2253,8 +2109,7 @@ Max Power
 tim
 ``
 
-其它时候，你需要计算数学表达式，但一些字段值设置为None，而它应该为
-0。
+其它时候，你需要计算数学表达式，但一些字段值设置为None，而它应该为0。
 ``coalesce_zero`` 用来完成查询中默认转换None到0。
 
 ``
@@ -2269,8 +2124,7 @@ tim
 ### 生成原始sql
 ``raw SQL``:inxx
 
-S有时你需要生成SQL但不执行。用web2py很容易做到，因为每个执行数据库
-IO命令，有等同的不执行命令，很容易地返回应该执行的SQL。这些命令有像
+S有时你需要生成SQL但不执行。用web2py很容易做到，因为每个执行数据库IO命令，有等同的不执行命令，很容易地返回应该执行的SQL。这些命令有像
 函数一样的相同的名字和语法，但他们以下划线开头：
 
 以下是``_insert`` ``_insert``:inxx
@@ -2334,8 +2188,7 @@ person.id,person.name,dog.id,dog.name,dog.owner
 >>> db.person.import_from_csv_file(open('test.csv', 'r'))
 ``:code
 
-当导入，web2py在CSV头中查找字段名。这个例子它找到两列：“person.id”和
-“person.name”。它忽略“person.”前缀，忽略“id”字段。然后所有记录追加，并
+当导入，web2py在CSV头中查找字段名。这个例子它找到两列：“person.id”和“person.name”。它忽略“person.”前缀，忽略“id”字段。然后所有记录追加，并
 指定新的id。这些操作可以通过appadmin web接口执行。
 
 #### CSV（所有表一次）
@@ -2352,8 +2205,7 @@ web2py中，你能 用两个命令back/restore（备份/恢复）整个数据库
 >>> db.import_from_csv_file(open('somefile.csv', 'rb'))
 ``:code
 
-这种机制即便是导入数据库与导出数据库不同也能够使用。数据以CSV文件存
-储在“somefile.csv”，每张表一行开头表示表名，另起行字段名：
+这种机制即便是导入数据库与导出数据库不同也能够使用。数据以CSV文件存储在“somefile.csv”，每张表一行开头表示表名，另起行字段名：
 ``
 TABLE tablename
 field1, field2, field3, ...
@@ -2364,13 +2216,10 @@ field1, field2, field3, ...
 END
 ``:code
 
-如果不存储在数据库中，文件不包括上传的文件。任何情况，轻而易举分开压
-缩“uploads”文件夹。
-在导入时，新记录追加在数据库，如果它不是空的。一般，新导入记录不会与
-源记录（保存的）有相同的记录id，但web2py会存引用，因此即使id的值改
+如果不存储在数据库中，文件不包括上传的文件。任何情况，轻而易举分开压缩“uploads”文件夹。
+在导入时，新记录追加在数据库，如果它不是空的。一般，新导入记录不会与源记录（保存的）有相同的记录id，但web2py会存引用，因此即使id的值改
 变了它们不会破损。
-如果表包含字段 “uuid”，这个字段会用来标识重复的。而且，如果导入记录与
-已有记录有同样的“uuid”，之前的记录会更新。
+如果表包含字段 “uuid”，这个字段会用来标识重复的。而且，如果导入记录与已有记录有同样的“uuid”，之前的记录会更新。
 
 ####CSV和远程数据库同步
 
@@ -2390,8 +2239,7 @@ if not db(db.person).count():
     db.dog.insert(owner=id, name="Snoopy")
 ``:code
 
-每条记录用ID标识，通过ID 引用。如果你有数据库的两个拷贝，被distinct
-web2py安装使用，ID仅在每个数据库是唯一，而不是数据库之间。当从不同数
+每条记录用ID标识，通过ID 引用。如果你有数据库的两个拷贝，被distinct web2py安装使用，ID仅在每个数据库是唯一，而不是数据库之间。当从不同数
 据库融合记录，这是一个问题。
 
 为了使记录在数据库之间也是唯一标识的，它们必须：
@@ -2426,8 +2274,7 @@ if not db(db.person.id).count():
 ``:code
 
 -------
-注意，在上表定义，两个’UUID’字段默认值是lambda函数，返回UUID（转
-换为字符串）。每条记录插入，lambda函数就被调用一次，即使单个事务中插
+注意，在上表定义，两个’UUID’字段默认值是lambda函数，返回UUID（转换为字符串）。每条记录插入，lambda函数就被调用一次，即使单个事务中插
 入多条记录，确保每条记录有唯一UUID。
 -------
 
@@ -2470,8 +2317,7 @@ def import_and_sync():
 ``XML-RPC``:inxx
 换个方法，你能用XML-RPC导出/导入文件。
 
-如果记录引用上传文件，你也需要导出/导入上传文件夹的内容。注意那些文件
-已被UUID标识了，因此你不必担心名字冲突和引用。
+如果记录引用上传文件，你也需要导出/导入上传文件夹的内容。注意那些文件已被UUID标识了，因此你不必担心名字冲突和引用。
 
 #### HTML与XML（一张表一次）
 
@@ -2532,8 +2378,7 @@ DAL Rows 对象也有 ``xml`` 方法（同帮助对象），序列化到XML/HTML
 ``colnames``:inxx
 函数接受关键词参数``colnames`` ，包含想要导出的列的名字列表。默认对所有列。
 
-``export_to_csv_file`` 和 ``import_from_csv_file`` 接受关键词参数，告诉csv解析器保存
-/载入文件格式：
+``export_to_csv_file`` 和 ``import_from_csv_file`` 接受关键词参数，告诉csv解析器保存/载入文件格式：
 - ``delimiter``:分隔值的分隔符（默认‘，’）
 - ``quotechar``:用来分隔字符串的字符（默认双引号）
 - ``quoting``：quote系统（默认``csv.QUOTE_MINIMAL``）
@@ -2556,14 +2401,11 @@ DAL Rows 对象也有 ``xml`` 方法（同帮助对象），序列化到XML/HTML
 
 ### 缓存查询
 
-查询方法也采用一个缓存参数，默认None。为缓存目的，它应该设置为元组，
-第一个元素是缓存模型（cache.ram ，cache..disk等），第二个元素是用秒计的
+查询方法也采用一个缓存参数，默认None。为缓存目的，它应该设置为元组，第一个元素是缓存模型（cache.ram ，cache..disk等），第二个元素是用秒计的
 终止时间。
 
-下面的例子，你看到控制器，缓存查询之前定义的db.log表。实际查询从后端数
-据库得到数据，经常不会每60秒超过一次，存储结果在cache.ram里。下一次调
-用这个控制器发生在自上次数据库IO60秒内，它只从cache.ram里得到之前的
-数据。
+下面的例子，你看到控制器，缓存查询之前定义的db.log表。实际查询从后端数据库得到数据，经常不会每60秒超过一次，存储结果在cache.ram里。下一次调
+用这个控制器发生在自上次数据库IO60秒内，它只从cache.ram里得到之前的数据。
 ``cache select``:inxx
 ``
 def cache_db_select():
@@ -2579,8 +2421,7 @@ def cache_db_select():
 
 ``self reference``:inxx
 ``alias``:inxx
-用引用到自己的字段定义表是可能的，但通常的符号会失败。下面的代码出错，
-因为它在定义之前用到变量 ``db.person`` 。
+用引用到自己的字段定义表是可能的，但通常的符号会失败。下面的代码出错，因为它在定义之前用到变量 ``db.person`` 。
 ``
 db.define_table('person',
     Field('name'),
@@ -2600,8 +2441,7 @@ db.define_table('person',
 事实上，``db.tablename``和``"reference tablename"`` 是等价的字段类型。
 
 ``with_alias``:inxx
-如果表引用自己，那么不用SQL“AS”关键词就不能执行联合JOIN查询一个人
-以及他的父母。这在web2py中用``with_alias``实现。下面是例子：
+如果表引用自己，那么不用SQL“AS”关键词就不能执行联合JOIN查询一个人以及他的父母。这在web2py中用``with_alias``实现。下面是例子：
 ``
 >>> Father = db.person.with_alias('father')
 >>> Mother = db.person.with_alias('mother')
@@ -2657,8 +2497,7 @@ Marco Massimo Claudia
 #### 表继承 Table inheritance
 ``inheritance``:inxx
 
-能创建包含另外表的所有字段的表。它足以把表传递并替带 ``define_table``的一个
-字段。例如：
+能创建包含另外表的所有字段的表。它足以把表传递并替带 ``define_table``的一个字段。例如：
 ``
 db.define_table('person', Field('name'))
 db.define_table('doctor', db.person, Field('specialization'))
@@ -2686,30 +2525,26 @@ auth = Auth(db)
 db.define_table('payment', Field('amount', 'double'), auth.signature)
 ``
 
-当使用表继承，如果你想继承的表也继承验证器，要确认在定义继承的表之前
-就定义了父表验证器。
+当使用表继承，如果你想继承的表也继承验证器，要确认在定义继承的表之前就定义了父表验证器。
 
 #### 共同fields 和 multi-tenancy多分租
 ``common fields``:inxx
 ``multi tenancy``:inxx
 
-``db._common_fields`` 是属于所有表的字段列表。这列表还能包含表，它被理解为从
-表来所有字段。例如，偶尔你发现需要为所有的表添加签名， ```auth`` 表。这种情况，你调用 ``db.define_tables()`` 后，在定义另外表之前，插入
+``db._common_fields`` 是属于所有表的字段列表。这列表还能包含表，它被理解为从表来所有字段。例如，偶尔你发现需要为所有的表添加签名， ```auth`` 表。这种情况，你调用 ``db.define_tables()`` 后，在定义另外表之前，插入
 
 ``
 db._common_fields.append(auth.signature)
 ``
 
-request_tenant字段是特殊的。这个字段不存在，但你能创建，并把它添加到你
-的任意的表（或所有它们）：
+request_tenant字段是特殊的。这个字段不存在，但你能创建，并把它添加到你的任意的表（或所有它们）：
 
 ``
 db._common_fields.append(Field('request_tenant',
     default=request.env.http_host,writable=False))
 ``
 
-对每张有叫做``db._request_tenant``字段的表，
-所有查询的全部记录会被自动过滤：
+对每张有叫做``db._request_tenant``字段的表，所有查询的全部记录会被自动过滤：
 
 ``
 db.table.request_tenant == db.table.request_tenant.default
@@ -2724,10 +2559,8 @@ default = request.env.http_host
 db.table.request_tenant == request.env.http_host
 ``
 
-这个简单技巧允许我们把任何应用变换为多分租应用。也就是即使我们运行一
-个应用实例，我们用到单个数据库，如果应用被两个或多个域访问（例子中，
-域名从``request.env.http_host``得到），访问者看到依赖域的不同数据。想
-想在不同的域名下运行多个Web stores，有一个应用程序和一个数据库。 
+这个简单技巧允许我们把任何应用变换为多分租应用。也就是即使我们运行一个应用实例，我们用到单个数据库，如果应用被两个或多个域访问（例子中，
+域名从``request.env.http_host``得到），访问者看到依赖域的不同数据。想想在不同的域名下运行多个Web stores，有一个应用程序和一个数据库。 
 
 你能用如下语句关闭多分租过滤：``ignore_common_filters``:inxx
 ``
@@ -2736,8 +2569,7 @@ rows = db(query, ignore_common_filters=True).select()
 
 #### 通用过滤器 Common filters
 
-通用过滤器是上面multi-tenant想法产生的。它提供了简单方法防止重复同样的
-查询。考虑下表这个例子：
+通用过滤器是上面multi-tenant想法产生的。它提供了简单方法防止重复同样的查询。考虑下表这个例子：
 
 ``
 db.define_table('blog_post',
@@ -2748,18 +2580,15 @@ db.define_table('blog_post',
 )
 ``
 
-任何表中的查询、删除和更新，只会包括公开的博客posts。属性也能在控制器中
-修改：
+任何表中的查询、删除和更新，只会包括公开的博客posts。属性也能在控制器中修改：
 
 ``
 db.blog_post._common_filter = lambda query: db.blog_post.is_public == True
 ``
 
-它是一个服务于，在每个blog post搜索，既避免重复"db.blog_post.is_public==True"的办法，也是一种安全增强，防止你遗忘禁止
-浏览非公开的posts。
+它是一个服务于，在每个blog post搜索，既避免重复"db.blog_post.is_public==True"的办法，也是一种安全增强，防止你遗忘禁止浏览非公开的posts。
 
-一种情况，你确实想要被通用过滤器滤掉的项目（例如，允许 admin看非公开
-posts），你能删除过滤器：
+一种情况，你确实想要被通用过滤器滤掉的项目（例如，允许 admin看非公开posts），你能删除过滤器：
 ``
 db.blog_post._common_filter = None
 ``
@@ -2772,8 +2601,7 @@ db(query, ignore_common_filters=True).select(...)
 
 ``SQLCustomType``:inxx
 
-能定义新的或自定义字段类型。例如我们思考下面的例子，一个字段包含
-压缩形式的二进制数据：
+能定义新的或自定义字段类型。例如我们思考下面的例子，一个字段包含压缩形式的二进制数据：
 
 ``
 from gluon.dal import SQLCustomType
@@ -2789,12 +2617,10 @@ compressed = SQLCustomType(
 db.define_table('example', Field('data',type=compressed))
 ``:code
 
-``SQLCustomType`` 是字段类型工厂。它的t``type`` 参数必须是标准web2py类型之一。它
-告诉web2py在web2py层级如何处理字段值。只要关注数据库，``native`` 是字段名字
+``SQLCustomType`` 是字段类型工厂。它的t``type`` 参数必须是标准web2py类型之一。它告诉web2py在web2py层级如何处理字段值。只要关注数据库，``native`` 是字段名字
 允许的名字取决于数据库引擎。``encoder`` 可选变换功能，当数据存储时应用； ``decoder`` 是可选的反变换功能。
 
-这个特性标记为实验阶段。实践中，它在web2py用了好长时间，它有用，但会
-使代码不可移植，例如，当native type （原先类型）是数据库专用的。它不能用
+这个特性标记为实验阶段。实践中，它在web2py用了好长时间，它有用，但会使代码不可移植，例如，当native type （原先类型）是数据库专用的。它不能用
 在Google App Engine NoSQL。
 
 #### 不定义表使用DAL
@@ -2806,13 +2632,11 @@ from gluon import DAL, Field
 db = DAL('sqlite://storage.sqlite',folder='path/to/app/databases')
 ``:code
 
-即导入DAL和Field，连接和指定包含.table文件的文件夹（应用/数据库文件
-夹）。
+即导入DAL和Field，连接和指定包含.table文件的文件夹（应用/数据库文件夹）。
 
 为访问数据和它的属性，我们仍需要用 ``db.define_tables(...)``定义我们将要访问的所有表。
 
-如果我们就需要访问数据而不是web2py表的属性，我们无需再定义表，而是
-简单要求web2py从.table元数据文件读取必要信息：
+如果我们就需要访问数据而不是web2py表的属性，我们无需再定义表，而是简单要求web2py从.table元数据文件读取必要信息：
 
 ``
 from gluon import DAL, Field
@@ -2836,8 +2660,7 @@ db = DAL('sqlite://storage.sqlite')
 db = DAL('postgresql://username:password@hocalhost/mydb')
 ``
 
-在你切换之前，你想为新的数据库移动数据并重建所有的元数据。我们假定新
-数据库存在，但我们也假定它是空的。
+在你切换之前，你想为新的数据库移动数据并重建所有的元数据。我们假定新数据库存在，但我们也假定它是空的。
 
 web2py为你提供完成这个工作的脚本：
 
@@ -2849,11 +2672,9 @@ python scripts/cpdb.py \
    -Y 'postgresql://username:password@hocalhost/mydb'
 ``
 
-运行脚本后，你能在模型中轻松切换连接字符串，所有的要能够即开即用。新
-数据就在那儿。
+运行脚本后，你能在模型中轻松切换连接字符串，所有的要能够即开即用。新数据就在那儿。
 
-脚本提供了各种各样的命令行选项，允许你从一个应用到领一个移动数据，移
-动所有的表或仅是一些，清除表中的数据。更多信息尝试：
+脚本提供了各种各样的命令行选项，允许你从一个应用到领一个移动数据，移动所有的表或仅是一些，清除表中的数据。更多信息尝试：
 
 ``
 python scripts/cpdb.py -h
@@ -2861,8 +2682,7 @@ python scripts/cpdb.py -h
 
 #### 新的DAL和适配器的注意事项
 
-数据库抽象层的源代码在2010年完全重写。在它保持后向兼容的同时，重
-写令它更模块化并且更加易于扩展。我们解释下主要逻辑。
+数据库抽象层的源代码在2010年完全重写。在它保持后向兼容的同时，重写令它更模块化并且更加易于扩展。我们解释下主要逻辑。
 文件“gluon/dal.py”，除其它外，定义下列类。
 
 ``
@@ -2899,8 +2719,7 @@ Table.insert(myfield='myvalue')
 db._adapter.insert(db.mytable,db.mytable._listify(dict(myfield='myvalue')))
 ``
 
-这里 ``db.mytable._listify`` 方法把参数字典转换为``(field,value)``列表，并调用``adapter``
-的``insert``。 ``db._adapter`` 或多或少完成下面：
+这里 ``db.mytable._listify`` 方法把参数字典转换为``(field,value)``列表，并调用``adapter``的``insert``。 ``db._adapter`` 或多或少完成下面：
 
 ``
 query = db._adapter._insert(db.mytable,list_of_fields)
@@ -3036,32 +2855,24 @@ db =DAL(..., driver_args={}, adapter_args={})
 #### Gotchas 陷阱
 
 **SQLite** 不支持删除和修改列。这意味着，web2py迁移的工作会到一种情况。
-如果你从表删除一个字段，列仍然在数据库但对web2py不可见。如果你决定再
-安置列，web2py将会再创建它，但不成功。这种情况，你必须设置``fake_migrate=True`` ，以使元数据重建而不必再添加列。同样原因，**SQLite** 也不清
-楚列类型的任何改变。如果你在string字段插入数字，它被存为字符串。如果你后
-面改变模型，用类型integer替换类型string，SQLite会继续保持数字是字符串，
+如果你从表删除一个字段，列仍然在数据库但对web2py不可见。如果你决定再安置列，web2py将会再创建它，但不成功。这种情况，你必须设置``fake_migrate=True`` ，以使元数据重建而不必再添加列。同样原因，**SQLite** 也不清
+楚列类型的任何改变。如果你在string字段插入数字，它被存为字符串。如果你后面改变模型，用类型integer替换类型string，SQLite会继续保持数字是字符串，
 当你试图提取数据的时候会引发问题。
 
-**MySQL** 在单个事务范围不支持多ALTER TABLE。这意味着任何迁移操作会
-分解为多个commit。如果出现失败，它造成迁移中断（web2py元数据不再与真
-实数据库表结构保持同步）。这不走运，但能够避免（一次迁移一张表），或
-后验更正（恢复web2py模型到与数据库表结构相应的，设置``fake_migrate=True`` ，元数据被重建后，设置f``fake_migrate=False`` False，再次迁移表格。）
+**MySQL** 在单个事务范围不支持多ALTER TABLE。这意味着任何迁移操作会分解为多个commit。如果出现失败，它造成迁移中断（web2py元数据不再与真
+实数据库表结构保持同步）。这不走运，但能够避免（一次迁移一张表），或后验更正（恢复web2py模型到与数据库表结构相应的，设置``fake_migrate=True`` ，元数据被重建后，设置f``fake_migrate=False`` False，再次迁移表格。）
 
-**Google SQL** 有与MySQL相同的问题，还更多些。特别是表元数据本身必须
-存在数据库的表中，不被web2py迁移的。这是因为Google App Engine有只读文
+**Google SQL** 有与MySQL相同的问题，还更多些。特别是表元数据本身必须存在数据库的表中，不被web2py迁移的。这是因为Google App Engine有只读文
 件系统。Google中web2py迁移：上述SQ L结合MySQL问题会导致元数据崩溃。
-再一次，这能被阻止（我迁移表一次，然后设置migrate=False，元数据表不能
-再被访问），或它能后验修复（我用Google dashboard访问数据库，从叫做``web2py_filesystem``的表删除任何损坏的条目）
+再一次，这能被阻止（我迁移表一次，然后设置migrate=False，元数据表不能再被访问），或它能后验修复（我用Google dashboard访问数据库，从叫做``web2py_filesystem``的表删除任何损坏的条目）
 
 ``limitby``:inxx
 **MSSQL** 不支持SQL OFFSET关键词。因此数据库不能做分页。当执行``limitby=(a,b)`` web2py会得到最初的 ``b`` 的行，而丢弃最初的 ``a``。与
 其它数据库引擎比，这会导致相当大的开销
 
-**Oracle** 也不支持分页。它既不支持OFFSET也不支持LIMIT关键词。web2py实
-现分页但把 ``db(...).select(limitby=(a,b))`` 翻译成复杂的三层嵌套查询（Oracle官方文档建议）。简单查询有效，但可能因涉及别名字段和联合查询而中断。
+**Oracle** 也不支持分页。它既不支持OFFSET也不支持LIMIT关键词。web2py实现分页但把 ``db(...).select(limitby=(a,b))`` 翻译成复杂的三层嵌套查询（Oracle官方文档建议）。简单查询有效，但可能因涉及别名字段和联合查询而中断。
 
-**MSSQL** 有循环引用的问题在ONDELETE CASCADE表中。这是MSSQL漏洞，
-你可以对所有引用字段设置ondelete属性为“NO ACTION”克服它。也能在定义
+**MSSQL** 有循环引用的问题在ONDELETE CASCADE表中。这是MSSQL漏洞，你可以对所有引用字段设置ondelete属性为“NO ACTION”克服它。也能在定义
 表前对所有的设置一次。
 
 ``
@@ -3083,8 +2894,7 @@ db(query).select(distinct=True)
 db(query).select(distinct=db.mytable.myfield)
 ``
 
-**Google NoSQL (Datastore)** 不允许联合，左联，聚类，表达式，多于一张表
-的OR，like运算及在“text”字段中搜索。事务受限制，不会被web2py自动提供
+**Google NoSQL (Datastore)** 不允许联合，左联，聚类，表达式，多于一张表的OR，like运算及在“text”字段中搜索。事务受限制，不会被web2py自动提供
 （你需要用Google API``run_in_transaction`` ，你能在Google App Engine在线文档中查找到）。Google也限制你每次能检索的记录数（写书时是1000条）。Google数据存储记录ID是整型，但它们不连续。当SQL“list:string”类型映射到“text” 类型，在Google数据存储，它映射为``ListStringProperty``。相同地，“list:integer”和“list:reference”映射为“ListProperty”。这使在这些字段类型内容搜索，Google
 NoSQL比SQL数据库更高效。
 
